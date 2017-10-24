@@ -1,0 +1,71 @@
+{% extends "roma/roma_base.html" %}
+{% load staticfiles i18n %}
+
+{% block head_title %}{{ poitype.name }} - {{ zone.name }}{% endblock %}
+
+{% block content %}
+    <div class="boxcontent">
+        <div class="row mB10">
+            <div class="col-md-12 col-lg-12">
+                <div class="segnaposto notranslate">{{ region }}</div>
+            </div>
+            <div class="col-md-9 col-lg-10">
+                <h1><span class="notranslate">{{zone.name}}</span> - {{ poitype.name }}</h1>
+                <div class="mB20">
+                {% if not poitype.active %}
+                    <div class="summary">
+                        <div class="eti">{% trans "sub-categories"|capfirst %}</div>
+                        {% for p in poitype.sub_types %}<div class="val"><a href="/categoria/{{ p.slug }}/{% if zone and zone.code != 'ROMA' %}zona/{{ zone.slug }}/{% endif %}" rel="tooltip" title='{% trans "list the resources of the category" %} {{ p.name }}'>{{ p.name }}</a></div>{% endfor %}
+                    </div>
+                {% endif %}
+                {% if theme %}
+                    <div class="summary">
+                        <div class="eti">{% trans "specific theme area"|capfirst %}</div>
+                        <div class="val"><a href="/tema/{{ theme.slug }}/" rel="tooltip" title='{% trans "show an index" %} {% trans "of resources for" %} {{ theme.name }}'>{{ theme.name }}</a></div>
+                    </div>
+                {% endif %}
+                {% if theme_list %}
+                <div class="summary">
+                    <div class="eti">{% trans "theme areas related"|capfirst %} {% trans "to the category" %}</div>
+                    {% for theme in theme_list %}<div class="val"><a href="/tema/{{ theme.slug }}/" rel="tooltip" title='{% trans "show an index" %} {% trans "of resources for" %} {{ theme.name }}'>{{ theme.name }}</a></div>{% endfor %}
+                </div>
+                {% endif %}
+                </div>
+            </div>
+            <div class="col-md-3 col-lg-2">
+                <div class="actions">
+                    {% if zone and zone.code != 'ROMA' %}
+                        <div><a href="/indice-zona/{{ zone.slug }}/" title="{% trans "show the resources by theme area" %}" rel="tooltip"><i class="fa fa-list" aria-hidden="true"></i> <small>{% trans "show the resources by theme area" %}</small></a></div>
+                        <div><a href="/categoria/{{ poitype.slug }}/" rel="tooltip" title="{% trans 'show all resources in this category' %}"><i class="fa fa-map-o" aria-hidden="true"></i> <small>{% trans 'show all resources in this category' %}</small></a></div>
+                    {% endif %}                    
+                    {% include "pois/_help_block.html" %}
+                </div>
+            </div>
+        </div>
+        <div class="summary mB10">
+            {% if poi_dict_list and zone_list %}<div class="eti">{% trans "Other zones"|capfirst %}</div>{% endif %}
+            {% for zone in zone_list %}
+                <div class="val"><span class="notranslate">{{ zone.name }}</span> <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype.slug }}/zona/{{ zone.slug }}/" title="{% trans "list the resources of the category" %} {{ poitype.name }} {% trans "in the zone" %} {{ zone.name }}">{{ zone.count }}</a> ]</span></div>
+            {% endfor %}
+        </div>
+        <div class="row mB20">
+            <div class="col-sm-12 col-md-12 col-lg-12 mB10">
+                <div id="map" class="map mapZone"></div>
+            </div>
+        </div>
+        <div><table class="table table-striped table-list"><tbody id="resources">
+        {% if poi_dict_list %}
+            {% for poi_dict in poi_dict_list %}{% include "pois/_poi_list_item.html" %}{% endfor %}
+        {% else %}
+            <tr><td class="td-total-white">{% trans "No resource is present" %}.</td></tr>
+        {% endif %}
+        </tbody></table></div>
+    </div>
+{% endblock %}
+
+{% block mapjs %}
+    <script type="text/javascript">
+        var json_zones = {};
+    </script>
+    {% include "pois/_map_poi_list_js.html" %}
+{% endblock mapjs %}

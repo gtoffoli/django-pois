@@ -1,0 +1,65 @@
+{% extends "roma/gridA.html" %}
+{% load staticfiles i18n macros %}
+{% loadmacros pois/pois_macros.html %}
+
+{% block head_title %}{% trans "Search results for" %}: <span class="notranslate">"{{ q }}"</span>{% endblock %}
+
+{% block title-page %}{% trans "Search results for" %}: <span class="notranslate">"{{ q }}"</span>{% endblock %}
+{% block no-view-map %}{% endblock %}
+
+{% block list %}
+{% if queries.pois or queries.categories or queries.zones or queries.streets %}
+    {% if queries.pois %}
+    	<div style="font-weight:bold; margin-top: 5px; margin-bottom: 2px;">{% trans "Resources" %}</div>
+		<div>
+        {% for poi_dict in queries.pois %}
+        {% comment %}<div><a href="/risorsa/{{ poi.1 }}/">{{ poi.0 }}</a></div>{% endcomment %}
+        {% usemacro poi_list_item %}
+        {% endfor %}
+        </div>
+    {% endif %}
+    {% if queries.categories %}
+    	<div style="font-weight:bold; margin-top: 5px; margin-bottom: 2px;">{% trans "Categories" %}</div>
+		<div>
+        {% for category in queries.categories %}
+        <div><a href="/categoria/{{ category.1 }}/">{{ category.0 }}</a></div>
+        {% endfor %}
+        </div>
+    {% endif %}
+    {% if queries.zones %}
+    	<div style="font-weight:bold; margin-top: 5px; margin-bottom: 2px;">{% trans "Zones" %}</div>
+		<div>
+        {% for zone in queries.zones %}
+        <div><a href="/zona/{{ zone.1 }}/">{{ zone.2 }} {{ zone.0 }}</a></div>
+        {% endfor %}
+        </div>
+    {% endif %}
+    {% if queries.streets %}
+    	<div style="font-weight:bold; margin-top: 5px; margin-bottom: 2px;">{% trans "Streets, squares .." %}</div>
+		<div>
+        {% for street in queries.streets %}
+        <div><a href="/toponimo/{{ street.1 }}/">{{ street.0 }}</a></div>
+        {% endfor %}
+        </div>
+    {% endif %}
+{% else %}
+	{% trans "no result"|capfirst %}
+{% endif %}
+    <hr>
+  	<form style="margin: 0;" action="/cerca/?q={{ form.cleaned_data.q }}" method="post" id="search_form"><div>
+{% csrf_token %}
+   <table>
+   <tr><th style="vertical-align: top"><h4>{% trans "new search"|capfirst %}</h4></th>
+   	<td style="vertical-align: bottom"><input type="submit" value="{% trans "apply"|capfirst %}"></td></tr>
+   {% for field in form.visible_fields %}
+       <tr style="vertical-align: top;">
+	   		<th style="font-weight: bold; text-align: right;">{% if field.help_text %}<img src="{% static "admin/img/icon-unknown.gif" %}" Title="{{ field.help_text }}" style="cursor: pointer; float:right; margin:5px;">{% endif %}
+	   		{{ field.label_tag|capfirst }}</th>
+	   		<td><div class="checkbox-multiple">{{ field }}</div></td>
+   		</tr>
+   {% endfor %}
+   </table>
+   </div></form>
+{% endblock %}
+
+{% block blog %}{% endblock %}

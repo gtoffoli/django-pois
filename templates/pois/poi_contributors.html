@@ -1,0 +1,24 @@
+{% extends "roma/roma_base.html" %}
+{% load staticfiles i18n %}
+{% block head_title %}{% trans "top contributors"|capfirst %}{% endblock head_title %}
+{% block content %}
+    <div class="boxcontent">
+        <h1>{% trans "top contributors"|capfirst %}</h1>
+        <div class="table-responsive"><table class="table table-striped table-list">
+            <thead><th>resources</th><th>username</th><th>full name</th><th>email</th><th>date joined</th><th>last login</th></thead>
+            <tbody>
+            {% for user in user_list %}
+                <tr class="tr-ele">
+                    <td class="text-center">{{ user.num_pois }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.first_name }} {{ user.last_name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.date_joined }}</td>
+                    <td>{{ user.last_login }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table></div>
+    </div>
+{% endblock content %}
+

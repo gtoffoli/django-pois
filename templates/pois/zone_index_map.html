@@ -1,0 +1,196 @@
+{% extends "roma/roma_base.html" %}
+{% load staticfiles i18n %}
+
+{% block head_title %}{% if zonetype_label %}{{ zonetype_label|capfirst }}{% endif %}{% endblock %}
+
+{% block content %}
+    <div class="boxcontent">
+        <div class="row mB10">
+            <div class="col-md-12 col-lg-12">
+                <div class="segnaposto notranslate">{{region}}</div>
+                {% if zonetype_label %}<h1>{{ zonetype_label|capfirst }}</h1>{% endif %}
+            </div>
+            {% if view_map %}
+            <div class="col-md-12 col-lg-12 mB10">
+                <div id="map" class="mapZones"></div>
+            </div>
+            {% endif %}
+            <div class="col-md-12 col-lg-12">
+                <div class="summary">
+                {% if zonetype.id == 3 and prefix == '' %}
+                    {% for item in zonetype.list_topo_zones %}
+                        <div class="eti">{{ item.0|capfirst }}</div>
+                        {% for zone in item.1 %}<div {% if not forloop.last %}class="val"{% endif %}><a rel="tooltip" id="{{ zone.id }}" class="event-map" title="{% trans "list the resources" %} {% trans "located in the zone" %} {{ zone.name }}" href="/indice-zona/{{ zone.slug}}/"><span class="notranslate">{{ zone.name }} <small>({{zone.code}})</small></span></a></div>{% endfor %}
+                    {% endfor %}
+                {% else %}
+                    {% for zone in zone_list %}<div class="val"><a rel="tooltip" id="{{ zone.id }}" class="event-map" title="{% trans "list the resources" %} {% trans "located in the zone" %} {{ zone.name }}" href="/indice-zona/{{ zone.slug}}/"><span class="notranslate">{{ zone.name }}</span>{% if zonetype.id == 3 %} <small class="notranslate">({{zone.code}})</small>{% endif %}</a></div>{% endfor %}
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% if view_map %}
+{% block mapjs %}
+<script type="text/javascript">
+var json_zones = {};
+</script>
+<script type="text/javascript" src="{% static "pois/pois_map.js" %}" ></script>
+{% for zone in zone_list %}<script type="text/javascript" src="{{ STATIC_URL }}roma/js/geojson/{{ zone.safe_code }}.js"></script>{% endfor %}
+<script type="text/javascript">
+    var zones, zone_highlight_control, zone_select_control;
+    var map, base_layer;
+
+    var zone_style = new OpenLayers.Style({
+        'fillColor': 'white',
+        'fillOpacity': .7,
+        'fontColor': '#333',
+        'fontOpacity': .8,
+        'fontSize': '11px',
+        'fontWeight': 'bold',
+        {% if zonetype.id == 3 and prefix == '' or zonetype.id == 6 %}
+            'label': '',
+        {% else %}
+            'label': '${label}',
+        {% endif %}
+        'labelBackgroundColor': 'white',
+        'strokeWidth': 1,
+        'strokeColor': '#333',
+    });
+    var zone_style_selected = new OpenLayers.Style({
+        'fillColor': '#FF8000',
+        'fillOpacity': .2,
+        'fontColor': '#A63840',
+        'fontOpacity': 1.0,
+        'fontSize': '14px',
+        'cursor': 'pointer',
+    });
+    var zone_style_map = new OpenLayers.StyleMap({
+        'default': zone_style,
+        'select': zone_style_selected,
+    });
+
+    function map_init(){
+        OpenLayers.Projection.addTransform("EPSG:900913", "EPSG:3857", "EPSG:23032");
+        proj_OSM = new OpenLayers.Projection("EPSG:3857");
+        proj_ISTAT = new OpenLayers.Projection("EPSG:23032");
+        map = new OpenLayers.Map('map', {
+            projection: proj_OSM,
+            //eventListeners: {'zoomend': on_zoom},
+            controls: []
+        });
+        for (var i = 0; i< map.controls.length; i++) {
+            if (map.controls[i].displayClass == "olControlNavigation") {
+                map.controls[i].deactivate();
+            }
+        }
+        map.div.oncontextmenu = function noContextMenu(e){return false;};
+        map.addControl(new OpenLayers.Control.MousePosition());
+        map.addControl(new OpenLayers.Control.LayerSwitcher());
+// overview_map = new OpenLayers.Control.OverviewMap({maximized: true});
+// overview_map = new OpenLayers.Control.OverviewMap({div: document.getElementById('map_overview')});
+// map.addControl(overview_map);
+// map.addControl(new OpenLayers.Control.PanZoomBar());
+        map.addControl(new OpenLayers.Control.ScaleLine({geodesic: 'true'}));
+        var gmap = new OpenLayers.Layer.Google("Google Streets", { numZoomLevels: 20 });
+        map.addLayer(gmap);
+        var gsat = new OpenLayers.Layer.Google("Google Satellite", {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22});
+        map.addLayer(gsat);
+        var osm = new OpenLayers.Layer.OSM("OpenStreetMap");
+        map.addLayer(osm);
+        geojson_format = new OpenLayers.Format.GeoJSON();
+        zones = new OpenLayers.Layer.Vector("Zone");
+        {% for zone in zone_list %}{% if zone.geom %}
+            {% if zonetype.id == 0 or zonetype.id == 1 or zonetype.id == 3 or zonetype.id == 6  or zonetype.id == 7 %}
+                zone = geojson_format.read(json_zones['{{ zone.safe_code }}'])[0];
+            {% else %}
+                zone = geojson_format.read({{zone.geom_OSM.geojson|safe}})[0]; // We mark it 'safe' so that Django doesn't escape the quotes.
+            {% endif %}
+            zone.attributes = { id: {{zone.id}}, label: "{{zone.name}}", description: "{{zone.name}}", type: 'municipio', url: "/indice-zona/{{zone.slug}}/"};
+// center = zone.getCentroid();
+            zones.addFeatures(zone);
+        {% endif %}{% endfor %}
+// zones.setOpacity(0.5);
+        map.addLayer(zones);
+        zones.styleMap = zone_style_map;
+        zone_highlight_control = new OpenLayers.Control.SelectFeature(zones, {
+            hover: true,
+            highlightOnly: true,
+// renderIntent: "temporary"
+        });
+        zone_select_control = new OpenLayers.Control.SelectFeature(zones, {
+            box: false,
+            clickout: false,
+            toggle: true,
+            multiple: true,
+            multipleKey: 'shiftKey',
+        });
+        zones.events.register('featureselected', this, on_feature_selected);
+// zones.events.register('featureunselected', this, on_feature_unselected);
+        map.addControl(zone_highlight_control);
+        map.addControl(zone_select_control);
+        zone_highlight_control.activate();
+        zone_select_control.activate();
+        map.zoomToExtent(zones.getDataExtent(), true);
+    }
+
+    function on_zoom(event){
+        // show_scale();
+    }
+
+    function on_feature_selected(event){
+// get feature attributes
+        attrs = event.feature.attributes;
+        url = attrs.url
+// navigate to the feature detail page
+        $('body').css('cursor','wait');
+        window.location.href = url;
+        return true;
+    }
+
+// window.onload = init();
+    if (window.attachEvent) {
+        window.attachEvent('onload', map_init());
+        if(window.onload) {
+            var curronload = window.onload;
+            var newonload = function() {
+                curronload();
+                map_init();
+            };
+            window.onload = newonload;
+        } else {
+            window.onload = map_init;
+        }
+    }
+
+    function highlight_zone(zone_id, on) {
+        for (var i = 0; i < zones.features.length; ++i) {
+            zone = zones.features[i];
+            if (zone.attributes['id'] == zone_id)
+                if (on)
+                    zone_highlight_control.highlight(zone);
+                else
+                 zone_highlight_control.unhighlight(zone);
+        }
+    }
+
+    map_init();
+</script>
+{% endblock mapjs %}
+
+{% block body_scripts %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("a.event-map").mouseover(function(event) {
+            event.preventDefault();
+            highlight_zone(this.id, true);
+        });
+        $("a.event-map").mouseout(function(event) {
+            event.preventDefault();
+            highlight_zone(this.id, false);
+        });
+    });
+</script>
+{% endblock body_scripts %}
+{% endif %}

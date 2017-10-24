@@ -1,0 +1,182 @@
+{% load macros i18n set_var %}
+
+{# poi_list_item macro. input: poi_dict = poi.make_dict(). output: a list item #}
+{% macro poi_list_item %}
+{% if poi_dict.notes %}
+<div class="row">
+<div class="span5"><a href="{{ poi_dict.url }}" class="alfa-blue-normal" rel="tooltip" title="{% trans "show resource" %} {{ poi_dict.name }}"><span class="notranslate">{{ poi_dict.name }}</span></a></div>
+<div class="span5 txt-small"><a href="{{ poi_dict.street_url }}" class="alfa-blue-normal" rel="tooltip" title="{% trans "show" %} {{ poi_dict.street_name }}"><span class="notranslate">{{ poi_dict.street_address }}</span></a> - <a href="/indice-zona/{{poi_dict.cap }}/" class="alfa-blue-normal" rel="tooltip" title="{% trans "show" %} {% trans "the zone with zipcode" %} {{poi_dict.cap }}">{{poi_dict.cap }}</a> {{poi_dict.comune }}</div>
+<div class="row txt-small span9">{{ poi_dict.short }}</div>
+<div class="rowRes txt-small span9">{{ poi_dict.notes }}</div>
+</div>
+{% else %}
+<tr class="tr-ele">
+<td class="td-img"><img class="img-responsive" src="{{ STATIC_URL }}roma/img/icons/{{ poi_dict.icon}}.png"></td>
+<td>
+<div class="row">
+<div class="col-lg-7"><a href="{{ poi_dict.url }}" rel="tooltip" title="{% trans "show resource" %} {{ poi_dict.name }}"><span class="notranslate">{{ poi_dict.name }}</span></a></div>
+<div class="col-lg-5"><small>{% if  poi_dict.street_url %}<a href="{{ poi_dict.street_url }}" rel="tooltip" title="{% trans "show" %} {{ poi_dict.street_name }}"><span class="notranslate">{{ poi_dict.street_name }}</span></a><span class="notranslate">, {{ poi_dict.number }}</span>{% else %}<span class="notranslate">{{ poi_dict.street_address }}</span>{% endif %} - <a href="/indice-zona/{{poi_dict.cap }}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the zone with zipcode" %} {{poi_dict.cap }}"><span class="notranslate">{{poi_dict.cap }}</span></a> {% if poi_dict.comune.1 == 'roma' %}<span class="notranslate">{{ poi_dict.comune.0 }}</span>{% else %}<a href="/indice-zona/{{poi_dict.comune.1}}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the town" %} {{ poi_dict.comune.0 }}"><span class="notranslate">{{ poi_dict.comune.0 }}</span></a>{% endif %}</small></div>
+<div class="col-lg-9"><small>{{ poi_dict.short }}</small></div>
+</div>
+</td>
+</tr>
+{% endif %}
+{% endmacro %}
+
+{% comment %}
+{% macro show_feed %}
+  <ul class="feed">
+	{% for entry in feed.entries|slice:":3" %}
+		{% if entry.title %}
+		<li>
+		<div><a class="alfa-blue" href="{{ entry.link }}" target="_new" title="{% trans "read the original article" %}">{{ entry.title }}</a></div>
+		<div class="p3">{{ entry.date }}</div>
+		{% if entry.summary %}
+		<div class="p3">{{ entry.summary|striptags|safe|truncatewords:80 }}</div>
+		{% else %}
+		<div class="p3">{{ entry.content|striptags|safe|truncatewords:80 }}</div>
+		{% endif %}
+	  </li>
+		{% endif %}
+	{% endfor %}
+  </ul>
+{% endmacro %}
+
+{% macro poi_show_feeds %}
+	{% for feed in feeds %}
+		<div  class="boxround-small marg-top-10">
+		<div class="box-header">{% trans "articles from"|capfirst %} {% if feed.title %}{{ feed.title }}{% else %}<span class="notranslate">{{ poi.name }}</span>{% endif %}</div>
+		{% usemacro show_feed %}
+		</div>
+   	{% endfor %}
+{% endmacro %}
+
+{% endcomment %}
+{% macro zone_view_summary %}
+<div class="row">
+<div class="hidden-xs col-lg-12">
+{% if zone.zonetype_id == 0 %}
+    <div class="summary">
+        <div class="eti">{% if 'PR' in zone.code %}{% trans "towns"|capfirst %}{% else %}{% trans "municipalities"|capfirst %}{% endif %}</div>
+        {% for otherzone in zone.type_subzones %}<div class="val"><a href="/{{ urlprefix }}/{{ otherzone.slug }}/" rel="tooltip" title="{% trans "show" %} {{ otherzone.name }}"><span class="notranslate">{{ otherzone.name }}</span></a></div>{% endfor %}
+    </div>
+    <div class="summary  mB20">
+    {% for item in subzone_list %}
+        <div class="eti">{{ item.0|capfirst }}</div>
+        <div class="summary">
+        {% for subzone in item.2 %}<div {% if not forloop.last %}class="val"{% endif %}><a href="/{{ urlprefix }}/{{ subzone.slug }}/" rel="tooltip" title="{% trans "show" %} {{ item.1 | lower}} {{ subzone.name }}"><span class="notranslate">{{ subzone.name }} <small>({{ subzone.code }})</small></span></a></div>{% endfor %}
+        </div>
+    {% endfor %}
+    </div>
+{% comment %}MMR 20170912
+    <div class="summary mB20">
+        <div class="eti">{% trans "the other"|capfirst %} {% trans "macrozones" %}</div>
+       {% for otherzone in zone.sametype_zones %}<div>{% if not otherzone.id == zone.id and not otherzone.id == 90 %}<a href="/{{ urlprefix }}/{{ otherzone.slug }}/" rel="tooltip" title="{% trans "show" %} {% trans "macrozone" %} {{ otherzone.name }}"><span class="notranslate">{{ otherzone.name }}</span></a>{% if not forloop.last %}<span class="ele-divider">&bull;</span>{% endif %}{% endif %}</div>{% endfor %}
+    </div>
+{% endcomment %}
+{% else %}
+    {% if zone.zonetype_id == 7 %}
+        <div class="summary">
+            <div class="eti">{% trans "macrozone"|capfirst %}</div>
+            {% for macrozone in macrozones %}{% if not macrozone.id == 90 %}<div class="val"><a href="/{{ urlprefix }}/{{ macrozone.slug }}/" rel="tooltip" title="{% trans "show" %} {% trans "macrozone" %} {{ macrozone.name }}"><span class="notranslate">{{ macrozone.name }}</span></a></div>{% endif %}{% endfor %}
+        </div>
+    {% elif zone.zonetype_id == 3 %}
+        {% if zone.short %}
+            <div class="summary">
+                <div class="eti">{% trans "main streets and places"|capfirst %}</div> <span class="notranslate">{{ zone.short }}</span>
+            </div>
+        {% endif %}
+        <div class="summary">
+            <div class="eti">{% trans "macrozones"|capfirst %}</div>
+            {% for macrozone in macrozones %}{% if not macrozone.id == 90 %}<div class="val"><a href="/{{ urlprefix }}/{{ macrozone.slug }}/" rel="tooltip" title="{% trans "show" %} {% trans "macrozone" %} {{ macrozone.name }}"><span class="notranslate">{{ macrozone.name }}</span></a></div>{% endif %}{% endfor %}
+        </div>
+    {% endif %}
+    <div class="summary mB20">
+        {% for item in zone.neighbouring %}
+            <div class="eti">{{ item.0|capfirst }}</div>
+            {% for neighbour in item.2 %}<div {% if not forloop.last %}class="val"{% endif %}><a href="/{{ urlprefix }}/{{ neighbour.slug }}/" rel="tooltip" title="{% trans "show" %} {{ item.1}} {{ neighbour.name }}"><span class="notranslate">{{ neighbour.name }}</span>{% if neighbour.zonetype_id == 3 %} <small class="notranslate">({{ neighbour.code }})</small>{% endif %}</a></div>{% endfor %}
+        {% endfor %}
+    </div>
+{% comment %} MMR 20170912
+<div class="summary mB20">
+	<div class="eti">{% trans "zones" %} {% trans "partially overlapping" %}</div>
+	{% for overlap in zone.overlapping %}<div><a href="/{{ urlprefix }}/{{ overlap.slug }}/" class="alfa-blue-normal" rel="tooltip" title="{% trans "show" %}{% if overlap.zonetype_id == 3 %} {{ overlap.code }}-{% endif %} {{ overlap.name }}">{% if overlap.zonetype_id == 3 %}{{ overlap.code }}-{% endif %}{{ overlap.name }}</a>{% if not forloop.last %}<span class="ele-divider">&bull;</span>{% endif %}</div>{% endfor %}
+</div>
+{% endcomment %}
+{% endif %}
+</div>
+</div>
+{% endmacro %}
+
+{% macro fv_zone_view_summary %}
+<div class="mB20">
+{% if zone.zonetype_id == 0 %}
+  <div class="summary">
+    <div class="icon-hand-right"></div><div class="eti">{% trans "the municipalities" %}</div>
+    {% for otherzone in zone.type_subzones %}<div><a href="/{{ urlprefix }}/{{ otherzone.slug }}/" class="alfa-blue-normal" rel="tooltip" title="{% trans "show" %} {{ otherzone.name }}">{{ otherzone.name }}</a>{% if not forloop.last %}<span class="ele-divider">&bull;</span>{% endif %}</div>{% endfor %}
+  </div>
+{% comment %}
+  <div class="summary">
+  {% for item in subzone_list %}
+    <div class="icon-hand-right"></div><div class="eti">{{ item.0 }}</div>
+    {% for subzone in item.1 %}<div><a href="/{{ urlprefix }}/{{ subzone.slug }}/" class="alfa-blue-normal" rel="tooltip" title="{% trans "show" %} {{ item.0 | lower}} {{ subzone.name }}">{{ subzone.name }}</a>{% if not forloop.last %}<span class="ele-divider">&bull;</span>{% endif %}</div>{% endfor %}
+  {% endfor %}
+  </div>
+{% endcomment %}
+  <div class="summary">
+    <div class="icon-hand-right"></div><div class="eti">{% trans "the other" %} {% trans "macrozones" %}</div>
+    {% for otherzone in zone.sametype_zones %}<div>{% if not otherzone.id == zone.id and not otherzone.id == 90 %}<a href="/{{ urlprefix }}/{{ otherzone.slug }}/" class="alfa-blue-normal" rel="tooltip" title="{% trans "show" %} {% trans "macrozone" %} {{ otherzone.name }}">{{ otherzone.name }}</a>{% if not forloop.last %}<span class="ele-divider">&bull;</span>{% endif %}{% endif %}</div>{% endfor %}
+  </div>
+{% else %}
+  {% if zone.zonetype_id == 7 %}
+    <div class="summary">
+      <div class="icon-hand-right"></div><div class="eti">{% trans "macrozone" %}</div>
+      {% for macrozone in macrozones %}<div>{% if not macrozone.id == 90 %}<a href="/{{ urlprefix }}/{{ macrozone.slug }}/" class="alfa-blue-normal" rel="tooltip" title="{% trans "show" %} {% trans "macrozone" %} {{ macrozone.name }}">{{ macrozone.name }}</a>{% if not forloop.last %}<span class="ele-divider">&bull;</span>{% endif %}{% endif %}</div>{% endfor %}
+    </div>
+  {% endif %}
+{% comment %}
+  {% if zone.zonetype_id == 3 %}
+    {% if zone.short %}
+      <div class="summary">
+        <div class="eti">{% trans "main streets and places" %}</div> {{ zone.short }}
+      </div>
+    {% endif %}
+    <div class="summary">
+      <div class="icon-hand-right"></div><div class="eti">{% trans "macrozones" %}</div>
+        {% for macrozone in macrozones %}<div>{% if not macrozone.id == 90 %}<a href="/{{ urlprefix }}/{{ macrozone.slug }}/" class="alfa-blue-normal" rel="tooltip" title="{% trans "show" %} {% trans "macrozone" %} {{ macrozone.name }}">{{ macrozone.name }}</a>{% if not forloop.last %}<span class="ele-divider">&bull;</span>{% endif %}{% endif %}</div>{% endfor %}
+    </div>
+  {% endif %}
+{% endcomment %}
+  <div class="summary">
+    <div class="icon-hand-right"></div><div class="eti">{{ zone.zonetype_name_plural }} {% trans "neighbouring" %}</div>
+{% comment %} {% if neighbour.zonetype_id == 3 %} {{ neighbour.zonetype_label}} {{ neighbour.code }} - {% endif%} {% if neighbour.zonetype_id == 3 %}{{ neighbour.code }}-{% endif %}{% endcomment %}
+    {% for neighbour in zone.neighbouring %}
+      {% if zone.name != neighbour.name %}
+        {% if neighbour.zonetype_id == 7 or neighbour.zonetype_id == 6 %}
+          <div><a href="/{{ urlprefix }}/{{ neighbour.slug }}/" class="alfa-blue-normal" rel="tooltip" title="{% trans "show" %}{% if neighbour.zonetype_id == 6 %} {{ neighbour.zonetype_name }}{% endif %} {{ neighbour.name }}">{{ neighbour.name }}</a>{% if not forloop.last %}<span class="ele-divider">&bull;</span>{% endif %}</div>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+    </div>
+{% comment %}
+<div class="summary">
+	<div class="icon-hand-right"></div><div class="eti">{% trans "zones" %} {% trans "partially overlapping" %}</div>
+	{% for overlap in zone.overlapping %}<div><a href="/{{ urlprefix }}/{{ overlap.slug }}/" class="alfa-blue-normal" rel="tooltip" title="{% trans "show" %}{% if overlap.zonetype_id == 3 %} {{ overlap.code }}-{% endif %} {{ overlap.name }}">{% if overlap.zonetype_id == 3 %}{{ overlap.code }}-{% endif %}{{ overlap.name }}</a>{% if not forloop.last %}<span class="ele-divider">&bull;</span>{% endif %}</div>{% endfor %}
+</div>
+{% endcomment %}
+{% endif %}
+</div>
+{% endmacro %}
+
+{% macro filter_theme %}
+<form method="post" id="search_form">
+    {% csrf_token %}
+    {% for field in form.visible_fields %}
+        <div class="mB10">
+            <label for="{{ field.id_for_label }}">{{ field.label|capfirst }}</label>
+            <div class="checkbox-multiple"><small>{{ field }}</small></div>
+        </div>
+    {% endfor %}
+    <div><button id="refresh_viewport" class="btn btn-default my_btn"><i class="fa fa-refresh" aria-hidden="true"></i> {% trans "refresh" %}</button></div>
+</form>
+{% endmacro %}

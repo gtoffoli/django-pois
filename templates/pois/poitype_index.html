@@ -1,0 +1,46 @@
+{% extends "roma/roma_base.html" %}
+{% load staticfiles i18n %}
+
+{{ current_path }}
+
+{% block head_title %}{% trans "Classification of the resource categories" %}{% endblock %}
+
+{% block content %}
+    <div class="boxcontent">
+        <div class="row mB10">
+            <div class="col-md-9 col-lg-10">
+                <h1>{% trans "Classification of the resource categories" %}</h1>
+            </div>
+            <div class="col-md-3 col-lg-2">
+                <div class="actions">
+                   <div><a href="#"><i class="fa fa-info-circle" aria-hidden="true"></i> <small>{% trans "help" %}</small></a>
+                   <div><small style="display:none">
+                       <p>({% trans "In this list each category occurs in a single group" %})</p>
+                       <p>&nbsp;</p>
+                       <p>{% trans "Click on the number in parentheses, next to a category, to get a list of resources of that category" %}.</p>
+                   </small></div></div>
+                </div>
+            </div>
+        </div>
+        {% if category_list %}
+        {% for code, category, category_name, m, poitype_poi_list in category_list %}
+            <div class="mB20">
+            <div class="demiBold mB10">{{ code }} {{ category_name }} [ {{ m }} ]</div>
+            <ul class="list-unstyled">
+            {% for prefix, poitype, poitype_name, n, theme_names, pois in poitype_poi_list %}
+                <li class="mB10"><img src="{{ STATIC_URL}}roma/img/icons/{{ poitype.icon_name }}.png" onError="this.onerror=null; this.src='{{ STATIC_URL}}roma/img/icons/{{ poitype.icon_name }}.gif';"> {{ prefix }} {{ poitype_name }}
+                    {% if n == 1 %}
+                        [ <a href="{{ pois.0.friendly_url }}" title="{% trans "show resource" %}">{{ n }}</a> ]
+                    {% else %}
+                        [ <a href="{{ poitype.friendly_url }}" title="{% trans "list resources" %}">{{ n }}</a> ]
+                    {% endif %}
+                    - <em>{% for theme_name in theme_names %}{% if forloop.first %}<span class="demiBold" style="color: #888">{% trans "Themes" %}:</span>{% endif %} {{ theme_name }}{% if not forloop.last %},{% endif %} {% endfor %}</em></li>
+            {% endfor %}
+            </ul>
+            </div>
+        {% endfor %}
+        {% else %}
+        <p>{% trans "No resource categories are present" %}.</p>
+        {% endif %}
+    </div>
+{% endblock content %}

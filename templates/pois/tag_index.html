@@ -1,0 +1,83 @@
+{% extends "roma/roma_base.html" %}
+{% load staticfiles i18n %}
+
+{{ current_path }}
+
+{% block head_title %}{% trans "Categories and resources, by theme area" %}{% endblock %}
+
+{% block content %}
+    <div class="boxcontent">
+        <div class="row mB10">
+            <div class="col-md-9 col-lg-10">
+                 <h1>{% trans "Categories and resources, by theme area" %}</h1>
+            </div>
+            <div class="col-md-3 col-lg-2">
+                <div class="summary">
+                    <div><a href="#"><i class="fa fa-info-circle" aria-hidden="true"></i> <small>{% trans "help" %}</small></a>
+                    <div><small style="display:none">
+                        <p>({% trans "In this list a category can occur in several theme areas" %})</p>
+                        <div>&nbsp;</div>
+                        <p>{% trans "Click on the number in parentheses, next to a category, to get a list of resources of that category" %}.</p>
+                    </small></div></div>
+                </div>
+            </div>
+        </div>
+        {% if tag_poitype_list %}
+            <div class="row" id="accordion">
+                {% for tag_id, tag_url, tag_name, tag_slug, m, poitype_poi_list in tag_poitype_list %}
+                    {% if tag_id != 49 or request.user.is_superuser or request.user.is_staff %}
+                    <div class="col-md-6 col-lg-3">
+                        <h5 class="back-LightSkyBlue panel-header"><a name="{{ tag_slug }}"></a><a href="#" class="toggleIcon"><i class="fa fa-plus-square"></i></a> {{ tag_name|capfirst }} <span class="text-wrap">[ {{ m }} ]</span></h5>
+                        <article id="tema_{{ forloop.counter }}" class="view-list height30vh box-scroll" style="display:none">
+                            {% for prefix, poitype_slug, poitype_name, poitype_icon, n, category_in_theme, poi_url in poitype_poi_list %}
+                                <p class="pL26" style="padding-bottom: 5px; border-bottom: 1px dotted #77DDFF; background: url('{{ STATIC_URL }}roma/img/icons/{{ poitype_icon.name }}.png') no-repeat top left;">{{ prefix }} {{ poitype_name }}
+                                {% if n == 1 %}
+                                    <span class="text-pre-wrap">[ <a href="{{ poi_url }}" title="{% trans "show resource" %}">{{ n }}</a> ]</span>
+                                {% elif category_in_theme %}
+                                    <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype_slug }}/" title="{% trans "list resources" %}">{{ n }}</a> ]</span>
+                                {% else %}
+                                    <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype_slug }}/tema/{{ tag_slug }}/" title="{% trans "list resources" %}">{{ n }}</a> ]</span>
+                                {% endif %}
+                                </p>
+                            {% endfor %}
+                        </article>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>{% trans "No theme areas or resource categories are present" %}.</p>
+        {% endif %}
+    </div>
+{% endblock content%}
+
+{% block body_scripts %}
+    <script type="text/javascript">
+        $(document).ready(function (){
+            $('h5 a.toggleIcon').on('click', function(event){
+                event.preventDefault();
+                $("body").css("cursor", "default");
+                var accordion = $(this).parent().parent();
+                var accordionContent = accordion.children('article');
+                idAccordionContent = accordionContent.attr('id');
+                if ($("#accordion").find("div.open")) {
+                    contentOpen = $("div.open").children('article');
+                    idContent = contentOpen.attr('id');
+                    if (idContent != idAccordionContent) {
+                        $("div.open h5 a.toggleIcon").children('i').attr("class","fa fa-plus-square");
+                        contentOpen.slideToggle(250);
+                        $("div.open").toggleClass("open", false);
+                    }
+                }
+                var accordionToggleIcon = $(this);
+                accordion.toggleClass("open");
+                accordionContent.slideToggle(250);
+                if (accordion.hasClass("open")) {
+                    accordionToggleIcon.children('i').attr("class","fa fa-minus-square");
+                } else {
+                    accordionToggleIcon.children('i').attr("class","fa fa-plus-square");
+                }
+            });
+        });
+    </script>
+{% endblock body_scripts %} 

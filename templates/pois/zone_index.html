@@ -1,0 +1,21 @@
+{% extends "roma/roma_base.html" %}
+{% load staticfiles i18n %}
+
+{% block head_title %}{% trans "show" %}{% if zonetype %} {% trans "of type" %} {{ zonetype_name|upper }}{% endif %}{% endblock %}
+
+{% block title-page%}{% trans "show" %}{% if zonetype %} {% trans "of type" %} {{ zonetype_name|upper }}{% endif %}{% endblock %}
+{% block content %}
+    <div class="boxcontent">
+        <div class="row mB10">
+            <div class="col-md-12 col-lg-12">
+                <h1>}{% trans "show" %}{% if zonetype %} {% trans "of type" %} {{ zonetype_name|upper }}{% endif %}</h1>
+            </div>
+        </div>
+        {% for zone in zone_list %}
+            <p>{{ zone.code }} - <a href="/pois/zone/{{ zone.pk }}" title="{% trans "show" %}">{{ zone.name }}</a></p>
+        {% empty %}
+            <p>No zone is present.</p>
+        {% endfor %}
+    </div>
+{% endblock content %}
+

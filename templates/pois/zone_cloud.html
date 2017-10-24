@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+<title>Test of zone_cloud.js</title>
+<script src="http://d3js.org/d3.v2.min.js?2.9.3"></script>
+</head>
+<body>
+<style>
+	.link {
+	  stroke: #eee;
+	}
+	div #zone_cloud svg {
+	  background: lightgrey;
+	}
+	g {
+	  pointer-events: all;
+	  cursor: pointer;
+	}
+	text {
+	  pointer-events: none;
+	}
+	rect {
+	  stroke: transparent;
+	  fill: transparent;
+	}
+</style>
+<script type="text/javascript" src="http://d3js.org/d3.v2.min.js?2.9.3"></script>
+<script type="text/javascript" src="/static/pois/zone_cloud.js"></script>
+<div id="zone_cloud" style="border: 1px solid; display: inline-block; padding: 0; spacing: 0;"></div>
+<script type="text/javascript">cloud_init(600, 200, {{ zone.id }});</script>
+</body>

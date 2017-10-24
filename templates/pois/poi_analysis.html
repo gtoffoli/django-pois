@@ -1,0 +1,99 @@
+{% extends "roma/roma_base.html" %}
+{% load staticfiles i18n %}
+
+
+{% block head_title %}Risorse da controllare{% endblock %}
+
+{% block content %}
+<div class="boxcontent">
+    <div class="container">
+        <h1>Risorse da controllare</h1>
+        {% if comment_list %}
+            <h4>Risorse con commento nel campo Note</h4>
+            <div><table class="table table-striped table-list"><tbody>
+            {% for poi_dict in comment_list %}
+            <tr>
+                <td>
+                    <div class="row">
+                    <div class="col-lg-7">{{ poi_dict.name }}</div>
+                    <div class="col-lg-5">{{ poi_dict.street_address }} -  {{poi_dict.cap }} {{ poi_dict.comune.0 }}</div>
+                    <div class="col-lg-12">{{ poi_dict.short }}</div>
+                    <div class="col-lg-12">{{ poi_dict.notes }}</div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody></table></div></div>
+        {% endif %}
+        {% if no_theme_list %}
+            <h4>Risorse senza area tematica associata</h4>
+            <div><table class="table table-striped table-list"><tbody>
+            {% for poi_dict in no_theme_list %}
+            <tr>
+                <td>
+                    <div class="row">
+                    <div class="col-lg-7">{{ poi_dict.name }}</div>
+                    <div class="col-lg-5">{{ poi_dict.street_address }} -  {{poi_dict.cap }} {{ poi_dict.comune.0 }}</div>
+                    <div class="col-lg-12">{{ poi_dict.short }}</div>
+                    <div class="col-lg-12">{{ poi_dict.notes }}</div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody></table></div></div>
+        {% endif %}
+        {% if no_geo_list %}
+            <h4>Risorse non georeferenziate</h4>
+            <div><table class="table table-striped table-list"><tbody>
+            {% for poi_dict in no_geo_list %}
+            <tr>
+                <td>
+                    <div class="row">
+                    <div class="col-lg-7">{{ poi_dict.name }}</div>
+                    <div class="col-lg-5">{{ poi_dict.street_address }} -  {{poi_dict.cap }} {{ poi_dict.comune.0 }}</div>
+                    <div class="col-lg-12">{{ poi_dict.short }}</div>
+                    <div class="col-lg-12">{{ poi_dict.notes }}</div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody></table></div></div>
+        {% endif %}
+        {% if todo_list %}
+            <h4>Risorse con memento nella prima riga del campo Note</h4>
+            <div><table class="table table-striped table-list"><tbody>
+            {% for poi_dict in todo_list %}
+            <tr>
+                <td>
+                    <div class="row">
+                    <div class="col-lg-7">{{ poi_dict.name }}</div>
+                    <div class="col-lg-5">{{ poi_dict.street_address }} -  {{poi_dict.cap }} {{ poi_dict.comune.0 }}</div>
+                    <div class="col-lg-12">{{ poi_dict.short }}</div>
+                    <div class="col-lg-12">{{ poi_dict.notes }}</div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody></table></div></div>
+        {% endif %}
+        {% if notes_list %}
+            <h4>Risorse con testo nel campo Note</h4>
+            <div><table class="table table-striped table-list"><tbody>
+            {% for poi_dict in notes_list %}
+            <tr>
+                <td>
+                    <div class="row">
+                    <div class="col-lg-7">{{ poi_dict.name }}</div>
+                    <div class="col-lg-5">{{ poi_dict.street_address }} -  {{poi_dict.cap }} {{ poi_dict.comune.0 }}</div>
+                    <div class="col-lg-12">{{ poi_dict.short }}</div>
+                    <div class="col-lg-12">{{ poi_dict.notes }}</div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody></table></div></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}
+

@@ -1,0 +1,13 @@
+{% load i18n staticfiles %}
+
+<form method="post" id="search_form">
+    {% csrf_token %}
+    {% for field in form.visible_fields %}
+        <div class="mB10">
+            <label for="{{ field.id_for_label }}">{{ field.label|capfirst }}</label>
+            <div class="checkbox-multiple"><small>{{ field }}</small></div>
+        </div>
+    {% endfor %}
+    <div><button id="refresh_viewport" class="btn btn-default my_btn"><i class="fa fa-refresh" aria-hidden="true"></i> {% trans "refresh" %}</button></div>
+</form>
+

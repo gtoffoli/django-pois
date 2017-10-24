@@ -1,0 +1,23 @@
+{% extends "roma/gridA.html" %}
+{% load staticfiles i18n %}
+
+{% block head_title %}{% trans "Index of zone types" %}{% endblock %}
+
+{% block title-page %}{% trans "Index of zone types" %}{% endblock %}        
+{% block no-view-map %}{% endblock %}
+{% block list %}
+
+  {% if zonetype_list %}
+    	<ul style="list-style-type: none;">
+        {% for zonetype, zonetype_name, zones_count in zonetype_list %}
+            {% if zones_count %}
+             <li><span style="font-weight: bold">{{ zonetype_name|capfirst }}</span> <a href="/tipo-di-zona/{{ zonetype.slug }}/">{{ zones_count }}</a></li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    {% else %}
+    <p>{% trans "No zone type is present" %}.</p>
+    {% endif %}
+{% endblock %}
+{% block blog %}{% endblock %}
+{% block portlets %}{% endblock %}

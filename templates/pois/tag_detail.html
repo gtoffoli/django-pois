@@ -1,0 +1,94 @@
+{% extends "roma/roma_base.html" %}
+{% load staticfiles i18n %}
+
+{{ current_path }}
+
+{% block head_title %}{% trans "Theme area" %}: {{ tag.name|capfirst }}{% endblock %}
+{% block top-banner %}{% endblock top-banner %}
+{% block content %}
+    <div class="mLR-15"><img src="{{ STATIC_URL }}roma/img/img_tema/{{tag.slug}}.jpg" alt="" class="img-responsive"></div>
+    <div class="boxcontent marg-top-0">
+        <div class="row">
+            <div class="col-md-12 col-lg-12 text-center">
+                <h1>{{ tag.name|capfirst }}</h1>
+            </div>
+        </div>
+        <div class="row mB20">
+            {% if poitype_list %}
+                <div class="hidden-sx hidden-sm hidden-md">
+                    <div class="col-lg-4">
+                    {% for poitype, n, category_in_theme, poi_url in list_3_1 %}
+                         <p class="pL26TB5 bBdotted" style="background: url('{{ STATIC_URL }}roma/img/icons/{{ poitype.icon.name }}.png') no-repeat center left;">{{ poitype.name }}
+                         {% if n == 1 %}
+                             <span class="text-pre-wrap">[ <a href="{{ poi_url }}"  title="{% trans "show resource" %}" rel="tooltip">{{ n }}</a> ]</span>
+                         {% elif category_in_theme %}
+                             <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype.slug }}/" title="{% trans "show the resources on the map" %}" rel="tooltip">{{ n }}</a> ]</span>
+                         {% else %}
+                             <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype.slug }}/tema/{{ tag.slug }}/" title="{% trans "list resources" %}" rel="tooltip">{{ n }}</a> ]</span>
+                         {% endif %}
+                         </p>
+                    {% endfor %}
+                    </div>
+                    <div class="col-lg-4">
+                    {% for poitype, n, category_in_theme, poi_url in list_3_2 %}
+                         <p class="pL26TB5 bBdotted" style="background: url('{{ STATIC_URL }}roma/img/icons/{{ poitype.icon.name }}.png') no-repeat center left;">{{ poitype.name }}
+                         {% if n == 1 %}
+                             <span class="text-pre-wrap">[ <a href="{{ poi_url }}"  title="{% trans "show resource" %}" rel="tooltip">{{ n }}</a> ]</span>
+                         {% elif category_in_theme %}
+                             <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype.slug }}/" title="{% trans "show the resources on the map" %}" rel="tooltip">{{ n }}</a> ]</span>
+                         {% else %}
+                             <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype.slug }}/tema/{{ tag.slug }}/" title="{% trans "list resources" %}" rel="tooltip">{{ n }}</a> ]</span>
+                         {% endif %}
+                         </p>
+                    {% endfor %}
+                    </div>
+                    <div class="col-lg-4">
+                    {% for poitype, n, category_in_theme, poi_url in list_3_3 %}
+                         <p class="pL26TB5 bBdotted" style="background: url('{{ STATIC_URL }}roma/img/icons/{{ poitype.icon.name }}.png') no-repeat center left;"> {{ poitype.name }}
+                         {% if n == 1 %}
+                             <span class="text-pre-wrap">[ <a href="{{ poi_url }}"  title="{% trans "show resource" %}" rel="tooltip">{{ n }}</a> ]</span>
+                         {% elif category_in_theme %}
+                             <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype.slug }}/" title="{% trans "show the resources on the map" %}" rel="tooltip">{{ n }}</a> ]</span>
+                         {% else %}
+                             <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype.slug }}/tema/{{ tag.slug }}/" title="{% trans "list resources" %}" rel="tooltip">{{ n }}</a> ]</span>
+                         {% endif %}
+                         </p>
+                    {% endfor %}
+                    </div>
+                </div>
+                <div class="hidden-lg">
+                    <div class="col-xs-12 col-sm-12 col-md-6">
+                    {% for poitype, n, category_in_theme, poi_url in list_2_1 %}
+                         <div class="pL26TB5 bBdotted" style="background: url('{{ STATIC_URL }}roma/img/icons/{{ poitype.icon.name }}.png') no-repeat center left;">{{ poitype.name }}
+                         {% if n == 1 %}
+                             <span class="text-pre-wrap">[ <a href="{{ poi_url }}"  title="{% trans "show resource" %}" rel="tooltip">{{ n }}</a> ]</span>
+                         {% elif category_in_theme %}
+                             <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype.slug }}/" title="{% trans "show the resources on the map" %}" rel="tooltip">{{ n }}</a> ]</span>
+                         {% else %}
+                             <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype.slug }}/tema/{{ tag.slug }}/" title="{% trans "list resources" %}" rel="tooltip">{{ n }}</a> ]</span>
+                         {% endif %}
+                         </div>
+                    {% endfor %}
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-6">
+                    {% for poitype, n, category_in_theme, poi_url in list_2_2 %}
+                         <div class="pL26TB5 bBdotted" style="background: url('{{ STATIC_URL }}roma/img/icons/{{ poitype.icon.name }}.png') no-repeat center left;">{{ poitype.name }}
+                         {% if n == 1 %}
+                             <span class="text-pre-wrap">[ <a href="{{ poi_url }}"  title="{% trans "show resource" %}" rel="tooltip">{{ n }}</a> ]</span>
+                         {% elif category_in_theme %}
+                             <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype.slug }}/" title="{% trans "show the resources on the map" %}" rel="tooltip">{{ n }}</a> ]</span>
+                         {% else %}
+                             <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype.slug }}/tema/{{ tag.slug }}/" title="{% trans "list resources" %}" rel="tooltip">{{ n }}</a> ]</span>
+                         {% endif %}
+                         </div>
+                    {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-lg-12">
+                    <p>{% trans "No resource is present" %} {% trans "for this theme area" %}.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>  
+{% endblock content %}

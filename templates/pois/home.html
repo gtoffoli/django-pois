@@ -1,0 +1,201 @@
+{% extends "roma/roma_base.html" %}
+{% load staticfiles i18n %}
+
+
+{% block head_title %}{% trans "culture, well-being, solidarity"|capfirst %}{% endblock %}
+
+
+{% block top-banner %}{% endblock top-banner %}
+
+{% block content %}
+
+    <div class="mLR-15">
+        <div><img src="{% static "roma/img/home.jpg" %}" class="img-responsive"></div>
+        {{ summary|safe }}
+    </div>
+
+    <div class="boxcontent">
+        <div class="row">
+            <div class="col-md-4 col-lg-3">
+                <h4 class="char-spacing text-center back-LightSkyBlue" style="color: #333; margin-top:0; padding:12px 6px">{% trans "Resources by" %} {% trans "theme area" %}</h4>
+                <article id="tema" class="view-list">
+                {% for theme_id, theme_name, theme_slug, n in by_theme_list %}
+                    {% if theme_id != 49 %}
+                        <p>{{ theme_name|capfirst }} <span class="text-pre-wrap">[ <a href="/tema/{{ theme_slug }}/" title="{% trans "show an index" %} {% trans "of resources for" %} {{ theme_name }}">{{ n }}</a> ]</span></p>
+                    {% elif theme_id == 49 %}
+                        {% if request.user.is_superuser or request.user.is_staff %}
+                            <p>{{ theme_name|capfirst }} <span class="text-pre-wrap">[ <a href="/tema/{{ theme_slug }}/" title="{% trans "show an index" %} {% trans "of resources for" %} {{ theme_name }}">{{ n }}</a> ]</span></p>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                </article>
+            </div>
+            <div class="col-md-4 col-lg-3" >
+                <h4 class="color-base char-spacing text-center back-Zone" style="color:white;  margin-top:0; padding:12px 6px">{% trans "Resources by" %} {% trans "zones of" %} <span class="ntranslate">Roma</span></h4>
+                <div><img class="mapHome" src="{% static "roma/img/mappe/mappa_roma.jpg" %}"></div>
+                <div id="accordion" class="back-box">
+                {% for topotype_name_plural, topotype_sublist in by_zone_list|slice:":4" %}
+                    <div>
+                        <h5 style="font-weight: bold; color: #333; margin-top:0; padding: 10px"><a href="#" class="toggleIcon" style="color:#333"><i class="fa fa-plus-square"></i></a> {{ topotype_name_plural|capfirst }}</h5>
+                        <article id="zona_{{ forloop.counter }}" class="view-list" style="display:none">
+                        {% for zone_code, zone_name, zone_slug, n in topotype_sublist %}
+                            <p>{{ zone_name }} <small>({{ zone_code }})</small> <span class="text-pre-wrap">[ <a href="/indice-zona/{{ zone_slug }}/" title="{% trans "show an index" %} {% trans "of resources in the zone" %} {{ zone_name }}">{{ n }}</a> ]</span></p>
+                        {% endfor %}
+                        </article>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <h4 class="char-spacing text-center back-Zone" style="color:white; margin-top:0; padding:12px 6px">{% trans "Resources by" %} {% trans "zones of" %} <span class="ntranslate">Lazio</span></h4>
+                <div class="back-box"><img class="mapHome" src="{% static "roma/img/mappe/mappa_lazio.jpg" %}"></div>
+                <article id="prov" class="view-list">
+                {% for zone_code, zone_name, zone_slug, n in by_prov_list %}
+                    <p>{{ zone_name }} <span class="text-pre-wrap">[ <a href="/indice-zona/{{ zone_slug }}/" title="{% trans "show an index" %} {% trans "of resources in the zone" %} {{ zone_name }}">{{ n }}</a> ]</span></p>
+                {% endfor %}
+                </article>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <h4 class="color-base char-spacing text-center" style="margin-top:0; padding:12px 6px; background: #B5813A; color: white">In evidenza</h4>
+                <div class="mB10 text-center"><a href="/categoria/caf/"><img class="mapHome" src="{% static "roma/img/mappe/mappa-caf.jpg" %}"><div style="padding:6px; background:rgba(255,255,255,0.8); position:relative; bottom:30px">Centri assistenza fiscale di Roma</div></a></div>
+                <div class="text-center"><a href="/categoria/secondarie-superiori/"><img class="mapHome" src="{% static "roma/img/mappe/scuole-sup.jpg" %}"><div style="padding:6px; background:rgba(255,255,255,0.8); position:relative; bottom:30px">Scuole superiori pubbliche del Lazio</div></a></div>
+            </div>
+        </div>
+
+            <div class="row">
+            <div class="col-md-4 col-lg-4">
+            <h4 class="color-base char-spacing text-center" style="margin-top:0; padding:12px 6px">Risorse in primo piano</h4>
+            <div class="row" style="border:1px solid #A63840; margin:0">
+                <div class="col-lg-6">
+                    <p>IIS Guglielmo Marconi, Latina</p>
+                </div>
+                   <div class="col-lg-6" style="padding-right:0">
+                    <img class="mapHome" style="border:0 solid transparent" src="{% static "roma/img/mappe/scuola-latina.jpg" %}">
+                   </div> 
+            </div>
+            </div>
+        </div>
+        <!--div class="row">
+            <div class="col-md-4 col-lg-3">
+
+                <div id="accordion">
+                    <div>
+                        <h5 class="back-LightSkyBlue panel-header"><a href="#" class="toggleIcon"><i class="fa fa-plus-square"></i></a> {% trans "Resources by" %} {% trans "theme area" %}</h5>
+                        <article id="tema" class="view-list" style="display:none">
+                            {% for theme_id, theme_name, theme_slug, n in by_theme_list %}
+                                {% if theme_id != 49 %}
+                                    <p>{{ theme_name|capfirst }}
+                                        [ <a href="/tema/{{ theme_slug }}/" title="{% trans "show an index" %} {% trans "of resources for" %} {{ theme_name }}">{{ n }}</a> ]
+                                    </p>
+                                {% elif theme_id == 49 %}
+                                    {% if request.user.is_superuser or request.user.is_staff %}
+                                        <p>{{ theme_name|capfirst }}
+                                            [ <a href="/tema/{{ theme_slug }}/" title="{% trans "show an index" %} {% trans "of resources for" %} {{ theme_name }}">{{ n }}</a> ]
+                                        </p>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </article>
+                    </div>
+
+                </div>
+                                <div class="mB20">
+                <h4 class="color-base char-spacing" style="margin-top:0; padding:12px 6px">In evidenza</h4>
+ <div class="mB10"><a href="/categoria/caf/"><img class="mapHome" src="{% static "roma/img/mappe/mappa-caf.jpg" %}"><div style="padding:6px; background:rgba(255,255,255,0.8); position:relative; bottom:30px">Centri assistenza fiscale di Roma</div></a></div>
+  <div><a href="/categoria/scuole-superiori/"><img class="mapHome" src="{% static "roma/img/mappe/scuole-sup.jpg" %}">Scuole superiori pubbliche del Lazio</a></div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-5">
+                <div class="row mB20" style="border:1px solid #A63840">
+                    <h4 class="color-base char-spacing text-center back-Zone" style="color:white;  margin-top:0; padding:12px 6px">{% trans "Resources by" %} {% trans "zones of" %} <span class="ntranslate">Roma</span></h4>
+                    <div class="col-md-12 col-lg-4" style="padding:0">
+                    
+                    <div><img class="mapHome" style="border:0px solid #A63840" src="{% static "roma/img/mappe/mappa_roma.jpg" %}"></div>
+                    </div>
+                    <div class="col-md-12 col-lg-8" style="padding:0">
+                    {% for topotype_name_plural, topotype_sublist in by_zone_list|slice:":4" %}
+                        <div>
+                            <h5 class="panel-header" style=" color: #333"><a href="#" class="toggleIcon" style="color:#333"><i class="fa fa-plus-square"></i></a> {{ topotype_name_plural|capfirst }}</h5>
+                            <article id="zona_{{ forloop.counter }}" class="view-list" style="border: 0 solid transparent; display:none;">
+                            {% for zone_code, zone_name, zone_slug, n in topotype_sublist %}
+                                <p>{{ zone_name }} <small>({{ zone_code }})</small>
+                                    [ <a href="/indice-zona/{{ zone_slug }}/" title="{% trans "show an index" %} {% trans "of resources in the zone" %} {{ zone_name }}">{{ n }}</a> ]
+                                </p>
+                            {% endfor %}
+                            </article>
+                        </div>
+                    {% endfor %}
+                    </div>
+                </div>
+                <div class="row" style="border:1px solid #A63840">
+                <h4 class="char-spacing text-center back-Zone" style="color:white; margin-top:0; padding:12px 6px">{% trans "Resources by" %} {% trans "zones of" %} <span class="ntranslate">Lazio</span></h4>
+
+                <div class="col-md-12 col-lg-8" style="padding:0">
+                    <article id="prov" class="view-list" style="border:0px solid #A63840">
+                            {% for zone_code, zone_name, zone_slug, n in by_prov_list %}
+                                <p>{{ zone_name }}
+                                    [ <a href="/indice-zona/{{ zone_slug }}/" title="{% trans "show an index" %} {% trans "of resources in the zone" %} {{ zone_name }}">{{ n }}</a> ]
+                                </p>
+                            {% endfor %}
+                            </article>
+                </div>
+                <div class="col-md-12 col-lg-4" style="padding:0">
+                <div><img class="mapHome" style="border:0px solid #A63840" src="{% static "roma/img/mappe/mappa_lazio.jpg" %}"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-4">
+            <h4 class="color-base char-spacing text-center" style="margin-top:0; padding:12px 6px">Risorse in primo piano</h4>
+            <div class="row" style="border:1px solid #A63840; margin:0">
+                <div class="col-lg-6">
+                    <p>IIS Guglielmo Marconi, Latina</p>
+                </div>
+                   <div class="col-lg-6" style="padding-right:0">
+                    <img class="mapHome" style="border:0 solid transparent" src="{% static "roma/img/mappe/scuola-latina.jpg" %}">
+                   </div> 
+            </div>
+            </div>
+        </div-->
+        
+            <!--div class="col-lg-9">
+                <div class="marg-bottom-20">
+                    <h4 class="color-base marg-bottom-10 char-spacing">{% trans "Resources by" %} {% trans "zone" %}</h4>
+                    <div class="boxMap"><div id="map" class="mapHome"></div></div>
+
+                </div-->
+            <!--/div>
+        </div-->
+    </div>
+
+{% endblock content %}
+
+{% block body_scripts %}
+    <script type="text/javascript">
+        $(document).ready(function (){
+            $('h5 a.toggleIcon').on('click', function(event){
+                event.preventDefault();
+                $("body").css("cursor", "default");
+                var accordion = $(this).parent().parent();
+                var accordionContent = accordion.children('article');
+                idAccordionContent = accordionContent.attr('id');
+                if ($("#accordion").find("div.open")) {
+                    contentOpen = $("div.open").children('article');
+                    idContent = contentOpen.attr('id');
+                    if (idContent != idAccordionContent) {
+                        $("div.open h5 a.toggleIcon").children('i').attr("class","fa fa-plus-square");
+                        contentOpen.slideToggle(250);
+                        $("div.open").toggleClass("open", false);
+                    }
+                }
+                var accordionToggleIcon = $(this);
+                accordion.toggleClass("open");
+                accordionContent.slideToggle(250);
+                if (accordion.hasClass("open")) {
+                    accordionToggleIcon.children('i').attr("class","fa fa-minus-square");
+                } else {
+                    accordionToggleIcon.children('i').attr("class","fa fa-plus-square");
+                }
+            });
+        });
+    </script>
+{% endblock body_scripts %} 

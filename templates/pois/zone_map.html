@@ -1,0 +1,427 @@
+{% extends "roma/roma_base.html" %}
+{% load staticfiles i18n set_var %}
+
+{% block head_title %}{% trans "Zone" %}: {% if zone.zonetype.id == 3 %}{{ zone.code }}-{% endif %}{% if zone.zonetype.id == 6 %}{{ zone.zonetype.name|capfirst }} {% endif %}{{ zone.name }}{% comment %}, Roma{% endcomment %}{% endblock %}
+{% block meta_description %}{% trans "main streets and places"|capfirst %}: {{ zone.short }}{% endblock %}
+
+{% block content %}
+    <div class="boxcontent">
+        <div class="row mB10">
+            <div class="col-md-12 col-lg-12">
+                <div class="segnaposto notranslate">ROMA / LAZIO - {{ zone.type_label|capfirst }} {% if zone.zonetype.id == 3 %}{{ zone.code }}{% endif %}</div>
+            </div>
+            <div class="col-md-9 col-lg-10">
+                <h1>{% if zone.zonetype_id == 3 %}{{ zone.code}} - {% elif zone.zonetype_id == 6 %}{{zone.zonetype_label|capfirst}} {% endif %}<span class="notranslate">{{ zone.name}}</span></h1>
+                {% set urlprefix = 'mappa-zona' %}
+                {% include "pois/_pois_zone_view_summary.html" %}
+            </div>
+            <div class="col-md-3 col-lg-2">
+                <div class="actions">
+                    {% if can_edit %}<div><a href="{% url "admin:pois_zone_change" zone.id %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <small>{% trans "edit" %}</small></a></div>{% endif %}
+                    <div><a href="/indice-zona/{{ zone.slug }}/" title="{% trans "show the resources by theme area" %}" rel="tooltip"><i class="fa fa-list" aria-hidden="true"></i> <small>{% trans "show the resources by theme area" %}</small></a></div>
+                    {% if map and zone.has_geom %}
+                        <div><a href="/zona/{{ zone.slug }}/"><i class="fa fa-map-o" aria-hidden="true"></i> <small>{% trans "filter resources only by theme area"|capfirst %}</small></a></div>
+                        {% include "pois/_help_block.html" %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row mB20">
+            <div class="col-sm-12 col-md-12 col-lg-12 mB10">
+                <div id="map" class="map mapZone"></div>
+            </div>
+        </div>
+
+<h5 class="char-spacing marg-bottom-5 demiBold">{% trans "Selection of a theme area" %}</h5>
+<ul class="elenco marg-left-0">
+{% for tag in tag_list %}
+	<li id="tema{{ tag.0 }}"><label for="theme{{ tag.0 }}" {% if tag.2 %}class="active" {% endif %}><input type="radio" id="theme{{ tag.0 }}" name="tema" {% if tag.2 %}checked="checked"{% endif %} value="{{ tag.0 }}"> <span style="vertical-align: middle; padding-top: 3px;">{{ tag.1 }}</span></label></li>
+	{% if not forloop.last %}<li>&nbsp;</li>{% endif %}
+{% endfor %}
+</ul>
+<h5 class="char-spacing marg-bottom-5">{% trans "Selection of a category in the theme area" %}</h5>
+<ul class="tabs marg-left-0" id="tabres"></ul>
+<div class="visualClear"></div>
+
+<h4 class="char-spacing marg-top-20 marg-bottom-5 demiBold">{% trans "The resources of the category selected" %}</h4>
+
+<div id="resources"></div>
+
+{% if zone.description %}
+<div  class="boxround">{{ zone.description|safe }}</div>
+{% endif %}
+{% if zone.web %}
+<div class="summary">
+	<h4>Riferimenti web</h4>
+	<div>{{ zone.render_web|safe }}</div>
+</div>
+{% endif %}
+</div>
+{% endblock content %}
+
+{% block mapjs %}
+
+<script type="text/javascript" src="{% static "pois/CenteredCluster.js" %}"></script>
+<script type="text/javascript" src="{% static "pois/patches_OL-popup-autosize.js" %}"></script>
+<script type="text/javascript" src="{% static "pois/FeaturePopups.js" %}"></script>
+<script type="text/javascript" src="{% static "pois/pois_symbols.js" %}"></script>
+<script type="text/javascript" src="{% static "pois/geoPosition.js" %}"></script>
+<script type="text/javascript" src="{% static "pois/pois_map.js" %}"></script>
+
+<script type="text/javascript">
+    var json_zones = {};
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}roma/js/geojson/{{ zone.safe_code }}.js"></script>
+
+<script type="text/javascript">
+    var poi_style = new OpenLayers.Style(
+        {
+            'fillColor': '#77DDFF',
+            'fillOpacity': .8,
+            'strokeColor': ' ${color}',
+            'strokeWidth': 1,
+            'pointRadius': '${radius}',
+            'label': '${count}',
+            'labelOutlineWidth': 1,
+            'fontColor': '#333333',
+            'fontSize': '14px',
+            'fontWeight': 'bold',
+            'graphicName': '${symbol}',
+        },
+        { 
+            'context': {
+                radius: function(feature) {
+                    var radius = Math.max(5, 2 * (feature.layer.map.getZoom() - 8));
+                    var num = feature.attributes.count || 1;
+                    if (num>1) return Math.max(radius, Math.min(cluster_distance/2 + 2, radius * Math.sqrt(Math.sqrt(num))));
+                    else return radius;
+                },
+                symbol: function(feature) {
+                    var num = feature.attributes.count || 1;
+                    if (num>1) return 'circle';
+                    else return feature.attributes.icon_name;
+                },
+                color: function(feature) {
+                    var num = feature.attributes.count || 1;
+                    if (num>1) return feature.cluster[0].attributes.icon_color;
+                    else return feature.attributes.icon_color;
+                },
+                count: function(feature) {
+                    var num = feature.attributes.count || 1;
+                    if (num>1) return num;
+                    else return '';
+                },
+            }
+        }
+    );
+
+    var poi_style_selected = new OpenLayers.Style({
+        'strokeWidth': 2,
+        'cursor': 'pointer'
+    });
+    
+    var poi_style_map = new OpenLayers.StyleMap({
+        'default': poi_style,
+        'select': poi_style_selected,
+    });
+
+    var zone_style = new OpenLayers.Style({
+        'fillColor': '#FF8000',
+        'fillOpacity': .2,
+        'strokeWidth': 1,
+        'strokeColor': '#333333',
+    });
+
+    var zone_style_map = new OpenLayers.StyleMap({
+        'default': zone_style,
+    });
+    
+    var map, geojson_format, pois;
+
+    var MAX_ZOOM = 16; 
+    var MAX_POIS = 100;
+    var MIN_ZOOM = 12;
+
+    var cluster_distance = 15;
+    var centered_cluster_strategy = new OpenLayers.Strategy.CenteredCluster({distance:cluster_distance, threshold:2});
+
+    function map_init(){
+        map = new OpenLayers.Map('map', {
+            projection: proj_OSM,
+// eventListeners: {'moveend': on_move}
+            eventListeners: {'moveend': set_viewport}
+        });
+        for (var i = 0; i< map.controls.length; i++) {
+            if (map.controls[i].displayClass == "olControlNavigation") {
+                map.controls[i].disableZoomWheel();
+            }
+        }
+        map.div.oncontextmenu = function noContextMenu(e){return false;};
+        map.addControl(new OpenLayers.Control.MousePosition());
+        map.addControl(new OpenLayers.Control.LayerSwitcher());
+        map.addControl(new OpenLayers.Control.ScaleLine({geodesic: 'true'}));
+        var gmap = new OpenLayers.Layer.Google("Google Streets", { numZoomLevels: 20 });
+        map.addLayer(gmap);
+        var osm = new OpenLayers.Layer.OSM("OpenStreetMap");
+        map.addLayer(osm);
+        var gsat = new OpenLayers.Layer.Google("Google Satellite", {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22});
+        map.addLayer(gsat);
+        geojson_format = new OpenLayers.Format.GeoJSON();
+        vectors = new OpenLayers.Layer.Vector("Zone");
+        {% if zone.zonetype_id == 0 or zone.zonetype_id == 1 or zone.zonetype_id == 3 or zone.zonetype_id == 6  or zone.zonetype_id == 7 %}
+            vector = geojson_format.read(json_zones['{{ zone.safe_code }}'])[0];
+        {% else %}
+            vector = geojson_format.read({{zone.geom|safe}})[0]; // We mark it 'safe' so that Django doesn't escape the quotes.
+        {% endif %}
+        vector.attributes = { id:{{zone.id}}, name: "{{zone.code}}", description: "{{zone.name}}", type: 'zona'};
+        vectors.addFeatures(vector);
+        map.addLayer(vectors);
+        vectors.styleMap = zone_style_map;
+// pois = new OpenLayers.Layer.Vector("Risorse");
+        pois = new OpenLayers.Layer.Vector("{% trans "Resources" %}", { strategies: [centered_cluster_strategy]});
+        n_pois = 0;
+        {% if poi_dict_list %}
+            {% for poi_dict in poi_dict_list %}
+                {% if poi_dict.point %}
+                    poi = geojson_format.read({{poi_dict.point|safe}})[0]; // We mark it 'safe' so that Django doesn't escape the quotes.
+                    poi.attributes = { id: {{poi_dict.id}}, name: "{{poi_dict.safe_name}}".replace("&#39;", "'"), type: "{{poi_dict.category}}", icon_name: "{{poi_dict.icon}}", icon_color: "{{poi_dict.color}}", url: "{{poi_dict.url}}" };
+                    pois.addFeatures(poi);
+                    n_pois++;
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        map.addLayer(pois);
+        pois.styleMap = poi_style_map;
+        var fpControl = new OpenLayers.Control.FeaturePopups();
+        fpControl.addLayer(pois, {
+            templates: {
+// .name is attributes.name on features, and so on.
+                hover: '${.name}',
+                hoverList: '<b>${count} {% trans "Resources" %}</b><br>${html}',
+                hoverItem: '${.name}<br>',
+// select: single & list
+                single: '<div><h4>${.name}</h4></div><div><a href="${.url}">{% trans "show the resource profile" %}</a></div>',
+                list: '<h4>${count} {% trans "Resources" %}</h4>${html}',
+// item: '<li><a href="${.url}" ${showPopup()}>${.name}</a></li>'
+                item: '<li><a href="${.url}" title="{% trans "show the resource profile" %}">${.name}</a></li>'
+            }
+        });
+        map.addControl(fpControl);
+        if (pois.features.length && n_pois > 10) {
+            map.zoomToExtent(pois.getDataExtent());
+        } else {
+            map.zoomToExtent(vectors.getDataExtent());
+        }
+        if(map.getZoom() > MAX_ZOOM)
+            map.zoomTo(MAX_ZOOM);
+        else
+            set_viewport();
+    }
+
+    function set_viewport() {
+        vp = map.getExtent().toArray();
+        s = '/set_viewport?left={0}&bottom={1}&right={2}&top={3}';
+        url = s.format(vp[0], vp[1], vp[2], vp[3]);
+        $.getJSON(url, function (data) {
+        })
+    }
+
+/* MMR 20170919 richiamata direttamente in $("#refresh_viewport").click.....
+function refresh_viewport(form) {
+	$("body").css("cursor","wait");
+	var tags = $("#search_form input:checkbox:checked").map(function(){
+	      return $(this).val();
+	    }).get().join();
+	var poi_dict_list = new Array();
+	s = '/viewport_pois?left={0}&bottom={1}&right={2}&top={3}&max={4}&tags={5}';
+	url = s.format(vp[0], vp[1], vp[2], vp[3], MAX_POIS, tags);
+	$.getJSON(url, function (data) {
+		poi_dict_list = data['resource_list'];
+		show_resources(poi_dict_list);
+	})
+	$("body").css("cursor","default");
+}*/
+/* function on_zoom(event){ show_scale(); } */
+
+    function show_resources(poi_dict_list){
+/* svuota il vector layer delle risorse */
+        pois.removeAllFeatures();
+        $('#resources').empty();
+        if (poi_dict_list.length > 0) {
+            for (var i=0; i < poi_dict_list.length; i++) {
+                poi_dict = poi_dict_list[i];
+                $('#resources').append(make_poi_el(poi_dict));
+// MMR aggiunto tooltip
+// MMR 20170920 disattivato tooltip $("[rel='tooltip']").tooltip();
+                add_poi_feature(poi_dict);
+            }
+        } else {
+            $('#resources').append('<tr><td class="td-total-white">{% trans "No resource is present" %}.</td></tr>');
+        }
+/* rinfresca il vector layer delle risorse */
+        pois.redraw();
+    }
+
+    function make_poi_el(poi_dict) {
+/*MMR 20170922
+var s = '<div class="row">\
+         <div class="span5"><a href="{0}" rel="tooltip" title="{% trans "show resource" %} {1}" >{1}</a></div>\
+         <div class="span5 txt-small"><a href="{2}" rel="tooltip" title="{% trans "show" %} {3}">{3}</a> {4} - <a href="/zona-cap/{6}/" rel="tooltip" title="{% trans "show" %} {% trans "the zone with zipcode" %} {6}">{6}</a>{% comment %} Roma{% endcomment %}</div>\
+         </div>\
+         <div class="rowRes txt-small">{7}</div>';
+*/
+        var s='<tr>\
+            <td class="hidden-xs td-img"><img class="img-responsive" src="{{ STATIC_URL }}roma/img/icons/{0}.png"></td>\
+            <td>\
+            <div class="row">\
+            <div class="col-lg-7"><a href="{1}" rel="tooltip" title="{% trans "show resource" %} {2}"><span class="notranslate">{2}</span></a></div>\
+            <div class="col-lg-5"><small>';
+        if  (poi_dict['street_url']) {
+            s+='<a href="{3}" rel="tooltip" title="{% trans "show" %} {4}"><span class="notranslate">{4}</span></a><span class="notranslate">, {5}</span>';
+        } else {
+            s+='<span class="notranslate">{6}</span>';
+        }
+        s+=' - <a href="/indice-zona/{7}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the zone with zipcode" %} {7}"><span class="notranslate">{7}</span></a> ';
+        if (poi_dict['comune'][1]=='roma') {
+            s+='<span class="notranslate">{8}</span>';
+        } else {
+            s+='<a href="zona/{9}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the town" %} {8}"><span class="notranslate">{8}</span></a>';
+        }
+        s+='</small></div><div class="col-lg-9"><small>{10}</small></div></div>';
+        return s.format(poi_dict['icon'],poi_dict['url'], poi_dict['name'], poi_dict['street_url'], poi_dict['street_name'], poi_dict['number'], poi_dict['street_address'], poi_dict['cap'], poi_dict['comune'][0], poi_dict['comune'][1],  poi_dict['short']);
+    }
+
+
+
+
+
+
+    DX = 700; // 450.0;
+    DY = 400; // 250.0;
+    
+    function lookup_location() {
+        $(body).css('cursor','default'); 
+        geoPosition.getCurrentPosition(explore_location, location_error);
+    }
+
+    function location_error() {
+        alert('{% trans "cannot determine your current location" %}');
+    }
+
+    $(function() {
+        if (geoPosition.init()) {
+            $("#live-geolocation").html('<a href="#" onclick="lookup_location();return false"><i class="fa fa-location-arrow" aria-hidden="true"></i>  <small>{% trans "explore the zone around your current position" %}</small></a>');
+        }
+    });
+
+    map_init();
+</script>
+{% endblock mapjs %}
+
+{% block body_scripts %}
+<script type="text/javascript">
+function make_theme_el(theme) {
+	if (theme[2] != '') {
+		checked='checked="checked"';
+		class_label='class="active"';
+		title = '';
+	} else {
+		checked='';
+		class_label='';
+		title='{% trans "show the related categories for this theme area" %}';
+		}
+
+	//var s = '<label for="theme{0}" style="display: block;"><input type="radio" id="theme{0}" name="tema" {2} value="{1}" title="{3}"> <span style="vertical-align: middle; padding-top: 3px;">{1}</span></label>'
+	var s = '<label id="label{0}" for="theme{0}" {4} title="{3}"><input type="radio" id="theme{0}" name="tema" {2} value="{1}" title="{3}"> <span>{1}</span></label>'
+
+	return s.format(theme[0], theme[1], checked, title, class_label);
+}
+
+
+function make_poitype_el(poitype_dict, pos) {
+    var s = '<li id="cat{0}" class="tabele" title="{% trans "show" %} {% trans "the resources associated to" %} {1}"> <img src="{{ STATIC_URL }}roma/img/icons/{2}.png" onError="this.onerror=null; this.src=\'{{ STATIC_URL }}roma/img/icons/{2}.gif\';"> {1}</li>'
+	return s.format(poitype_dict['klass'], poitype_dict['name'], poitype_dict['icon']);
+}
+
+function call_server_and_update_theme(el, url) {
+	$.getJSON(url, function (data) {
+		/* ricostruisce l'elenco dei temi */
+		var theme_list = data['theme_list'];
+		for (var i = 0; i < theme_list.length; i++) {
+			 theme = theme_list[i];
+			 $("#tema"+theme[0]).html(make_theme_el(theme)); 
+			 // assegna gli event handler dinamicamente
+			 // $('#label'+theme[0]).tooltip();
+			 $('#theme'+theme[0]).click(theme_click);
+		}
+		/* svuota il vector layer delle risorse */
+		{% if map %}pois.removeAllFeatures();{% endif %}
+		/* ricostruisce l'elenco di risorse per categoria e il layer delle risorse sulla mappa */
+		$('#resources').empty();
+		$('#tabres').empty();
+		var poitype_dict_list = data['resource_list'];
+		category = data['category'];
+		var poitype_dict, poi_dict_list, poi_dict;
+		var n_types = poitype_dict_list.length;
+		for (var i = 0; i < n_types; i++) {
+			poitype_dict = poitype_dict_list[i];
+			$('#tabres').append(make_poitype_el(poitype_dict, i+1));
+			// MMR aggiunto elemento separatore
+			if (i < n_types-1)
+			   $('#tabres').append('<li class="bull">&bull;</li>');
+			// assegna gli event handler dinamicamente - MMR aggiunto tooltip
+		  $('#cat'+poitype_dict['klass']).tooltip();
+			$('#cat'+poitype_dict['klass']).click(category_click);
+		}
+		category = data['category'];
+	    if (category) {		
+			el = $("ul.tabs li#cat"+category).filter(":first"); // Attiva la categoria corrente 
+			call_server_and_update_category(el);
+	    } else if (n_types) {
+			$("ul.tabs li.tabele:first").trigger('click'); // Attiva la prima linguetta
+		} else {
+			$("html").removeClass("wait"); // Terminato lo stato di attesa
+		}
+	});
+}
+
+
+function call_server_and_update_category(el) {
+	url = '/zone_set_category/' + el.attr("id").replace("cat","") + '/';
+	$.getJSON(url, function (data) {
+		/* costruisce l'elenco di risorse e il layer delle risorse sulla mappa */
+		var poi_dict_list = data['resource_list'];
+		show_resources(poi_dict_list);
+		$("ul.tabs li.tabele").attr("class","tabele cursor"); //tabs
+		// MMR rimosso title standard e aggiunto tooltip
+	//	$("ul.tabs li.tabele").attr("title","{% trans "list the resources" %}"); //tabs 
+		$("ul.tabs li.tabele").tooltip();
+		el.attr("class","tabele active");
+		// MMR rimosso tooltip su elemento selezionato
+		$("#"+el.attr("id")).tooltip('destroy');
+		//el.attr("title","");
+		$("html").removeClass("wait");
+	
+	});
+}
+
+function theme_click() {
+	var url;
+	$("html").addClass("wait");
+	// url = '/zone_toggle_theme/' + $(this).attr("id").replace("theme","") + '/';
+	url = '/zone_set_theme/' + $(this).attr("id").replace("theme","") + '/';
+	call_server_and_update_theme($(this), url);
+}
+
+function category_click() {
+	$("html").addClass("wait");
+	call_server_and_update_category($(this));
+}
+//Quando la pagina viene caricata
+$(document).ready(function() {
+	call_server_and_update_theme(null, url = '/zone_themes/'); // Inizializza la bottoniera dei temi e le linguette delle categorie
+})
+</script>
+{% endblock body_scripts %}

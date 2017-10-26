@@ -7,6 +7,8 @@ from collections import defaultdict
 # MMR old version - from urlparse import urlsplit
 from urllib.parse import urlsplit
 import json
+
+from django.core.cache import caches # MMR old version  from django.core.cache import get_cache
 from django.template.defaultfilters import slugify
 """
 MMR temporaneamente disattivato
@@ -23,6 +25,7 @@ from django.contrib.auth.models import User
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.utils import translation
 from django.utils.translation import ugettext_lazy as _ 
 from django_user_agents.utils import get_user_agent
 
@@ -346,17 +349,13 @@ def street_detail(request, street_id, street=None):
     if not street:
         street = get_object_or_404(Odonym, pk=street_id)
         return HttpResponseRedirect('/toponimo/%s/' % street.slug)
-    language = RequestContext(request).get('LANGUAGE_CODE', 'en')
-    # MMR old version cache - streets_cache = get_cache('streets')
+    language = translation.get_language() or 'en'
+    streets_cache = caches['streets']
     key = 'street_%05d' % street_id
-    """
-    MMR old version cache
     if not language.startswith('it') or request.GET.get('nocache', None):
         data_dict = None
     else:
         data_dict = streets_cache.get(key, None)
-    """
-    data_dict = None
     if data_dict:
         print ('%s valid' % key)
     else:
@@ -379,14 +378,11 @@ def street_detail(request, street_id, street=None):
                     region = 'LAZIO' 
                     break
         data_dict = {'help': help_text, 'street_name': street.name, 'street_id': street.id, 'zone_list': zone_list, 'zone_zipcode_list': zone_zipcode_list, 'poi_dict_list': poi_dict_list, 'view_type': 'street', 'region': region}
-        """
-        MMMR old version cache
         if language.startswith('it'):
             try:
                 streets_cache.set(key, data_dict)
             except:
                 print (data_dict)
-        """
     can_edit = street.can_edit(request)
     data_dict['can_edit'] = can_edit
     # MMR old version - return render_to_response('pois/street_detail.html', data_dict, context_instance=RequestContext(request))
@@ -401,18 +397,13 @@ def zone_detail(request, zone_id, zone=None):
     if not zone:
         zone = get_object_or_404(Zone, pk=zone_id)
         return HttpResponseRedirect('/zona/%s/' % zone.slug)
-    language = RequestContext(request).get('LANGUAGE_CODE', 'en')
-    #MMR old version - zonemaps_cache = get_cache('zonemaps')
+    language = translation.get_language() or 'en'
+    zonemaps_cache = caches['zonemaps']
     key = 'zone%04d' % zone_id
-    """
-    MMR old version 
     if not language.startswith('it') or request.GET.get('nocache', None):
         data_dict = None
     else:
         data_dict = zonemaps_cache.get(key, None)
-        # print data_dict
-    """
-    data_dict = None
     if data_dict:
         print ('%s valid' % key)
     else:
@@ -452,15 +443,11 @@ def zone_detail(request, zone_id, zone=None):
         # initial={'tags': []}
         form = PoiBythemeForm()
         data_dict = {'help': help_text, 'zone': zone_dict, 'macrozones': macrozones, 'subzone_list': subzone_list, 'poi_dict_list': poi_dict_list, 'form': form}
-        """
-        MMR old version cache
         if language.startswith('it'):
             try:
                 zonemaps_cache.set(key, data_dict)
             except:
-                pass
-                # print data_dict        
-        """
+                print (data_dict)
     data_dict['can_edit'] = zone.can_edit(request)
     # MMR old version - return render_to_response('pois/zone_detail.html', data_dict, context_instance=RequestContext(request))
     return render(request, 'pois/zone_detail.html', data_dict)
@@ -819,18 +806,15 @@ def tag_index(request):
 def zone_tag_index(request, zone_id, zone=None):
     if not zone:
         zone = get_object_or_404(Zone, pk=zone_id)
-    language = RequestContext(request).get('LANGUAGE_CODE', 'en')
-    # MMR old version cache - zones_cache = get_cache('zones')
+    language = translation.get_language() or 'en'
+    zones_cache = caches['zones']
     key = 'zone%04d' % zone_id
-    """
-    MMR old version cache
     if not language.startswith('it') or request.GET.get('nocache', None):
         tag_poitype_list = None
         print ('%s invalid' % key)
     else:
         tag_poitype_list = zones_cache.get(key, None)
         print ('%s valid' % key)
-    """
     tag_poitype_list = None
     if not tag_poitype_list:
         tag_list = Tag.objects.all().order_by('weight')
@@ -840,30 +824,23 @@ def zone_tag_index(request, zone_id, zone=None):
             if n_pois:
                 # tag_poitype_list.append([tag, tag_name, tag_slug, n_pois, poitype_instances_list])
                 tag_poitype_list.append([tag.friendly_url(), tag.name, tag.slug, n_pois, poitype_instances_list])
-        """
-        MMR old version cache
         if language.startswith('it'):
             try:
                 zones_cache.set(key, tag_poitype_list)
-                pass
             except:
                 print (tag_poitype_list)
-    cache = get_cache('custom')
-    """
+    cache = caches['custom']
     key = 'allzones_' + language
-    """
-    MMR old version cache
     if request.GET.get('nocache', None):
         all_zones = None
         print ('allzones invalid')
     else:
-        all_zones = cache.get(key, None)
+        all_zones = cache.set(key, None)
         print ('allzones valid')
-    """
     all_zones = None
     if not all_zones:
         all_zones = list_all_zones()
-        #MMR old version cache - cache.set(key, all_zones)
+        cache.set(key, all_zones)
     can_edit = zone.can_edit(request)
     region = zone.zone_parent()
     zonetype_label = zone.type_label()
@@ -938,17 +915,13 @@ def category_index(request):
 def tag_detail(request, tag_id, tag=None):
     if not tag:
         tag = get_object_or_404(Tag, pk=tag_id)
-    language = RequestContext(request).get('LANGUAGE_CODE', 'en')
-    # MMR old version cache - themes_cache = get_cache('themes')
+    language = translation.get_language() or 'en'
+    themes_cache = caches['themes']
     key = 'theme_%02d' % tag_id
-    """
-    MMR old version cache
     if not language.startswith(LANGUAGE_CODE) or request.GET.get('nocache', None):
         data_dict = None
     else:
         data_dict = themes_cache.get(key, None)
-    """
-    data_dict = None
     if data_dict:
         print ('%s valid' % key)
     else:
@@ -990,14 +963,11 @@ def tag_detail(request, tag_id, tag=None):
         list_3_2 = poitype_instances_list[n_col_2_1:n_col_2_2]
         list_3_3 = poitype_instances_list[n_col_3:]
         data_dict = {'tag': tag.make_dict(), 'poitype_list': poitype_instances_list, 'list_2_1': list_2_1, 'list_3_1': list_3_1,'list_2_2': list_2_2, 'list_3_2': list_3_2,'list_3_3': list_3_3, }
-        """
-        MMR old version cache
         if language.startswith(LANGUAGE_CODE):
             try:
                 themes_cache.set(key, data_dict)
             except:
                 print (data_dict)
-        """
     # return render_to_response('pois/tag_detail.html', {'tag': tag, 'poitype_list': poitype_instances_list,}, context_instance=RequestContext(request))
     return render(request, 'pois/tag_detail.html', data_dict)
 
@@ -1052,21 +1022,17 @@ def poitype_detail(request, klass, poitype=None):
         theme_id = None
         theme_list = poitype.tags.all()
     region = 'ROMA'
-    language = RequestContext(request).get('LANGUAGE_CODE', 'en')
-    # MMR old version cache - categories_cache = get_cache('categories')
+    language = translation.get_language() or 'en'
+    categories_cache = caches['categories']
     key = 'cat_%s' % klass
-    """
-    MMR old version cache
     if not language.startswith('it') or request.GET.get('nocache', None) or theme:
-        data_dict = []
+        data_dict = None
     else:
         data_dict = categories_cache.get(key, None)
         if data_dict:
             print ('%s valid' % key)
         else:
             print ('%s invalid' % key)
-    """
-    data_dict = []
     if not data_dict:
         help_text = FlatPage.objects.get(url='/help/category/').content
         # if theme and not theme in poitype.tags.all():
@@ -1117,14 +1083,11 @@ def poitype_detail(request, klass, poitype=None):
             poitype['sub_types'] = sub_types
         data_dict = {'help': help_text, 'poitype': poitype, 'theme_list': theme_list, 'poi_dict_list': poi_dict_list, 'region': region, 'zone_list': zone_list, 'min': min_count, 'max': max_count}
         data_dict['zone'] = zone
-        """
-        MMR old version cache
         if language.startswith('it') and not theme:
             try:
                 categories_cache.set(key, data_dict)
             except:
                 print (data_dict)
-        """
     # MMR old version return render_to_response('pois/poitype_detail.html', data_dict, context_instance=RequestContext(request))
     return render(request, 'pois/poitype_detail.html', data_dict)
 
@@ -1166,18 +1129,14 @@ def poitype_zone_detail(request, klass, zone_id, poitype=None, zone=None):
         poitype = get_object_or_404(Poitype, klass=klass)
     if not zone:
         zone = get_object_or_404(Zone, pk=zone_id)
-    language = RequestContext(request).get('LANGUAGE_CODE', 'en')
-    # MMR old version version - catzones_cache = get_cache('catzones')
+    language = translation.get_language() or 'en'
+    catzones_cache = caches['catzones']
     key = 'cat_%s_zone%04d' % (klass, zone_id)
     region = 'ROMA'
-    """
-    MMR old version cache
     if not language.startswith('it') or request.GET.get('nocache', None):
         data_dict = None
     else:
         data_dict = catzones_cache.get(key, None)
-    """
-    data_dict = None
     if data_dict:
         print ('%s valid' % key)
     else:
@@ -1225,14 +1184,11 @@ def poitype_zone_detail(request, klass, zone_id, poitype=None, zone=None):
             region = zone.zone_parent()
         data_dict = {'help': help_text, 'poitype': poitype, 'theme_list': theme_list, 'poi_dict_list': poi_dict_list, 'zone_list': zone_list, 'region': region}
 
-        """
-        MMR old version cache
         if language.startswith('it'):
             try:
                 catzones_cache.set(key, data_dict)
             except:
                 print (data_dict)
-        """
     data_dict['zone'] = zone
     # MMR old version - return render_to_response('pois/poitype_detail.html', data_dict, context_instance=RequestContext(request))
     return render(request, 'pois/poitype_zone_detail.html', data_dict)
@@ -1247,15 +1203,12 @@ def poi_index(request):
     #MMR old version - return render_to_response('pois/poi_index.html', {'poi_list': poi_list,}, context_instance=RequestContext(request))
     return render(request, 'pois/poi_index.html', {'poi_list': poi_list,})
 
-# MMR old version  from django.core.cache import get_cache
-from django.core.cache import caches
-
 @xframe_options_exempt
 def poi_detail(request, poi_id, poi=None):
     if not poi:
         poi = get_object_or_404(Poi, pk=poi_id)
         return HttpResponseRedirect('/risorsa/%s/' % poi.slug)
-    language = RequestContext(request).get('LANGUAGE_CODE', 'en')
+    language = translation.get_language() or 'en'
     can_edit = poi.can_edit(request)
     focus_set_category(request, poi.poitype_id)
     """
@@ -1263,16 +1216,12 @@ def poi_detail(request, poi_id, poi=None):
     focus_add_themes(request, poi.get_themes(return_ids=True))
     """
     user_agent = get_user_agent(request)
-    # MMR old version cache - pois_cache = get_cache('pois')
+    pois_cache = caches['pois']
     key = 'poi%05d' % poi_id
-    """
-    MMR old version cache
     if not language.startswith('it') or request.GET.get('nocache', None):
         data_dict = None
     else:
         data_dict = pois_cache.get(key, None)
-    """
-    data_dict = None
     if not data_dict:
         print ('invalid cache for ', key)
         poi_dict = poi.make_dict() # 140603
@@ -1310,11 +1259,8 @@ def poi_detail(request, poi_id, poi=None):
         data_dict = {'poi_dict': poi_dict, 'poitype': poitype, 'theme_list': theme_list, 'hosted_list': hosted_list, 'zone_list': zone_list, 'poi_list': poi_list, 'n_caredby': n_caredby,}
         if macrozone:
             data_dict['macrozone'] = macrozone
-        """
-        MMR old version cache
         if language.startswith('it'):
             pois_cache.set(key, data_dict)
-        """
     feeds = []
     for f in poi.get_feeds():
         entries = []

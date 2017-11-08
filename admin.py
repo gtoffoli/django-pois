@@ -3,6 +3,7 @@ from django.contrib.gis import admin
 from django.contrib.gis.geos import Point
 from tinymce.widgets import TinyMCE
 
+
 from pois.models import Zonetype, Zone, ZoneZone, Route, Odonym, Tag, TagTag, Poitype, Sourcetype, Poi, PoiZone, PoiRoute, PoiPoi # MMR temporaneamente disattivato -, Blog
 from pois.forms import ZoneForm, RouteForm, PoiForm  # MMR temporaneamente disattivato -, BlogForm
 
@@ -163,7 +164,7 @@ class PoiAdmin(MultiGeoAdmin):
     list_filter = ('poitype__name',)
     search_fields = ['name', 'description',]
     # inlines = [PoiInLine]
-
+        
     def category_short(self, obj):
         if not obj.poitype:
             return ''

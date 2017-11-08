@@ -29,27 +29,27 @@
 
         <div class="row mB20">
             <div class="col-sm-12 col-md-12 col-lg-12 mB10">
-                <div id="map" class="map mapZone"></div>
+                <div id="map" class="mapZone"></div>
             </div>
         </div>
 
-<h5 class="char-spacing marg-bottom-5 demiBold">{% trans "Selection of a theme area" %}</h5>
-<ul class="elenco marg-left-0">
+<h5 class="char-spacing mB5 demiBold">{% trans "Selection of a theme area" %}</h5>
+<ul class="elenco mL0">
 {% for tag in tag_list %}
 	<li id="tema{{ tag.0 }}"><label for="theme{{ tag.0 }}" {% if tag.2 %}class="active" {% endif %}><input type="radio" id="theme{{ tag.0 }}" name="tema" {% if tag.2 %}checked="checked"{% endif %} value="{{ tag.0 }}"> <span style="vertical-align: middle; padding-top: 3px;">{{ tag.1 }}</span></label></li>
 	{% if not forloop.last %}<li>&nbsp;</li>{% endif %}
 {% endfor %}
 </ul>
-<h5 class="char-spacing marg-bottom-5">{% trans "Selection of a category in the theme area" %}</h5>
-<ul class="tabs marg-left-0" id="tabres"></ul>
+<h5 class="char-spacing mB5">{% trans "Selection of a category in the theme area" %}</h5>
+<ul class="tabs mL0" id="tabres"></ul>
 <div class="visualClear"></div>
 
-<h4 class="char-spacing marg-top-20 marg-bottom-5 demiBold">{% trans "The resources of the category selected" %}</h4>
+<h4 class="char-spacing mT20 mB5 demiBold">{% trans "The resources of the category selected" %}</h4>
 
 <div id="resources"></div>
 
 {% if zone.description %}
-<div  class="boxround">{{ zone.description|safe }}</div>
+<div  class="box-desc">{{ zone.description|safe }}</div>
 {% endif %}
 {% if zone.web %}
 <div class="summary">
@@ -265,13 +265,6 @@ function refresh_viewport(form) {
     }
 
     function make_poi_el(poi_dict) {
-/*MMR 20170922
-var s = '<div class="row">\
-         <div class="span5"><a href="{0}" rel="tooltip" title="{% trans "show resource" %} {1}" >{1}</a></div>\
-         <div class="span5 txt-small"><a href="{2}" rel="tooltip" title="{% trans "show" %} {3}">{3}</a> {4} - <a href="/zona-cap/{6}/" rel="tooltip" title="{% trans "show" %} {% trans "the zone with zipcode" %} {6}">{6}</a>{% comment %} Roma{% endcomment %}</div>\
-         </div>\
-         <div class="rowRes txt-small">{7}</div>';
-*/
         var s='<tr>\
             <td class="hidden-xs td-img"><img class="img-responsive" src="{{ STATIC_URL }}roma/img/icons/{0}.png"></td>\
             <td>\

@@ -1,17 +1,17 @@
-{% load url from future %}{% load i18n %}
+{% load i18n %}
 <ul>{% if Poi or Poitype or Zone or Odonym %}
-{% if Poi %}<li><div>{% trans "Resources" %}</div><ul>
+{% if Poi %}<li><span class="demiBold">{% trans "Resources" %}</span><ul class="mB10">
 {% for poi in Poi %}<li>{% if poi.1 %}<a class="choice" href="/risorsa/{{ poi.1 }}/">{{ poi.0 }}</a>{% else %}{{ poi.0 }}{% endif %}</li>{% endfor %}
 </ul></li>{% endif %}
-{% if Poitype %}<li><div>{% trans "Categories" %}</div><ul>
+{% if Poitype %}<li><span class="demiBold">{% trans "Categories" %}</span><ul>
 {% for category in Poitype %}<li>{% if category.1 %}<a class="choice" href="/categoria/{{ category.1 }}/">{{ category.0 }}</a>{% else %}{{ category.0 }}{% endif %}</li>{% endfor %}
 </ul></li>{% endif %}
-{% if Zone %}<li><div>{% trans "Zones" %}</div><ul>
-{% for zone in Zone %}<li>{% if zone.1 %}<a class="choice" href="/zona/{{ zone.1 }}/">{{ zone.2 }} {{ zone.0 }}</a>{% else %}{{ zone.0 }}{% endif %}</li>{% endfor %}
+{% if Zone %}<li><span class="demiBold">{% trans "Zones" %}</span><ul class="mB10">
+{% for zone in Zone %}<li>{% if zone.1 %}<a class="choice" href="/zona/{{ zone.1 }}/">{% if not 'COM' in zone.2 or not 'M' in zone.2 %}{{ zone.2 }} {% endif %}{{ zone.0 }}</a>{% else %}{{ zone.0 }}{% endif %}</li>{% endfor %}
 </ul></li>{% endif %}
-{% if Odonym %}<li><div>{% trans "Streets, squares .." %}</div><ul>
+{% if Odonym %}<li><span class="demiBold">{% trans "Streets, squares .." %}</span><ul class="mB10">
 {% for street in Odonym  %}<li>{% if street.1 %}<a class="choice" href="/toponimo/{{ street.1 }}/">{{ street.0 }}</a>{% else %}{{ street.0 }}{% endif %}</li>{% endfor %}
 </ul></li>{% endif %}
 {% if more %}<li>...</li>{% endif %}
-<li><div><a style="font-style: italic; font-size: small;  font-weight: normal;" href="/cerca/?q={{ q }}">{% trans "list all the results in a page" %}</a></div></li>
+<li class="mT10"><a href="/cerca/?q={{ q }}">{% trans "list all the results in a page" %}</a></li>
 {% else %}<li>{% trans "no item" %}</li>{% endif %}</ul>

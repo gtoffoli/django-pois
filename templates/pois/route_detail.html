@@ -22,7 +22,7 @@
         </div>
         <div class="row mB20">
             <div class="col-sm-12 col-md-12 col-lg-12">
-                <div id="map" class="map mapZone"></div>
+                <div id="map" class="mapZone"></div>
             </div>
         </div>
         <h5 class="mB10 demiBold">{% trans "Resources related to this route" %}</h5>
@@ -256,13 +256,6 @@ function refresh_viewport(form) {
     }
 
     function make_poi_el(poi_dict) {
-/*MMR 20170922
-var s = '<div class="row">\
-         <div class="span5"><a href="{0}" rel="tooltip" title="{% trans "show resource" %} {1}" >{1}</a></div>\
-         <div class="span5 txt-small"><a href="{2}" rel="tooltip" title="{% trans "show" %} {3}">{3}</a> {4} - <a href="/zona-cap/{6}/" rel="tooltip" title="{% trans "show" %} {% trans "the zone with zipcode" %} {6}">{6}</a>{% comment %} Roma{% endcomment %}</div>\
-         </div>\
-         <div class="rowRes txt-small">{7}</div>';
-*/
         var s='<tr>\
             <td class="hidden-xs td-img"><img class="img-responsive" src="{{ STATIC_URL }}roma/img/icons/{0}.png"></td>\
             <td>\

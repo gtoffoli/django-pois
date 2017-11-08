@@ -4,11 +4,10 @@ from __future__ import unicode_literals
 import datetime
 # Add before admin.autodiscover() and any form import for that matter:
 from collections import defaultdict
-# MMR old version - from urlparse import urlsplit
 from urllib.parse import urlsplit
 import json
 
-from django.core.cache import caches # MMR old version  from django.core.cache import get_cache
+from django.core.cache import caches
 from django.template.defaultfilters import slugify
 """
 MMR temporaneamente disattivato
@@ -16,7 +15,7 @@ import autocomplete_light
 autocomplete_light.autodiscover()
 """
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render, get_object_or_404                    #MMR old version - render_to_response,
+from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
 from django.contrib.gis.shortcuts import render_to_kml
 from django.contrib.gis.geos import Polygon, LinearRing
@@ -32,13 +31,13 @@ from django_user_agents.utils import get_user_agent
 from django.conf import settings
 from roma.session import get_focus, set_focus, focus_set_category, focus_add_themes
 from django.db.models.functions import Lower
-from pois.models import Zonetype, Zone, Route, Odonym, Poitype, Poi, Tag # MMR temporaneamente disattivato -, Blog
+from pois.models import Zonetype, Zone, Route, Odonym, Poitype, Poi, Tag
 from pois.models import list_all_zones
 from pois.models import make_zone_subquery
 from pois.models import refresh_configuration
 from pois.forms import PoiUserForm, PoiAnnotationForm
 from pois.models import MACROZONE, TOPOZONE, MUNICIPIO, CAPZONE
-from pois.forms import  PoiBythemeForm, PoiSearchForm # MMR temporaneamente disattivato - BlogUserForm, PostUserForm, TagUserForm,
+from pois.forms import  PoiBythemeForm, PoiSearchForm
 from pois.models import POI_CLASSES
 
 from roma.settings import LANGUAGE_CODE
@@ -52,6 +51,9 @@ roma_lon = 12.4750
 roma_lat = 41.9050
 from django.contrib.gis import admin
 from django.contrib.gis.geos import Point
+
+from dal import autocomplete
+
 class ZoneAdmin(admin.OSMGeoAdmin):
     pnt = Point(roma_lon, roma_lat, srid=srid_GPS)
     pnt.transform(srid_OSM)
@@ -66,7 +68,6 @@ def zonetype_index(request):
     zonetype_list = []
     for zt in zonetypes:
         zonetype_list.append([zt, zt.name, Zone.objects.filter(zonetype=zt.pk).count()])
-    # MMR old version - return render_to_response('pois/zonetype_index.html', {'zonetype_list': zonetype_list,}, context_instance=RequestContext(request))
     return render(request, 'pois/zonetype_index.html', {'zonetype_list': zonetype_list,})
 
 def zonetype_detail(request, zonetype_id, zonetype=None):
@@ -74,7 +75,6 @@ def zonetype_detail(request, zonetype_id, zonetype=None):
         zonetype = get_object_or_404(Zonetype, pk=zonetype_id)
     zonetype_name = zonetype.name
     zone_list = Zone.objects.filter(zonetype=zonetype_id).exclude(id=90).order_by('id')
-    # MMR old version - return render_to_response('pois/zonetype_detail.html', {'zonetype': zonetype, 'zonetype_name': zonetype_name, 'zone_list': zone_list,}, context_instance=RequestContext(request))
     return render(request,'pois/zonetype_detail.html', {'zonetype': zonetype, 'zonetype_name': zonetype_name, 'zone_list': zone_list,})
 
 def zonetype_detail_by_slug(request, zonetype_slug):
@@ -90,9 +90,7 @@ def zone_index(request, zonetype_id=None):
     else:
         zonetype = None
         zonetype_name = ''
-        # zone_list = Zone.objects.filter(zonetype_id__in=[0,7,3,6]).exclude(id=90).order_by('zonetype__name_it', 'id')
         zone_list = Zone.objects.filter(zonetype_id__in=[0,7,3,6]).exclude(id=90).order_by('zonetype__name', 'id')
-    # MMR old version - return render_to_response('pois/zone_index.html', {'zonetype': zonetype, 'zonetype_name': zonetype_name, 'zone_list': zone_list,}, context_instance=RequestContext(request))
     return render(request, 'pois/zone_index.html', {'zonetype': zonetype, 'zonetype_name': zonetype_name, 'zone_list': zone_list,})
 
 def zone_index_map(request, zonetype_id=1, prefix='', render_view=True):
@@ -135,7 +133,6 @@ def zone_index_map(request, zonetype_id=1, prefix='', render_view=True):
     data_dict = {'view_map': view_map, 'zonetype': zonetype, 'zone_list' : zone_list, 'zone_count' : zcount, 'zonetype_label': zonetype_label, 'region': region, 'prefix': prefix}
 
     if render_view:
-        # MMR old version - return render_to_response('pois/zone_index_map.html', data_dict, context_instance=RequestContext(request))
        return render(request, 'pois/zone_index_map.html', data_dict)
     else:
         return data_dict
@@ -150,7 +147,6 @@ def zone_kml(request, zonetype_id=6):
 def muoviroma(request):
     flatpage = FlatPage.objects.get(url='/help/muoviroma/')
     text_body = flatpage.content
-    #MMR old version - return render_to_response('pois/muoviroma.html', {'text_body': text_body}, context_instance=RequestContext(request))
     return render(request, 'pois/muoviroma.html', {'text_body': text_body})
 
 def tag_set(request, tag_id, redirect=True):
@@ -161,7 +157,6 @@ def tag_set(request, tag_id, redirect=True):
         return HttpResponseRedirect(redirect_to)
 
 def tag_toggle(request, tag_id, redirect=True):
-    # tag_id = int(tag_id)
     focus = get_focus(request)
     tags = focus.get('tags', [])
     print ('TAG_TOGGLE')
@@ -240,12 +235,10 @@ def zone_map(request, zone_id, render_view=True, zone=None):
         poitype_dict[poitype.id] = [poitype]
     poitype_list = [[key, poitype_dict[key]] for key in poitype_ids]
 
-    # data_dict = {'zone': zone, 'macrozones': macrozones, 'subzone_list': subzone_list, 'tag_list': tag_list, 'poitype_list': poitype_list, 'can_edit': can_edit,}
     data_dict = {'zone': zone, 'macrozones': macrozones, 'subzone_list': subzone_list, 'tag_list': tag_list, 'tag_id': selected_tag, 'poitype_list': poitype_list, 'can_edit': can_edit,}
     if render_view:
         flatpage = FlatPage.objects.get(url='/help/zonemap/')
         data_dict['help'] = flatpage.content
-        # MMR old version - return render_to_response('pois/zone_map.html', data_dict, context_instance=RequestContext(request))
         return render(request, 'pois/zone_map.html', data_dict)
     else:
         return data_dict
@@ -361,7 +354,6 @@ def street_detail(request, street_id, street=None):
     else:
         print ('%s invalid' % key)
         help_text = FlatPage.objects.get(url='/help/street/').content
-        # zone_list = [[zone, zone.zonetype.name] for zone in street.get_zones()]
         zones = street.get_zones()
         zone_list = [zone.make_dict(list_item=True) for zone in zones[0]]
         zone_zipcode_list = [zone.make_dict(list_item=True) for zone in zones[1]]
@@ -385,7 +377,6 @@ def street_detail(request, street_id, street=None):
                 print (data_dict)
     can_edit = street.can_edit(request)
     data_dict['can_edit'] = can_edit
-    # MMR old version - return render_to_response('pois/street_detail.html', data_dict, context_instance=RequestContext(request))
     return render(request, 'pois/street_detail.html', data_dict)
 
 def street_detail_by_slug(request, street_slug):
@@ -421,7 +412,6 @@ def zone_detail(request, zone_id, zone=None):
         # zone_dict['overlapping'] = [z.make_dict(list_item=True) for z in zone.overlapping()]
         if zone.zonetype_id == MACROZONE:
             subzone_list = zone.list_subzones(zonetype_id=TOPOZONE)
-            print (subzone_list)
         elif zone.zonetype_id in [TOPOZONE, MUNICIPIO]:
             macrozones = Zone.objects.filter(zonetype_id=MACROZONE, zones=zone)
             macrozones = [z.make_dict for z in macrozones]
@@ -449,7 +439,6 @@ def zone_detail(request, zone_id, zone=None):
             except:
                 print (data_dict)
     data_dict['can_edit'] = zone.can_edit(request)
-    # MMR old version - return render_to_response('pois/zone_detail.html', data_dict, context_instance=RequestContext(request))
     return render(request, 'pois/zone_detail.html', data_dict)
 
 def zone_detail_by_slug(request, zone_slug):
@@ -458,7 +447,6 @@ def zone_detail_by_slug(request, zone_slug):
 
 def route_index(request):
     routes = Route.objects.all()
-    # MMR old version - return render_to_response('pois/route_index.html', {'routes': routes,}, context_instance=RequestContext(request))
     return render(request, 'pois/route_index.html', {'routes': routes,})
 
 @xframe_options_exempt
@@ -476,7 +464,6 @@ def route_detail(request, route_id, route=None):
     near_pois = route.get_near_pois(distance=50)
     near_poi_dict_list = [poi.make_dict(list_item=True) for poi in near_pois if not poi in pois]
     data_dict['near_poi_dict_list'] = near_poi_dict_list
-    # MMR old version - return render_to_response('pois/route_detail.html', data_dict, context_instance=RequestContext(request))
     return render(request, 'pois/route_detail.html', data_dict)
 
 def route_detail_by_slug(request, route_slug):
@@ -487,26 +474,17 @@ def route_detail_by_slug(request, route_slug):
 def viewport(request):
     help_text = FlatPage.objects.get(url='/help/viewport/').content
     focus = get_focus(request)
-    # MMR tags = focus.get('tags', [])
     tags = []
     if request.method == 'POST':
         tags = request.POST.getlist('tags')
     viewport = focus.get('viewport', None)
     if not viewport:
         try:
-            """
-            MMR old version
-            w = float(request.REQUEST['left'])
-            s = float(request.REQUEST['bottom'])
-            e = float(request.REQUEST['right'])
-            n = float(request.REQUEST['top'])
-            """
             w = float(request.GET['left'])
             s = float(request.GET['bottom'])
             e = float(request.GET['right'])
             n = float(request.GET['top'])
         except:
-            # MMR old version - return render_to_response("roma/slim.html", {'text': '',}, context_instance=RequestContext(request))
             return render(request, "roma/slim.html", {'text': '',})
         viewport = [w, s, e, n]
     pois = viewport_get_pois(request, viewport, tags=tags)
@@ -522,19 +500,16 @@ def viewport(request):
                 region = 'LAZIO' 
                 break
     form = PoiBythemeForm(initial={'tags': tags})
-    # MMR old version - return render_to_response('pois/street_detail.html', {'help': help_text, 'poi_dict_list': poi_dict_list, 'view_type': 'viewport', 'form': form, 'tags': tags,}, context_instance=RequestContext(request))
     return render(request, 'pois/street_detail.html', {'help': help_text, 'poi_dict_list': poi_dict_list, 'view_type': 'viewport', 'form': form, 'tags': tags, 'region': region})
 
 def choose_zone(request):
     help_text = FlatPage.objects.get(url='/help/viewport/').content
-    # MMR old version - return render_to_response('pois/choose_zone.html', {'help': help_text}, context_instance=RequestContext(request))
     return render(request, 'pois/choose_zone.html', {'help': help_text})
 
 def zone_cloud(request):
     """ allows to test zone_cloud.html and zone_net """
     code = request.REQUEST['zone']
     zone = Zone.objects.filter(code=code)[0]
-    # MMR old version - return render_to_response('pois/zone_cloud.html', {'zone': zone}, context_instance=RequestContext(request))
     return render(request, 'pois/zone_cloud.html', {'zone': zone})
 
 zonetype_color_dict = {
@@ -799,7 +774,6 @@ def tag_index(request):
         n_pois, poitype_instances_list = resources_by_tag_and_zone(tag, list_all=list_all)
         if n_pois or list_all:
             tag_poitype_list.append([tag_id, tag_url, tag_name, tag_slug, n_pois, poitype_instances_list])
-    # MMR old version - return render_to_response('pois/tag_index.html', {'tag_poitype_list': tag_poitype_list,}, context_instance=RequestContext(request))
     return render(request, 'pois/tag_index.html', {'tag_poitype_list': tag_poitype_list})
 
 @xframe_options_exempt
@@ -845,7 +819,6 @@ def zone_tag_index(request, zone_id, zone=None):
     region = zone.zone_parent()
     zonetype_label = zone.type_label()
     
-    # MMR old version - return render_to_response('pois/zone_tag_index.html', {'zone': zone, 'zonetype_list': all_zones, 'tag_poitype_list': tag_poitype_list, 'can_edit': can_edit,}, context_instance=RequestContext(request))
     return render(request, 'pois/zone_tag_index.html', {'zone': zone, 'region': region, 'zonetype_label': zonetype_label, 'zonetype_list': all_zones, 'tag_poitype_list': tag_poitype_list, 'can_edit': can_edit,})
 
 
@@ -863,7 +836,6 @@ def poitype_index(request):
         n = len(pois)
         if n or list_all:
             poitype_instances_list.append([poitype, n, pois[:1]])
-    # MMR return render_to_response('pois/poitype_index.html', {'poitype_instances_list': poitype_instances_list,}, context_instance=RequestContext(request))
     return render(rquest, 'pois/poitype_index.html', {'poitype_instances_list': poitype_instances_list,})
 
 @xframe_options_exempt
@@ -905,10 +877,8 @@ def category_index(request):
     if m:
         last_code = list_all and last_category or ''
         last_category_poitype = Poitype.objects.get(klass=last_category+'0000')
-        print (last_category_poitype)
         category_name = last_category_poitype.name
         category_list.append([last_code, last_category_poitype, category_name, m, poitype_instances_list])
-    # MMR old version - return render_to_response('pois/poitype_index.html', {'category_list': category_list,}, context_instance=RequestContext(request))
     return render(request, 'pois/poitype_index.html', {'category_list': category_list,})
 
 @xframe_options_exempt
@@ -998,7 +968,6 @@ def tag_zone_detail(request, tag_id, zone_id, tag=None, zone=None):
             # poitype_instances_list.append([poitype, n, category_in_theme])
             poitype_instances_list.append([poitype, n, category_in_theme, pois[:1]])
             n_pois += n
-    # MMR old version - return render_to_response('pois/tag_zone_detail.html', {'tag': tag, 'zone': zone, 'poitype_list': poitype_instances_list,}, context_instance=RequestContext(request))
     return render('pois/tag_zone_detail.html', {'tag': tag, 'zone': zone, 'poitype_list': poitype_instances_list,})
 
 def tag_zone_detail_by_slug(request, tag_slug, zone_slug):
@@ -1088,7 +1057,6 @@ def poitype_detail(request, klass, poitype=None):
                 categories_cache.set(key, data_dict)
             except:
                 print (data_dict)
-    # MMR old version return render_to_response('pois/poitype_detail.html', data_dict, context_instance=RequestContext(request))
     return render(request, 'pois/poitype_detail.html', data_dict)
 
 def poitype_detail_by_slug(request, klass_slug):
@@ -1115,7 +1083,6 @@ def poitype_tag_detail(request, klass, tag_id, poitype=None, tag=None):
     data = {'help': help_text, 'poitype': poitype, 'region': region, 'zone': zone, 'theme_list': theme_list, 'poi_dict_list': poi_dict_list,}
     if not tag in poitype.tags.all():
         data['theme'] = tag
-    # MMR old version - return render_to_response('pois/poitype_detail.html', data, context_instance=RequestContext(request))
     return render(request, 'pois/poitype_tag_detail.html', data)
 
 def poitype_tag_detail_by_slugs(request, klass_slug, tag_slug):
@@ -1143,8 +1110,6 @@ def poitype_zone_detail(request, klass, zone_id, poitype=None, zone=None):
         print ('%s invalid' % key)
         poi_list = resources_by_category_and_zone(klass, zone, select_related=True)
         zone_list = zone_list_no_sorted = []
-        print(zone.zonetype_id)
-        print(zone.id)
         if zone.zonetype_id == 0:
             zones = Zone.objects.filter(zonetype_id=0).exclude(code='ROMA')
             for z in zones:
@@ -1190,7 +1155,6 @@ def poitype_zone_detail(request, klass, zone_id, poitype=None, zone=None):
             except:
                 print (data_dict)
     data_dict['zone'] = zone
-    # MMR old version - return render_to_response('pois/poitype_detail.html', data_dict, context_instance=RequestContext(request))
     return render(request, 'pois/poitype_zone_detail.html', data_dict)
 
 def poitype_zone_detail_by_slugs(request, klass_slug, zone_slug):
@@ -1200,7 +1164,6 @@ def poitype_zone_detail_by_slugs(request, klass_slug, zone_slug):
 
 def poi_index(request):
     poi_list = Poi.objects.all()
-    #MMR old version - return render_to_response('pois/poi_index.html', {'poi_list': poi_list,}, context_instance=RequestContext(request))
     return render(request, 'pois/poi_index.html', {'poi_list': poi_list,})
 
 @xframe_options_exempt
@@ -1280,7 +1243,6 @@ def poi_detail(request, poi_id, poi=None):
     data_dict['can_edit'] = can_edit
     data_dict['feeds'] = feeds
     data_dict['user_agent'] = user_agent
-    # MMR old version - return render_to_response('pois/poi_detail.html', data_dict, context_instance=RequestContext(request))
     return render(request, 'pois/poi_detail.html', data_dict)
 
 def poi_detail_by_slug(request, poi_slug):
@@ -1306,14 +1268,12 @@ def street_autocomplete(request):
 def poi_edit(request, poi_id):
     poi = get_object_or_404(Poi, pk=poi_id)
     form = PoiUserForm(instance=poi)
-    # MMR old version - return render_to_response('pois/poi_edit.html', {'poi': poi, 'form': form}, context_instance=RequestContext(request))
     return (request, 'pois/poi_edit.html', {'poi': poi, 'form': form})
 
 def poi_new(request):
     flatpage = FlatPage.objects.get(url='/risorse/segnala/')
     text_body = flatpage.content
     form = PoiUserForm()
-    # MMR old version - return render_to_response('pois/poi_edit.html', {'poi': '', 'form': form, 'text_body': text_body}, context_instance=RequestContext(request))
     return render(request, 'pois/poi_edit.html', {'poi': '', 'form': form, 'text_body': text_body})
 
 def poi_save(request):
@@ -1329,7 +1289,6 @@ def poi_save(request):
                 poi.save()
             return HttpResponseRedirect('/nuova-risorsa/%s/' % poi.id)
         else:
-            # MMR old version - return render_to_response('pois/poi_edit.html', {'form': form, 'text_body': text_body}, context_instance=RequestContext(request))
             return render(request, 'pois/poi_edit.html', {'form': form, 'text_body': text_body})
     else:
         return poi_new(request)
@@ -1338,7 +1297,6 @@ def poi_view(request,poi_id):
     poi = get_object_or_404(Poi, pk=poi_id)
     flatpage = FlatPage.objects.get(url='/risorse/riscontro/')
     text_body = flatpage.content
-    # MMR old version - return render_to_response('pois/poi_view.html', {'poi': poi, 'text_body': text_body}, context_instance=RequestContext(request))
     return render(request, 'pois/poi_view.html', {'poi': poi, 'text_body': text_body})
 
 def poi_add_note(request, poi_id, poi=None):
@@ -1347,7 +1305,6 @@ def poi_add_note(request, poi_id, poi=None):
     if not poi:
         poi = get_object_or_404(Poi, pk=poi_id)
     form = PoiAnnotationForm(initial={'id': poi_id})
-    # MMR old version - return render_to_response('pois/poi_feedback.html', {'poi': poi, 'form': form, 'text_body': text_body}, context_instance=RequestContext(request))
     return render(request, 'pois/poi_feedback.html', {'poi': poi, 'form': form, 'text_body': text_body})
 
 def poi_add_note_by_slug(request, poi_slug):
@@ -1368,21 +1325,18 @@ def poi_save_note(request):
         poi.save()
         return HttpResponseRedirect('/risorsa/%s/?comment=true' % poi.slug)
     else:
-        # MMR old version - return render_to_response('pois/poi_feedback.html', {'form': form}, context_instance=RequestContext(request))
         return render(request, 'pois/poi_feedback.html', {'form': form})
 
 def pois_recent(request, n=MAX_POIS):
     # instances = Poi.objects.filter(state=1).order_by('-id')[:n]
     instances = Poi.objects.select_related().filter(state=1).order_by('-id')[:n]
     poi_dict_list = [poi.make_dict() for poi in instances]
-    # MMR old version - return render_to_response('pois/poi_list.html', {'list_type': 'recent', 'poi_dict_list': poi_dict_list, 'count': instances.count()}, context_instance=RequestContext(request))
     return render(request, 'pois/poi_list.html', {'list_type': 'recent', 'poi_dict_list': poi_dict_list, 'count': instances.count()})
 
 def pois_updates(request, n=MAX_POIS):
     last_id = Poi.objects.latest('id').id
     instances = Poi.objects.select_related().filter(id__lt=last_id-MAX_POIS, state=1).order_by('-modified')[:n]
     poi_dict_list = [poi.make_dict() for poi in instances]
-    # MMR old version - return render_to_response('pois/poi_list.html', {'list_type': 'updates', 'poi_dict_list': poi_dict_list, 'count': instances.count()}, context_instance=RequestContext(request))
     return render(request, 'pois/poi_list.html', {'list_type': 'updates', 'poi_dict_list': poi_dict_list, 'count': instances.count()})
 
 def my_resources(request, n=MAX_POIS):
@@ -1394,12 +1348,10 @@ def my_resources(request, n=MAX_POIS):
         instances = Poi.objects.filter(owner=request.user).order_by('-id')[:n]
         count = instances.count()
         poi_dict_list = [poi.make_dict() for poi in instances]
-    # MMR old version - return render_to_response('pois/poi_list.html', {'list_type': 'my_resources', 'poi_dict_list': poi_dict_list, 'count': count}, context_instance=RequestContext(request))
     return render(request, 'pois/poi_list.html', {'list_type': 'my_resources', 'poi_dict_list': poi_dict_list, 'count': count})
 
 def poi_contributors(request):
     users = User.objects.annotate(num_pois=Count('poi_owner')).filter(num_pois__gt=0).order_by('-num_pois')
-    # MMR old version - return render_to_response('pois/poi_contributors.html', { 'user_list': users, }, context_instance=RequestContext(request))
     return render(request, 'pois/poi_contributors.html', { 'user_list': users, })
 
 def poi_zonize(request, poi_id):
@@ -1413,10 +1365,8 @@ def pois_update_colocations(request):
     for poi in pois:
         host = poi.host
         if poi.point == host.point:
-            # print poi.name
             pass
         else:
-            # print poi.name, '-> ', host.name
             poi.point = host.point
             poi.save()
             n += 1
@@ -1428,42 +1378,50 @@ def pois_update_colocations(request):
     return HttpResponse(html, content_type='text/html')
 
 def poi_analysis(request):
-    list_all = request.GET.get('all', '')
     no_geo_list = []
     no_theme_list = []
     todo_list = []
     comment_list = []
     notes_list = []
-    if list_all or request.GET.get('geo', ''):
-        no_geo_list = [poi.make_dict() for poi in Poi.objects.filter(point__isnull=True)]
-    if list_all or request.GET.get('theme', ''):
-        no_theme_list = [poi.make_dict() for poi in Poi.objects.filter(tags__isnull=True, poitype__tags__isnull=True)]
-    if list_all or request.GET.get('todo', '') or request.GET.get('comment', '') or request.GET.get('notes', ''):
-        poi_list = Poi.objects.exclude(notes='').exclude(notes__isnull=True)
-    if list_all or request.GET.get('todo', ''):
-        for poi in poi_list:
-            notes = poi.notes
-            if notes[0] != '\r' and notes[0] != '\n':
-                todo = notes.split('\n')[0]
-                item = poi.make_dict()
-                item.update({'notes': todo})
-                todo_list.append(item)
-    if list_all or request.GET.get('comment', ''):
-        for poi in poi_list:
-            notes = poi.notes
-            if notes.count('----- commento'):
-                item = poi.make_dict()
-                item.update({'notes': notes})
-                comment_list.append(item)
-    if request.GET.get('notes', ''):
-        for poi in poi_list:
-            notes = poi.notes
-            if notes:
-                item = poi.make_dict()
-                item.update({'notes': notes})
-                notes_list.append(item)
-    # MMR old version - return render_to_response('pois/poi_analysis.html', {'no_geo_list': no_geo_list, 'no_theme_list': no_theme_list, 'todo_list': todo_list, 'comment_list': comment_list, 'notes_list': notes_list,}, context_instance=RequestContext(request))
+    poi_list = []
+    if request.user.is_superuser or request.user.is_staff:
+        value_get = request.GET.get('field','')
+        state = request.GET.get('state','')
+        if state:
+            qs = Poi.objects.filter(state=state)
+        else:
+            qs = Poi.objects.all()
+        if value_get in ['all', 'geo'] :
+            no_geo_list = [poi.make_dict() for poi in qs.filter(point__isnull=True)]
+        if value_get in ['all', 'theme']:
+            no_theme_list = [poi.make_dict() for poi in qs.filter(tags__isnull=True, poitype__tags__isnull=True)]
+        if value_get in ['all','todo','comment','notes']:
+            poi_list = qs.exclude(notes='').exclude(notes__isnull=True)
+        if poi_list:
+            if value_get in ['all','todo']:
+                for poi in poi_list:
+                    notes = poi.notes
+                    if notes[0] != '\r' and notes[0] != '\n':
+                        todo = notes.split('\n')[0]
+                        item = poi.make_dict()
+                        item.update({'notes': todo})
+                        todo_list.append(item)
+            if value_get in ['all','comment']:
+                for poi in poi_list:
+                    notes = poi.notes
+                    if notes.count('----- commento'):
+                        item = poi.make_dict()
+                        item.update({'notes': notes})
+                        comment_list.append(item)
+            if value_get in ['all','notes']:
+                for poi in poi_list:
+                    notes = poi.notes
+                    if notes:
+                        item = poi.make_dict()
+                        item.update({'notes': notes})
+                        notes_list.append(item)
     return render(request, 'pois/poi_analysis.html', {'no_geo_list': no_geo_list, 'no_theme_list': no_theme_list, 'todo_list': todo_list, 'comment_list': comment_list, 'notes_list': notes_list,})
+
 
 def decimal_to_exagesimal(coord):
     degrees = int(coord)
@@ -1550,7 +1508,6 @@ def poi_network(request, poi_id, poi=None):
             if item['comune'][1] != 'roma':
                 region = 'LAZIO' 
                 break
-    # MMR old version - return render_to_response('pois/network_detail.html', {'relation': 'affiliated', 'help': help_text, 'zone': zone, 'parent': parent, 'poi_dict_list': poi_dict_list, 'zone_list': zone_list, 'min': min_count, 'max': max_count,}, context_instance=RequestContext(request))
     return render(request, 'pois/network_detail.html', {'relation': 'affiliated', 'help': help_text, 'zone': zone, 'parent': parent, 'poi_dict_list': poi_dict_list, 'zone_list': zone_list, 'min': min_count, 'max': max_count,'region': region,})
 
 def poi_network_by_slug(request, poi_slug):
@@ -1573,7 +1530,6 @@ def poi_network_zone(request, poi_id, zone_id, poi=None, zone=None):
             if item['comune'][1] != 'roma':
                 region = 'LAZIO' 
                 break
-    # MMR old version - return render_to_response('pois/network_detail.html', {'relation': 'affiliated', 'help': help_text, 'parent': parent, 'zone': zone, 'poi_dict_list': poi_dict_list,}, context_instance=RequestContext(request))
     return render(request, 'pois/network_detail.html', {'relation': 'affiliated', 'help': help_text, 'parent': parent, 'zone': zone, 'poi_dict_list': poi_dict_list, 'region': region})
 
 def poi_network_zone_by_slug(request, poi_slug, zone_slug):
@@ -1590,8 +1546,13 @@ def resource_map(request, poi_id, poi=None):
     parent = poi
     # poi_dict_list = [poi.make_dict() for poi in poi_list]
     poi_dict_list = [poi.make_dict(list_item=True) for poi in poi_list]
-    # MMR old version - return render_to_response('pois/network_detail.html', {'relation': 'caredby', 'help': help_text, 'zone': zone, 'parent': parent, 'poi_dict_list': poi_dict_list,}, context_instance=RequestContext(request))
-    return render(request, 'pois/network_detail.html', {'relation': 'caredby', 'help': help_text, 'zone': zone, 'parent': parent, 'poi_dict_list': poi_dict_list,})
+    region = 'ROMA'
+    if poi_dict_list:
+        for item in poi_dict_list:
+            if item['comune'][1] != 'roma':
+                region = 'LAZIO' 
+                break
+    return render(request, 'pois/network_detail.html', {'relation': 'caredby', 'help': help_text, 'zone': zone, 'parent': parent, 'poi_dict_list': poi_dict_list, 'region': region})
 
 def resource_map_by_slug(request, poi_slug):
     poi = get_object_or_404(Poi, slug=poi_slug)
@@ -1603,38 +1564,13 @@ def resource_networks(request):
     if POI_CLASSES:
         pois = pois.filter(poitype_id__in=POI_CLASSES)
     pois = pois.annotate(num_pois=Count('poipoi')).order_by('-num_pois')
-
     poi_dict_list = []
     for poi in pois:
         poi_dict = poi.make_dict(list_item=True)
         if poi.num_pois > 3:
             poi_dict['num_pois'] = poi.num_pois
             poi_dict_list.append(poi_dict)
-    # MMR old version - return render_to_response('pois/poi_list.html', {'list_type': 'networks', 'poi_dict_list': poi_dict_list, 'count': len(poi_dict_list)}, context_instance=RequestContext(request))
     return render(request, 'pois/poi_list.html', {'list_type': 'networks', 'poi_dict_list': poi_dict_list, 'count': len(poi_dict_list)})
-
-"""
-from pois.models import PoiPoi
-
-def resource_networks(request):
-
-    if POI_CLASSES:
-        pois = Poi.objects.filter(poitype_id__in=POI_CLASSES, state=1).exclude(state__poi=0)
-    else:
-        pois = Poi.objects.filter(state=1).exclude(poi__pois=None)
-
-    pois = pois.annotate(num_pois=Count('poipoi')).order_by('-num_pois')
-
-    poi_dict_list = []
-    for poi in pois:
-        poi_dict = poi.make_dict(list_item=True)
-        
-        if poi.num_pois > 3:
-            poi_dict['num_pois'] = poi.num_pois
-            poi_dict_list.append(poi_dict)
-
-    return render_to_response('pois/poi_list.html', {'list_type': 'networks', 'poi_dict_list': poi_dict_list, 'count': len(poi_dict_list)}, context_instance=RequestContext(request))
-"""
 
 def resource_maps(request):
     instances = Poi.objects.filter(state=1).exclude(poi_careof=None).annotate(num_pois=Count('poi__careof')).order_by('-num_pois')
@@ -1647,7 +1583,6 @@ def resource_maps(request):
             poi_dict = instance.make_dict(list_item=True)
             poi_dict['num_pois'] = num_pois
             poi_dict_list.append(poi_dict)
-    # MMR old version - return render_to_response('pois/poi_list.html', {'list_type': 'maps', 'poi_dict_list': poi_dict_list, 'count': len(poi_dict_list)}, context_instance=RequestContext(request))
     return render(request, 'pois/poi_list.html', {'list_type': 'maps', 'poi_dict_list': poi_dict_list, 'count': len(poi_dict_list)})
 
 def viewport_get_pois(request, viewport, street_id=None, tags=[]):
@@ -1668,32 +1603,18 @@ def viewport_get_pois(request, viewport, street_id=None, tags=[]):
     return pois
 
 def set_viewport(request):
-    """
-    w = float(request.REQUEST['left'])
-    s = float(request.REQUEST['bottom'])
-    e = float(request.REQUEST['right'])
-    n = float(request.REQUEST['top'])
-    """
     w = float(request.GET['left'])
     s = float(request.GET['bottom'])
     e = float(request.GET['right'])
     n = float(request.GET['top'])
     viewport = [w, s, e, n]
     set_focus(request, key='viewport', value=viewport)
-    # return HttpResponse('', mimetype="application/json")
-    # MMR 20170910 return HttpResponse('', content_type="application/x-json")
     json_data = json.dumps({'HTTPRESPONSE': 1, 'data': ''})
     return HttpResponse(json_data, content_type="application/x-json")
 
 
 # riporta le risorse interne alla viewport specificata dalla querystring
 def viewport_pois(request):
-    """
-    w = float(request.REQUEST['left'])
-    s = float(request.REQUEST['bottom'])
-    e = float(request.REQUEST['right'])
-    n = float(request.REQUEST['top'])
-    """
     w = float(request.GET['left'])
     s = float(request.GET['bottom'])
     e = float(request.GET['right'])
@@ -1724,166 +1645,60 @@ def viewport_pois(request):
     json_data = json.dumps({'HTTPRESPONSE': 1, 'resource_list': resource_list})
     # return HttpResponse(json_data, mimetype="application/json")
     return HttpResponse(json_data, content_type="application/x-json")
-    
-"""
-MMR temporaneamente disattivato
-def blogs_index(request):
-    blog_list = Blog.objects.filter(state=1)
-    try:
-        text = FlatPage.objects.get(url='/community/blogs/').content
-    except:
-        text = ''
-    return render_to_response('richtext_blog/blog_index.html', {'text': text, 'blog_list': blog_list,}, context_instance=RequestContext(request))
 
-def blog_detail(request, blog_id):
-    blog = Blog.objects.get(pk=blog_id)
-    can_edit = blog.can_edit(request)
-    return render_to_response('richtext_blog/blog_detail.html', {'blog': blog, 'can_edit': can_edit,}, context_instance=RequestContext(request))
+class StreetAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = Odonym.objects.all().order_by('name')
 
-def blog_detail_by_slug(request, blog_slug):
-    blog = get_object_or_404(Blog, slug=blog_slug)
-    return blog_detail(request, blog.id)
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
 
-def blog_posts(request, blog_id):
-    blog = Blog.objects.get(pk=blog_id)
-    can_edit = blog.can_edit(request)
-    posts = blog.posts()
-    return render_to_response('richtext_blog/post-list.html', {'blog': blog, 'post_list': posts, 'can_edit': can_edit,}, context_instance=RequestContext(request))
+        return qs
 
-def blog_posts_by_slug(request, blog_slug):
-    blog = get_object_or_404(Blog, slug=blog_slug)
-    return blog_posts(request, blog.id)
+class ZoneAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = Zone.objects.all().order_by('name')
 
-from richtext_blog.models import Post, Comment
-from richtext_blog.views import (PostListView, AllPostsRssFeed, PostView)
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
 
-def item_blog(self, item):
-    return item.get_absolute_url()
-AllPostsRssFeed.item_blog = item_blog
+        return qs
 
-def post_view_get_context_data(self, **kwargs):
-    print ('post_view_get_context_data')
-    # MMR ini commento
-    # Define required class attribute for DetailView functionality then pass
-    # it into the context along with any comments for the post
-    #  fine commento
-    # From detail.DetailView.get (called just before get_context_data, so
-    # we need the line here)
-    self.object = self.get_object()
+class PoiAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = Poi.objects.all().order_by('name')
 
-    # Call the parent get_context_data (in this case it will be the one
-    # defined in exit.ProcessFormView)
-    context = super(PostView, self).get_context_data(**kwargs)
-    context['object'] = self.object
-    context['comments'] = \
-        Comment.objects.filter(post=self.object).order_by('created')
-    print ('post : ', self.object)
-    context['can_edit_post'] = self.object.can_edit(self.request)
-    return context
-PostView.get_context_data = post_view_get_context_data
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
 
-def get_queryset(self):
-    # MMR ini commento
-    # Return posts based on a particular blog, year and month. 
-    # fine commento
-    if 'blog' in self.kwargs:
-        objects = Post.objects.filter(blog=self.kwargs['blog'])
-        print ('blog = ', self.kwargs['blog'])
-    else:
-        objects = Post.objects.all()
-    if 'month' in self.kwargs:
-        objects = objects.filter(created__year=self.kwargs['year'],
-            created__month=self.kwargs['month'])
-    elif 'year' in self.kwargs:
-        objects = objects.filter(created__year=self.kwargs['year'])
-    return objects.order_by('-created')
-PostListView.get_queryset = get_queryset
+        return qs
 
-def blog_edit(request, blog_slug):
-    print (blog_slug)
-    blog = get_object_or_404(Blog, slug=blog_slug)
-    if not blog.can_edit(request):
-        return HttpResponseRedirect(blog.friendly_url())        
-    form = BlogUserForm(instance=blog)
-    return render_to_response('richtext_blog/blog_edit.html', {'blog': blog, 'form': form,}, context_instance=RequestContext(request))
+class TagAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = Tag.objects.all().order_by('name')
 
-def blog_save(request):
-    blog_id = request.POST['id']
-    blog = get_object_or_404(Blog, id=blog_id)
-    if not blog.can_edit(request):
-        return HttpResponseRedirect(blog.friendly_url())        
-    blog.title = request.POST['title']
-    blog.description = request.POST['description']
-    blog.save()
-    return HttpResponseRedirect(blog.friendly_url())
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
 
-def post_new(request, blog_slug):
-    blog = get_object_or_404(Blog, slug=blog_slug)
-    if not blog.can_post(request):
-        return HttpResponseRedirect(blog.friendly_url())        
-    form = PostUserForm(blog_id=blog.id)
-    return render_to_response('richtext_blog/post_edit.html', {'blog': blog, 'post': '', 'form': form}, context_instance=RequestContext(request))
+        return qs
 
-def post_edit(request, post_slug):
-    post = get_object_or_404(Post, slug=post_slug)
-    blog = post.blog
-    if not post.can_edit(request):
-        return HttpResponseRedirect(blog.friendly_url())        
-    form = PostUserForm(instance=post)
-    return render_to_response('richtext_blog/post_edit.html', {'blog': blog, 'post': post, 'form': form,}, context_instance=RequestContext(request))
+class RouteAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = Route.objects.all().order_by('name')
 
-def post_save(request):
-    form = PostUserForm(request.POST)
-    blog = None
-    post = None
-    if form.is_valid():
-        print (form.cleaned_data)
-        # post = form.save()
-        post_id = form.cleaned_data.get('id')
-        if post_id:
-            post = get_object_or_404(Post, id=post_id)
-            created = post.created
-        print ('post_id = ', post_id)
-        post = form.save(commit=False)
-        if post_id:
-            post.id = post_id
-            post.created = created
-        post.author = request.user
-        post.save()
-        form.save_m2m()
-        return HttpResponseRedirect(post.get_absolute_url())
-    else:
-        print (form.cleaned_data)
-        post_id = form.cleaned_data.get('id')
-        if post_id:
-            post = get_object_or_404(Post, id=post_id)
-            blog = get_object_or_404(Blog, id=post.blog.id)
-        return render_to_response('richtext_blog/post_edit.html', {'blog': blog, 'post': post, 'form': form}, context_instance=RequestContext(request))
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
 
-from django.utils.html import escape
-from django import forms
-# see http://www.hoboes.com/Mimsy/hacks/replicating-djangos-admin/
-# (Replicating Django’s admin form pop-ups)
-def handlePopAdd(request, addForm, field):
-    if request.method == "POST":
-        form = addForm(request.POST)
-        if form.is_valid():
-            try:
-                newObject = form.save()
-            except (forms.ValidationError, error):
-                newObject = None
-            if newObject:
-                return HttpResponse('<script type="text/javascript">opener.dismissAddAnotherPopup(window, "%s", "%s");</script>' % \
-                    (escape(newObject._get_pk_val()), escape(newObject)))
-    else:
-        form = addForm()
-    pageContext = {'form': form, 'field': field}
-    return render_to_response("richtext_blog/add_popup.html", pageContext, context_instance=RequestContext(request))
+        return qs
 
-@login_required
-def newTag(request):
-    return handlePopAdd(request, TagUserForm, 'tags')
-"""
+class UserAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = User.objects.all().order_by('username')
+
+        if self.q:
+            qs = qs.filter(username__icontains=self.q)
+
+        return qs
 
 REGEX_FINDTRAILER = r"(^|\s|'|\"|-)%s"
 
@@ -1947,7 +1762,8 @@ def search_by_string(request, q, n=None, short=False, pgtrgm=False, what=[], tex
             if live:
                 pois.append(['...', ''])
         if not live:
-            pois = [poi.make_dict(list_item=True) for poi in pois]
+            pois_no_sorted = [poi.make_dict(list_item=True) for poi in pois]
+            pois = sorted(pois_no_sorted, key=lambda k: k['name'].lower())
         queries['pois'] = pois
     if not what or 'categories' in what:
         if pgtrgm:
@@ -1957,7 +1773,6 @@ def search_by_string(request, q, n=None, short=False, pgtrgm=False, what=[], tex
         if tags:
             categories = categories.filter(query_categories_by_tags(tags))
         categories = categories.distinct().values_list('name', 'slug')[:n]
-        # if len(categories) == n:
         if categories.count() == n:
             categories = list(categories)
             categories.append(['...', ''])
@@ -1967,10 +1782,14 @@ def search_by_string(request, q, n=None, short=False, pgtrgm=False, what=[], tex
             pass
         else:
             if pgtrgm:
-                zones = Zone.objects.filter( Q(name__similar=q)|Q(short__iregex=REGEX_FINDTRAILER % q), zonetype_id__in=zonetypes).values_list('name', 'slug', 'code')[:n]
+                # MMR 20171107 esclusa ricerca su short
+                # zones = Zone.objects.filter( Q(name__similar=q)|Q(short__iregex=REGEX_FINDTRAILER % q), zonetype_id__in=zonetypes).values_list('name', 'slug', 'code')[:n]
+                zones = Zone.objects.filter( Q(name__similar=q), zonetype_id__in=zonetypes).values_list('name', 'slug', 'code')[:n]
             else:
-                zones = Zone.objects.filter( Q(name__iregex=REGEX_FINDTRAILER % q)|Q(short__iregex=REGEX_FINDTRAILER % q), zonetype_id__in=zonetypes).values_list('name', 'slug', 'code')[:n]
-            # if len(zones) == n:
+                # MMR 20171107 esclusa ricerca su short
+                # zones = Zone.objects.filter( Q(name__iregex=REGEX_FINDTRAILER % q)|Q(short__iregex=REGEX_FINDTRAILER % q), zonetype_id__in=zonetypes).values_list('name', 'slug', 'code')[:n]
+                zones = Zone.objects.filter( Q(name__iregex=REGEX_FINDTRAILER % q), zonetype_id__in=zonetypes).values_list('name', 'slug', 'code')[:n]
+
             if zones.count() == n:
                 zones = list(zones)
                 zones.append(['...', ''])
@@ -1983,7 +1802,6 @@ def search_by_string(request, q, n=None, short=False, pgtrgm=False, what=[], tex
                 streets = Odonym.objects.filter(name__similar=q, poi_street__isnull=False).distinct().values_list('name', 'slug')[:n]
             else:
                 streets = Odonym.objects.filter(name__iregex=REGEX_FINDTRAILER % q, poi_street__isnull=False).distinct().values_list('name', 'slug')[:n]
-            # if len(streets) == n:
             if streets.count() == n:
                 streets = list(streets)
                 streets.append(['...', ''])
@@ -2016,90 +1834,7 @@ def search_all(request):
         else:
             form = PoiSearchForm()
     queries = search_by_string(request, q, n=100, pgtrgm=False, what=what, text_in=text_in, tags=tags)
-    return render_to_response('pois/search_results.html', {'q': q, 'queries': queries, 'form': form,}, context_instance=RequestContext(request))
+    n_results = len(queries['pois']) + len(queries['categories']) + len(queries['zones']) + len(queries['streets'])
+    return render(request, 'pois/search_results.html', {'q': q, 'queries': queries, 'n_results': n_results, 'form': form,})
 
-def navigation_autocomplete(request, template_name='pois/autocomplete.html'):
-    zonetypes = [3, 7]
-    """
-    site_url = request.META.get('HTTP_HOST', 'www.romapaese.it')
-    USE_PGTRGM = site_url != settings.ONLINE_DOMAIN
-    print site_url, 'USE_PGTRGM = ', USE_PGTRGM
-    """
-    q = request.GET.get('q', '')
-    q = clean_q(q)
-    USE_PGTRGM = False
-    context = {'q': q}
-    l = len(q)
 
-    if settings.USE_HAYSTACK:
-        try:
-            from haystack.query import SearchQuerySet
-            MAX = 16
-            results = SearchQuerySet().filter(text=q)
-            # return render(request, 'pois/autocomplete_hs.html', {'q': q, 'results': results[:MAX], 'more': results.count()>MAX})
-            if results.count()>MAX:
-                results = results[:MAX]
-                context['more'] = True
-            queries = defaultdict(list)
-            for result in results:
-                klass = result.model.__name__
-                values_list = [result.get_stored_fields()['name'], result.get_stored_fields()['slug']]
-                if klass=="Zone":
-                    values_list.append(result.object.code)
-                queries[klass].append(values_list)
-            # template_name='pois/autocomplete.html'
-        except:
-            queries = {}
-    # if l>2:
-    else:
-        MAX = 10
-        n = MAX
-        queries = {}
-        if USE_PGTRGM:
-            pois = Poi.objects.filter(name__similar=q, state=1).values_list('name', 'slug', 'id')[:n]
-        else:
-            pois = Poi.objects.filter(name__iregex=REGEX_FINDTRAILER % q, state=1).values_list('name', 'slug', 'id')[:n]
-        r = pois.count()
-        if r >= n:
-            pois = list(pois)
-            pois.append(['...', ''])
-        queries['Poi'] = pois
-        if USE_PGTRGM:
-            categories = Poitype.objects.filter(name__similar=q, poi_poitype__isnull=False).distinct().values_list('name', 'slug')[:n]
-        else:
-            categories = Poitype.objects.filter(name__iregex=REGEX_FINDTRAILER % q, poi_poitype__isnull=False).distinct().values_list('name', 'slug')[:n]
-        # if len(categories) == n:
-        if categories.count() == n:
-            categories = list(categories)
-            categories.append(['...', ''])
-        queries['Poitype'] = categories
-
-        if q=='via' or (l<= 6 and q.startswith('pia')):
-            pass
-        else:
-            if USE_PGTRGM:
-                zones = Zone.objects.filter( Q(name__similar=q)|Q(short__iregex=REGEX_FINDTRAILER % q), zonetype_id__in=zonetypes).values_list('name', 'slug', 'code')[:n]
-            else:
-                zones = Zone.objects.filter( Q(name__iregex=REGEX_FINDTRAILER % q)|Q(short__iregex=r"(^|\s|')%s" % q), zonetype_id__in=zonetypes).values_list('name', 'slug', 'code')[:n]
-            # if len(zones) == n:
-            if zones.count() == n:
-                zones = list(zones)
-                zones.append(['...', ''])
-            queries['Zone'] = zones
- 
-        if q=='via' or (l<= 6 and q.startswith('pia')):
-            streets = [['...', '']]
-        else:
-            if USE_PGTRGM:
-                streets = Odonym.objects.filter(name__similar=q, poi_street__isnull=False).distinct().values_list('name', 'slug')[:n]
-            else:
-                streets = Odonym.objects.filter(name__iregex=REGEX_FINDTRAILER % q, poi_street__isnull=False).distinct().values_list('name', 'slug')[:n]
-            # if len(streets) == n:
-            if streets.count() == n:
-                streets = list(streets)
-                streets.append(['...', ''])
-        queries['Odonym'] = streets
-        
-    context.update(queries)
-    return render(request, template_name, context)
-    

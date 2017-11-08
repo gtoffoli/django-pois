@@ -1,6 +1,5 @@
 {% extends "roma/roma_base.html" %}
-{% load staticfiles i18n macros set_var %}
-{% loadmacros pois/pois_macros.html %}
+{% load staticfiles i18n set_var %}
 
 {% block head_title %}{{ poi_dict.prefixed_name }}, {{poi_dict.comune.0}}{% endblock %}
 {% block meta_description %}{{ poi_dict.short }} - {% trans "Category" %}: {{ poi_dict.category }} - {% trans "Theme areas" %}: {{ theme_names }}{% endblock %}
@@ -157,7 +156,7 @@
             </div>
             <div class="col-md-6 col-lg-6 mB20">
             {% if poi_dict.video %}
-                <div class="box-res"><iframe style="width:100%; height:100%" src="http://{{ poi_dict.video }}?autoplay=1" frameborder="0" allowfullscreen=""></iframe></div>
+                <div class="box-res"><iframe src="http://{{ poi_dict.video }}?autoplay=1" frameborder="0" allowfullscreen=""></iframe></div>
             {% else %}
                 <div class="box-res back-box display-box"><div><i class="fa fa-play"></i> video</div></div>
             {% endif %}

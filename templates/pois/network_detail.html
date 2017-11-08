@@ -8,15 +8,13 @@
 
 {% block content %}
     <div class="boxcontent">
-        <div>poi-list: {{poi_dict_list|length }}</div>
-        <div>zone-list: {{zone_dict_list|length }}</div>
         <div class="row mB10">
             <div class="col-md-12 col-lg-12">
                 <div class="segnaposto notranslate">{{ region }}</div>
             </div>
             <div class="col-md-9 col-lg-10">
-                 <h1 style="margin-bottom: 0"><span class="notranslate">{{ parent.getName }}</span></h1>
-                 <h3 class="marg-top-0">
+                 <h1 class="mB0"><span class="notranslate">{{ parent.getName }}</span></h1>
+                 <h3 class="mT0">
                     {% if relation == 'affiliated' %}{% trans "affiliated resources"|capfirst %}
                     {% elif relation == 'caredby' %}{% trans "friend resources"|capfirst %}{% endif %}
                  </h3>
@@ -34,13 +32,15 @@
             <div class="val"><span class="notranslate">{{ zone.name }}</span> <span class="text-pre-wrap">[ <a href="/rete/{{ parent.slug }}/zona/{{ zone.slug }}/" title="{% trans "list the resources affiliated to" %} {{ parent.getName }} {% trans "in the zone" %} {{ zone.name }}">{{ zone.count }}</a> ]</span></div>
         {% endfor %}
         </div>
-
-        <div class="row mB20">
-            <div class="col-sm-12 col-md-12 col-lg-12 mB10">
-                <div id="map" class="map mapZone"></div>
+        
+        {% if poi_dict_list %}
+            <div class="row mB20">
+                <div class="col-sm-12 col-md-12 col-lg-12 mB10">
+                    <div id="map" class="mapZone"></div>
+                </div>
             </div>
-        </div>
-	      <div><table class="table table-striped table-list"><tbody id="resources">
+        {% endif %}
+        <div><table class="table table-striped table-list"><tbody id="resources">
         {% if poi_dict_list %}
             {% for poi_dict in poi_dict_list %}{% include "pois/_poi_list_item.html" %}{% endfor %}
         {% else %}
@@ -62,13 +62,3 @@
         {% include "pois/_map_poi_list_js.html" %}
     {% endif %}
 {% endblock mapjs %}
-
-{% comment %}
-{% if map %}
-{% block extra_script %}
-   {% if poi_dict_list %}{% include 'pois/zone_map_body.html' %}{% endif %}
-   {% if zone_list %}{% include 'pois/zone_index_map_body.html' %}{% endif %}
-{% endblock %}
-{% endif %}
-
-{% endcomment %}

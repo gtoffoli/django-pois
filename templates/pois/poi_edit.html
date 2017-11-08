@@ -10,14 +10,14 @@
         <div class="mB20">{{ text_body|safe }}</div>
         <div class="row">
         <div class="col-lg-offset-1 col-lg-8 pTB12LR24 back-box">
-        <form action="/pois/save" method="post" id="edit_form">
+        <form action="/pois/save" method="post" id="edit_form" class="poi_edit">
             {% csrf_token %}
             {% for field in form.hidden_fields %}{{ field }}{% endfor %}
                 <fieldset>
                 {% for field in form.visible_fields %}
                     <div class="form-group">
                         <label for="{{ field.name }}" {% if field.field.required %}class="required"{% endif %}>{{ field.label|capfirst}}</label>
-                        {% if field.help_text %}<small id="{{ field.name }}helpBlock" class="help-block marg-top-0">{{ field.help_text }}</small>{% endif %}
+                        {% if field.help_text %}<small id="{{ field.name }}helpBlock" class="help-block mT0">{{ field.help_text }}</small>{% endif %}
                        {% if field.errors %}<div class="error">{{ field.errors }}</div>{% endif %}
                         {{ field }}
                      </div>

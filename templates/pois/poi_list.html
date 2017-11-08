@@ -21,27 +21,26 @@
             {% endif %}
         </h1>
         {% if poi_dict_list %}
-             
-                {% if list_type == 'networks' or list_type == 'maps' %}
-            <ul class="elenco elenco-vertical marg-left-0 txt-medium">
-             {% for poi_dict in poi_dict_list %}
-               <li>{% if poi_dict.logo %}<img src="{{ poi_dict.logo }}" width="32" height="32" />{% endif %}
-                   <a href="{{ poi_dict.url }}" title="{% trans "show the resource profile" %}"><span class="notranslate">{{ poi_dict.name }}</span></a>
-               {% if list_type == 'networks' %}
-                 [ <a href="{{ poi_dict.url }}rete/" title="{% trans "show the network of affiliated resources" %}">{{ poi_dict.num_pois }}</a> ]
-               {% else %}
-                 [ (<a href="{{ poi_dict.url }}mappa/" title="{% trans "show the map of friend resources" %}">{{ poi_dict.num_pois }}</a>) ]
-               {% endif %}
-               </li>
-             {% endfor %}
-          </ul>
-        {% else %}
-        <div><table class="table table-striped table-list"><tbody id="resources">
-          {% for poi_dict in poi_dict_list %}
-            {% include "pois/_poi_list_item.html" with data="user" %}
-          {% endfor %}
-        {% endif %}
-    </tbody></table></div>
+            {% if list_type == 'networks' or list_type == 'maps' %}
+            <ul class="elenco pL0">
+            {% for poi_dict in poi_dict_list %}
+                <li>{% if poi_dict.logo %}<img src="{{ poi_dict.logo }}" width="32" height="32">{% endif %}
+                    <a href="{{ poi_dict.url }}" title="{% trans "show the resource profile" %}"><span class="notranslate">{{ poi_dict.name }}</span></a>
+                    {% if list_type == 'networks' %}
+                        [ <a href="{{ poi_dict.url }}rete/" title="{% trans "show the network of affiliated resources" %}">{{ poi_dict.num_pois }}</a> ]
+                    {% else %}
+                        [ <a href="{{ poi_dict.url }}mappa/" title="{% trans "show the map of friend resources" %}">{{ poi_dict.num_pois }}</a> ]
+                    {% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+            {% else %}
+                <div><table class="table table-striped table-list"><tbody id="resources">
+                {% for poi_dict in poi_dict_list %}
+                    {% include "pois/_poi_list_item.html" with data="user" %}
+                {% endfor %}
+                </tbody></table></div>
+            {% endif %}
         {% else %}
             <p>{% trans "No resource is present" %}.</p>
         {% endif %}

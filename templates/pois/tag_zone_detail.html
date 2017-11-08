@@ -14,7 +14,7 @@
 		<div class="summary">
 			<div class="icon-hand-right"></div><div class="eti">{% trans "related categories" %}</div>
 		</div>
-		<div id="resources" class="visualClear pT10">
+		<div id="resources" class="pT10">
         {% for poitype,  n, category_in_theme in poitype_list %}
             <div style="margin-bottom: 3px;">{{ poitype.name }} <a href="/categoria/{{ poitype.slug }}/zona/{{ zone.slug }}/">[{{ n }}]</a></div>
         {% endfor %}

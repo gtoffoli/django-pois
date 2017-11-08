@@ -50,15 +50,8 @@ class ZoneForm(ModelForm):
         label="Vedi anche",
         queryset=Zone.objects.order_by('zonetype', 'id'), 
         required=False,
-        widget=FilteredSelectMultiple("Vicini:", False, attrs={'rows': 4}))
-    careof = forms.ModelChoiceField(queryset=Poi.objects.all(),
-        required=False,
-        label='A cura di',
-        # widget=autocomplete_light.ChoiceWidget(autocomplete='PoiAutocomplete',
-        #    attrs={'minimum_characters': 3,
-        #                                'placeholder': 'Scegli risorsa'})
-
-        )
+        widget=FilteredSelectMultiple("Vicini:", False, attrs={'rows': 4})
+    )
 
     class Meta:
         model = Zone
@@ -75,12 +68,6 @@ class ZoneForm(ModelForm):
             'web',
         )
         widgets = {
-            """
-            'name': forms.TextInput(attrs={'size':'80'}),
-            'slug': forms.TextInput(attrs={'size':'80'}),
-            'short': forms.TextInput(attrs={'size':'120'}),
-            """
-            #'description': forms.Textarea(attrs={'cols': 60, 'rows': 3}),
             'description': forms.CharField(required=False,widget=TinyMCE()),
             'zones': FilteredSelectMultiple("Vicini:", False, attrs={'rows': 4}),
             'web': forms.Textarea(attrs={'cols': 60, 'rows': 2}),
@@ -228,8 +215,10 @@ class PoiForm(ModelForm):
     poitype = forms.ChoiceField(label="Tipo di risorsa", choices=(),
                                        widget=forms.Select(attrs={'class':'selector'}))
     """
-    name = forms.TextInput(attrs={'size':'80'})
-    othertags = forms.TextInput(attrs={'size':'80'})
+    #name = forms.TextInput(attrs={'size':'80', 'style':'width:60%'})
+    name = forms.CharField(widget=forms.TextInput(attrs={'style':'width:50em','maxlength':100}))
+    # othertags = forms.TextInput(attrs={'size':'80', 'style':'width:60%'})
+    short = forms.CharField(widget=forms.TextInput(attrs={'style':'width:60em','maxlength':120}))
     """
     phone = forms.Textarea(attrs={'cols': 60, 'rows': 2})
     email = forms.Textarea(attrs={'cols': 60, 'rows': 2})
@@ -261,6 +250,7 @@ class PoiForm(ModelForm):
     host = forms.ModelChoiceField(Poi.objects.all(),
         required=False,
         label='Ospitata da',
+        widget=autocomplete.ModelSelect2(url='risorsa-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Scegli risorsa','style':'width:60%'})
         # MMR temporaneamente disattivato
         # widget=autocomplete_light.ChoiceWidget(autocomplete='PoiAutocomplete',
         #    attrs={'minimum_characters': 3,
@@ -269,6 +259,7 @@ class PoiForm(ModelForm):
     pois = forms.ModelMultipleChoiceField(Poi.objects.all(),
         required=False,
         label='Risorse correlate',
+        widget=autocomplete.ModelSelect2Multiple(url='risorsa-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Scegli risorsa', 'style':'width:60%'})
         # MMR temporaneamente disattivato
         # widget=autocomplete_light.MultipleChoiceWidget('PoiAutocomplete',
         #    attrs={'minimum_characters': 3,
@@ -277,6 +268,8 @@ class PoiForm(ModelForm):
     tags = forms.ModelMultipleChoiceField(Tag.objects.all(),
         required=False,
         label='Aree tematiche',
+        widget=autocomplete.ModelSelect2Multiple(url='tema-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Aggiungi area tematica', 'style':'width:60%'})
+
         # MMR temporaneamente disattivato
         # widget=autocomplete_light.MultipleChoiceWidget('TagAutocomplete',
         #    attrs={'minimum_characters': 3,
@@ -285,6 +278,7 @@ class PoiForm(ModelForm):
     zones = forms.ModelMultipleChoiceField(Zone.objects.all(),
         required=False,
         label="Zone",
+        widget=autocomplete.ModelSelect2Multiple(url='zona-autocomplete', attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Aggiungi zona', 'style':'width:60%'})
         # MMR temporaneamente disattivato
         # widget=autocomplete_light.MultipleChoiceWidget(autocomplete='ZoneAutocomplete',
         #    attrs={'minimum_characters': 3,
@@ -293,6 +287,7 @@ class PoiForm(ModelForm):
     routes = forms.ModelMultipleChoiceField(Route.objects.all(),
         required=False,
         label="Route",
+        widget=autocomplete.ModelSelect2Multiple(url='itinerario-autocomplete', attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Aggiungi itinerario', 'style':'width:60%'})
         # MMR temporaneamente disattivato
         # widget=autocomplete_light.MultipleChoiceWidget(autocomplete='RouteAutocomplete',
         #   attrs={'minimum_characters': 3,
@@ -301,11 +296,11 @@ class PoiForm(ModelForm):
     pro_com = forms.ChoiceField(choices=COMUNE_CHOICES,
         required=False,
         label='Comune')
-
+    street_address = forms.CharField(widget=forms.TextInput(attrs={'style':'width:50em','maxlength':100}))
     street = forms.ModelChoiceField(Odonym.objects.all(),
         required=False,
         label='Via o Piazza o ..',
-        widget=autocomplete.ModelSelect2(url='toponimo-autocomplete/', attrs={'style': 'width: 80%;'})
+        widget=autocomplete.ModelSelect2(url='toponimo-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Scegli via o ..'})
         # MMR temporaneamente disattivato
         # widget=autocomplete_light.ChoiceWidget(autocomplete='OdonymAutocomplete',
         #    attrs={'minimum_characters': 3,
@@ -320,9 +315,16 @@ class PoiForm(ModelForm):
             attrs={'minimum_characters': 3,
                                         'placeholder': 'Scegli risorsa'}))
     """
+    owner = forms.ModelChoiceField(User.objects.all(),
+        required=False,
+        label='Proprietario',
+        widget=autocomplete.ModelSelect2(url='utente-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Scegli proprietario'})
+        )
     careof = forms.ModelChoiceField(Poi.objects.all(),
         required=False,
         label='A cura di',
+        widget=autocomplete.ModelSelect2(url='risorsa-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Scegli risorsa', 'style':'width:30%'})
+
         # MMR temporaneamente disattivato
         # widget=autocomplete_light.ChoiceWidget(autocomplete='PoiAutocomplete',
         #   attrs={'minimum_characters': 3,
@@ -331,6 +333,8 @@ class PoiForm(ModelForm):
     members = forms.ModelMultipleChoiceField(User.objects.all(),
         required=False,
         label='Membri (utenti)',
+        widget=autocomplete.ModelSelect2Multiple(url='utente-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Aggiungi membro', 'style':'width:30%'})
+
         # MMR temporaneamente disattivato
         # widget=autocomplete_light.MultipleChoiceWidget('UserAutocomplete',
         #   attrs={'minimum_characters': 3,
@@ -418,7 +422,7 @@ class PoiUserForm(ModelForm):
             label=_('Street name'),
             help_text=_("Enter at least 3 characters of the name, wait for some suggestions and choose one"),
             required=True,
-            widget=autocomplete.ModelSelect2(url='toponimo-autocomplete', attrs={'style': 'width: 80%;'})
+            widget=autocomplete.ModelSelect2(url='toponimo-autocomplete', attrs={'data-minimum-input-length': 3})
 
             # MMR temporaneamente disattivato
             #widget=autocomplete_light.ChoiceWidget(autocomplete='OdonymAutocomplete',
@@ -561,93 +565,3 @@ class PoiAnnotationForm(forms.Form):
             label=_("Control string"),
             help_text=_("Enter these 5 characters in the textbox on the right"),
             required=True,)
-
-"""
-MMMR temporaneamente disattivato
-zonetypes_with_blogs = [0, 3]
-class AutocompleteBlogHostItems(autocomplete_light.AutocompleteGenericBase):
-    choices = (
-        Zone.objects.filter(zonetype__in=zonetypes_with_blogs),
-        Poi.objects.all(),
-    )
-    search_fields = (
-        ('name',),
-        ('name',),
-    )
-autocomplete_light.register(AutocompleteBlogHostItems)
-
-class BlogForm(autocomplete_light.GenericModelForm):
-    host_object = autocomplete_light.GenericModelChoiceField(
-                label='Ospitato da (zona o risorsa)', help_text='type in a few chars',
-                widget=autocomplete_light.ChoiceWidget(autocomplete='AutocompleteBlogHostItems'))
-
-    class Meta:
-        model = Blog
-        fields = (
-            'title',
-            'slug',
-            'author',
-            'host_object',
-            'description',
-            'state',
-        )
-
-class BlogUserForm(ModelForm):
-    error_css_class = 'error'
-    required_css_class = 'required'
-
-    class Meta:
-        model = Blog
-        exclude = ('slug', 'author', 'host_type', 'host_id')
-
-class MultipleSelectWithPop(forms.SelectMultiple):
-    def render(self, name, *args, **kwargs):
-        html = super(MultipleSelectWithPop, self).render(name, *args, **kwargs)
-        popupplus = render_to_string("richtext_blog/popup_plus.html", {'field': name})
-        return html+popupplus
- 
-class PostUserForm(ModelForm):
-    error_css_class = 'error'
-    required_css_class = 'required'
-
-    def __init__(self, *args, **kwargs):
-        post_id = None
-        if kwargs.get('instance'):
-            post_id = kwargs.get('instance')
-        blog_id = None
-        if kwargs.get('blog_id'):
-            blog_id = kwargs.pop('blog_id')
-        super(PostUserForm, self).__init__(*args,**kwargs)
-        if post_id:
-            self.fields['id'].initial = post_id
-        if blog_id:
-            self.fields['blog'].initial = blog_id
-
-    id = forms.IntegerField(widget=forms.HiddenInput, required=False) 
-    # author = forms.ModelChoiceField(User.objects.all(), widget=forms.HiddenInput)
-    blog = forms.ModelChoiceField(Blog.objects.all(), widget=forms.HiddenInput)
-    tags = forms.ModelMultipleChoiceField(BlogTag.objects.all(), widget=MultipleSelectWithPop)
-    content = forms.CharField(required=False, widget=TinyMCE())
-
-    class Meta:
-        model = Post
-        exclude = ('slug', 'author',)
-
-#add new tag pop-up
-class TagUserForm(ModelForm):
-
-    class Meta:
-        model = BlogTag
-        fields = ['name']
-
-
-def CommentForm_init(self, *args, **kwargs):
-    super(CommentForm, self).__init__(*args, **kwargs)
-    self.fields['author'].label = _("Author")
-    self.fields['comment'].label = _("Comment")
-    self.fields['verification'].label = _("Verification")
-    self.fields['verification'].help_text = _("Please type the letters in the image")
-
-CommentForm.__init__ = CommentForm_init
-
-"""

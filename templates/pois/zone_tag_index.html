@@ -47,7 +47,7 @@
         {% else %}
             <p>{% trans "No theme areas or resource categories are present" %} {% trans "for this zone" %}.</p>
         {% endif %}
-        {% if zone.description %}<div  class="boxround">{{ zone.description|safe }}</div>{% endif %}
+        {% if zone.description %}<div  class="box-desc">{{ zone.description|safe }}</div>{% endif %}
     </div>
 {% endblock content %}
 

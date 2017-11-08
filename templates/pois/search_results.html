@@ -1,65 +1,90 @@
-{% extends "roma/gridA.html" %}
-{% load staticfiles i18n macros %}
-{% loadmacros pois/pois_macros.html %}
+{% extends "roma/roma_base.html" %}
+{% load staticfiles i18n %}
 
 {% block head_title %}{% trans "Search results for" %}: <span class="notranslate">"{{ q }}"</span>{% endblock %}
 
-{% block title-page %}{% trans "Search results for" %}: <span class="notranslate">"{{ q }}"</span>{% endblock %}
-{% block no-view-map %}{% endblock %}
+{% block content %}
+<div class="boxcontent">
+    <div class="row">
+    <div class="col-lg-12">
+    <h3>{{n_results}} {% trans "results found for" %} <span class="notranslate">'{{ q }}'</span></h3>   
+    {% if queries.pois or queries.categories or queries.zones or queries.streets %}
+        {% if queries.pois %}
+            <div><table class="table table-striped table-list table-results"><tbody>
+                <caption class="demiBold">{{ queries.pois|length }} {% trans "Resources" %}</caption>
+                {% for poi_dict in queries.pois %}
+                    {% include "pois/_poi_list_item.html" %}
+                {% endfor %}
+            </tbody></table></div>
+        {% endif %}
+        {% if queries.categories %}
+            <div><table class="table table-striped table-list table-results"><tbody>
+                <caption class="demiBold">{{ queries.categories|length }} {% trans "Categories" %}</caption>
+                {% for category in queries.categories %}
+                    <tr><td><a href="/categoria/{{ category.1 }}/">{{ category.0 }}</a></td></tr>
+                {% endfor %}
+            </tbody></table></div>
+        {% endif %}
+        {% if queries.zones %}
+            <div><table class="table table-striped table-list table-results"><tbody>
+                <caption class="demiBold">{{ queries.zones|length }} {% trans "Zones" %}</caption>
+                {% for zone in queries.zones %}
+                    <tr><td><a href="/zona/{{ zone.1 }}/">{% if not 'COM' in zone.2 or not 'M' in zone.2 %}{{ zone.2 }} {% endif %}{{ zone.0 }}</a></td></tr>
+                {% endfor %}
+            </tbody></table></div>
+        {% endif %}
+        {% if queries.streets %}
+            <div><table class="table table-striped table-list table-results"><tbody>
+                <caption class="demiBold">{{ queries.streets|length }} {% trans "Streets, squares .." %}</caption>
+                {% for street in queries.streets %}
+                    <tr><td><a href="/toponimo/{{ street.1 }}/">{{ street.0 }}</a></td></tr>
+                {% endfor %}
+            </tbody></table></div>
+        {% endif %}
+    {% else %}
+        <p>{% trans "no result"|capfirst %}</p>
+    {% endif %}
+    </div>
+    </div>
+</div>
+{% endblock content %}
 
-{% block list %}
-{% if queries.pois or queries.categories or queries.zones or queries.streets %}
-    {% if queries.pois %}
-    	<div style="font-weight:bold; margin-top: 5px; margin-bottom: 2px;">{% trans "Resources" %}</div>
-		<div>
-        {% for poi_dict in queries.pois %}
-        {% comment %}<div><a href="/risorsa/{{ poi.1 }}/">{{ poi.0 }}</a></div>{% endcomment %}
-        {% usemacro poi_list_item %}
-        {% endfor %}
-        </div>
-    {% endif %}
-    {% if queries.categories %}
-    	<div style="font-weight:bold; margin-top: 5px; margin-bottom: 2px;">{% trans "Categories" %}</div>
-		<div>
-        {% for category in queries.categories %}
-        <div><a href="/categoria/{{ category.1 }}/">{{ category.0 }}</a></div>
-        {% endfor %}
-        </div>
-    {% endif %}
-    {% if queries.zones %}
-    	<div style="font-weight:bold; margin-top: 5px; margin-bottom: 2px;">{% trans "Zones" %}</div>
-		<div>
-        {% for zone in queries.zones %}
-        <div><a href="/zona/{{ zone.1 }}/">{{ zone.2 }} {{ zone.0 }}</a></div>
-        {% endfor %}
-        </div>
-    {% endif %}
-    {% if queries.streets %}
-    	<div style="font-weight:bold; margin-top: 5px; margin-bottom: 2px;">{% trans "Streets, squares .." %}</div>
-		<div>
-        {% for street in queries.streets %}
-        <div><a href="/toponimo/{{ street.1 }}/">{{ street.0 }}</a></div>
-        {% endfor %}
-        </div>
-    {% endif %}
-{% else %}
-	{% trans "no result"|capfirst %}
-{% endif %}
-    <hr>
-  	<form style="margin: 0;" action="/cerca/?q={{ form.cleaned_data.q }}" method="post" id="search_form"><div>
-{% csrf_token %}
-   <table>
-   <tr><th style="vertical-align: top"><h4>{% trans "new search"|capfirst %}</h4></th>
-   	<td style="vertical-align: bottom"><input type="submit" value="{% trans "apply"|capfirst %}"></td></tr>
-   {% for field in form.visible_fields %}
-       <tr style="vertical-align: top;">
-	   		<th style="font-weight: bold; text-align: right;">{% if field.help_text %}<img src="{% static "admin/img/icon-unknown.gif" %}" Title="{{ field.help_text }}" style="cursor: pointer; float:right; margin:5px;">{% endif %}
-	   		{{ field.label_tag|capfirst }}</th>
-	   		<td><div class="checkbox-multiple">{{ field }}</div></td>
-   		</tr>
-   {% endfor %}
-   </table>
-   </div></form>
-{% endblock %}
+{% block body_scripts %}
+<script type="text/javascript">
+    var highlightTermsIn = function(jQueryElements, terms) {
+        if (typeof(terms) != 'undefined') {
+            var wrapper = ">$1<span style='background:yellow'>$2</span>$3<";
+            for (var i = 0; i < terms.length; i++) {
+                var regex = new RegExp(">([^<]*)?("+terms[i]+")([^>]*)?<","ig");
+                jQueryElements.each(function(i) {
+                    $(this).html($(this).html().replace(regex, wrapper));
+                });
+            };
+        }
+    }
 
-{% block blog %}{% endblock %}
+    var parseSearchTerms = function(value) {
+        if (value != '') {
+            var splitRegex = /(\u0022[^\u0022]*\u0022)|([^\u0022\s]+(\s|$))/g;
+            var rawTerms = value.match(splitRegex);
+            var terms = [];
+            for (var i = 0; i < rawTerms.length; i++) {
+                var term = rawTerms[i].replace(/^[\s\u0022\u0027+-][\s\u0022\u0027+-]*/, '').replace(/[\s*~\u0022\u0027][\s*~\u0022\u0027]*$/, '').toLowerCase();
+                terms[terms.length] = term;
+            }
+            return terms;
+        }
+    }
+
+    $(document).ready(function (){
+        quickSearch = '{{ q }}';
+        if (quickSearch.length > 0) {
+            quickSearch = '"'+quickSearch+'"';
+            highlightTermsIn($("table.table-results td"), parseSearchTerms(quickSearch));
+            highlightTermsIn($("table.table-results td"), parseSearchTerms(quickSearch));
+            highlightTermsIn($("table.table-results td"), parseSearchTerms(quickSearch));
+        }
+    });
+
+</script>
+{% endblock body_scripts %}

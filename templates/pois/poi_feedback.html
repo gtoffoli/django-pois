@@ -7,21 +7,26 @@
 <div class="boxcontent">
     <div class="container">
         <h1>{% trans "Remarks on the resource" %}: <span class="ntranslate">{{ poi.name }}</span></h1>
-        {{ text_body|safe }}
-        <form action="/pois/save_note" method="post" id="feedback_form">
-            {% csrf_token %}
-            {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-            <table style="width: 800px;">
-    {% for field in form.visible_fields %}
-        <tr><th style="text-align: right;">
-        		{% if field.help_text %}<img src="{% static "admin/img/icon-unknown.gif" %}" Title="{{ field.help_text }}" style="cursor: pointer; float:right; margin:5px;">{% endif %}
-        		<span class="filter-label"><label for="">{{ field.label_tag }}</label></span>
-        		{% if field.required %}<span style="color: red;">*</span>{% endif %}</th>
-            <td>{{ field.errors }}{{ field }}</td></tr>
-    {% endfor %}
-    <tr><th></th><td align="center"><input type="submit" value="{% trans "Send" %}"></td></tr>
-    </table>
-
-    </form>
-    </div></div>
+        <div class="mB20">{{ text_body|safe }}</div>
+        <div class="row">
+            <div class="col-lg-offset-1 col-lg-8 pTB12LR24 back-box">
+                <form action="/pois/save_note" method="post" id="feedback_form">
+                    {% csrf_token %}
+                    {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+                    <fieldset>
+                        {% for field in form.visible_fields %}
+                            <div class="form-group">
+                                <label for="{{ field.name }}" {% if field.field.required %}class="required"{% endif %}>{{ field.label|capfirst}}</label>
+                                {% if field.help_text %}<small id="{{ field.name }}helpBlock" class="help-block mT0">{{ field.help_text }}</small>{% endif %}
+                                {% if field.errors %}<div class="error">{{ field.errors }}</div>{% endif %}
+                                {{ field }}
+                            </div>
+                        {% endfor %}
+                        <div class="form-group"><input type="submit" class="btn btn-default" value="{% trans "Send" %}"></div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}

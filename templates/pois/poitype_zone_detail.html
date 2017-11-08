@@ -10,8 +10,9 @@
                 <div class="segnaposto notranslate">{{ region }}</div>
             </div>
             <div class="col-md-9 col-lg-10">
-                <h1><span class="notranslate">{{zone.name}}</span> - {{ poitype.name }}</h1>
-                <div class="mB20">
+                <h1><span class="notranslate">{{zone.name}}</span></h1>
+                <h3 class="mT0 mB10">{{ poitype.name }}</h3>
+                <div class="mB10">
                 {% if not poitype.active %}
                     <div class="summary">
                         <div class="eti">{% trans "sub-categories"|capfirst %}</div>
@@ -31,6 +32,14 @@
                 </div>
                 {% endif %}
                 </div>
+                {% if poi_dict_list and zone_list %}
+                <div class="summary mB10">
+                    {% if poi_dict_list and zone_list %}<div class="eti">{% trans "Other zones"|capfirst %}</div>{% endif %}
+                    {% for zone in zone_list %}
+                        <div class="val"><span class="notranslate">{{ zone.name }}</span> <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype.slug }}/zona/{{ zone.slug }}/" title="{% trans "list the resources of the category" %} {{ poitype.name }} {% trans "in the zone" %} {{ zone.name }}">{{ zone.count }}</a> ]</span></div>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
             <div class="col-md-3 col-lg-2">
                 <div class="actions">
@@ -42,15 +51,9 @@
                 </div>
             </div>
         </div>
-        <div class="summary mB10">
-            {% if poi_dict_list and zone_list %}<div class="eti">{% trans "Other zones"|capfirst %}</div>{% endif %}
-            {% for zone in zone_list %}
-                <div class="val"><span class="notranslate">{{ zone.name }}</span> <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype.slug }}/zona/{{ zone.slug }}/" title="{% trans "list the resources of the category" %} {{ poitype.name }} {% trans "in the zone" %} {{ zone.name }}">{{ zone.count }}</a> ]</span></div>
-            {% endfor %}
-        </div>
         <div class="row mB20">
             <div class="col-sm-12 col-md-12 col-lg-12 mB10">
-                <div id="map" class="map mapZone"></div>
+                <div id="map" class="mapZone"></div>
             </div>
         </div>
         <div><table class="table table-striped table-list"><tbody id="resources">

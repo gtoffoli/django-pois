@@ -154,7 +154,7 @@ class Sourcetype(models.Model):
         verbose_name = "tipo di fonte"
         verbose_name_plural = "tipi di fonte"
 
-    def __atr__(self):
+    def __str__(self):
         return self.name
 
 @python_2_unicode_compatible
@@ -1247,7 +1247,13 @@ class Poi(geomodels.Model):
         return '%s %s' % (self.street_name(), self.housenumber)
     """
     def get_street_address(self):
-        return self.street_address or '%s %s' % (self.street_name(), self.housenumber)
+        # return self.street_address or '%s %s' % (self.street_name(), self.housenumber)
+        if self.street_address:
+            return self.street_address
+        street_address = self.street_name()
+        if self.housenumber:
+            street_address = '%s, %s' % (street_address, self.housenumber)
+        return street_address
 
     def cap_zone(self):
         cap = self.zipcode
@@ -1425,8 +1431,10 @@ class Poi(geomodels.Model):
             poi_dict['webs'] = self.clean_webs()
             poi_dict['video'] = self.video
             poi_dict['logo'] = self.logo and self.logo.url or ''
-            poi_dict['owner'] = '%s %s' % (self.owner.first_name, self.owner.last_name)
-            # poi_dict['careof'] = self.careof and self.careof.name or ''
+            if self.owner:
+                poi_dict['owner'] = '%s %s' % (self.owner.first_name, self.owner.last_name)
+            else:
+                poi_dict['owner'] = ''
             careof = self.careof
             if careof:
                 logo = careof.logo

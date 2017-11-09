@@ -10,12 +10,17 @@ function gmap_geocode(form) {
 		address = street_address + ', ' + comune;
 	} else {
 		housenumber = form.elements['housenumber'].value;
+		/*
 		outer_span = document.getElementById('id_street-deck');
 		inner_span = outer_span.children[0];
 		if (typeof inner_span === "undefined")
 			street_name = '';
 		else
 			street_name = ', ' + inner_span.textContent.trim();
+		*/
+		select = document.getElementById('id_street');
+		street_name = select.options[select.selectedIndex].text;
+		console.log(street_name);
 		address = housenumber + street_name + ', ' + comune;
 	}
 	// window.alert(address);

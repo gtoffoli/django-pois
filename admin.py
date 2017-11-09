@@ -19,38 +19,22 @@ mazzini_lat = 41.915914
 # vedi definizione di OSMGeoAdmin in modulo django.contrib.gis.admin.options
 from django.contrib.gis.admin.options import GeoModelAdmin
 from django.contrib.gis import gdal
-"""
-MMR temporaneamente disattivato - old version
-if gdal.HAS_GDAL:
-    # Use the official spherical mercator projection SRID on versions
-    # of GDAL that support it; otherwise, fallback to 900913.
-    if gdal.GDAL_VERSION >= (1, 7):
-        spherical_mercator_srid = 3857
-    else:
-        spherical_mercator_srid = 900913
 
-    class MultiGeoAdmin(GeoModelAdmin):
-        map_template = 'admin/pois/multi.html'
-        num_zoom = 20
-        map_srid = spherical_mercator_srid
-        max_extent = '-20037508,-20037508,20037508,20037508'
-        max_resolution = '156543.0339'
-        point_zoom = num_zoom - 6
-        units = 'm'
-"""
+# Use the official spherical mercator projection SRID on versions
+# of GDAL that support it; otherwise, fallback to 900913.
 if gdal.GDAL_VERSION >= (1, 7):
     spherical_mercator_srid = 3857
 else:
     spherical_mercator_srid = 900913
 
 class MultiGeoAdmin(GeoModelAdmin):
-     map_template = 'admin/pois/multi.html'
-     num_zoom = 20
-     map_srid = spherical_mercator_srid
-     max_extent = '-20037508,-20037508,20037508,20037508'
-     max_resolution = '156543.0339'
-     point_zoom = num_zoom - 6
-     units = 'm'
+    map_template = 'admin/pois/multi.html'
+    num_zoom = 20
+    map_srid = spherical_mercator_srid
+    max_extent = '-20037508,-20037508,20037508,20037508'
+    max_resolution = '156543.0339'
+    point_zoom = num_zoom - 6
+    units = 'm'
 
 class PoiInLine(admin.TabularInline):
     model = Poi

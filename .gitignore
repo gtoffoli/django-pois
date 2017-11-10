@@ -1,4 +1,5 @@
 .gitignore
+.*
 private.py
 
 # Byte-compiled / optimized / DLL files

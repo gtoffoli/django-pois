@@ -1,8 +1,8 @@
 {% extends "roma/roma_base.html" %}
 {% load staticfiles i18n set_var %}
 
-{% block head_title %}{% if zone.zonetype_id == 3 %}{{ zone.code }}-{% endif %}{% if zone.zonetype_id == 6 %}{{ zone.zonetype_label|capfirst }} {% endif %}{{ zone.name }}{% endblock %}
-
+{% block head_title %}{% if zone.zonetype_id == 3 %}{{ zone.code }} - {% elif zone.zonetype_id == 6 %}{{ zone.zonetype_label|capfirst }} {% endif %}{{ zone.name }}, {{zone.prefix|lower|capfirst}}{% endblock %}
+{% block meta_description %}{% if zone.zonetype_id == 3 or zone.zonetype_id == 6 %}{{ zone.zonetype_label|capfirst }} {% endif %}{{ zone.name }}: {% trans "map of geolocalised resources" %}{% endblock meta_description %} 
 {% block content %}
     <div class="boxcontent">
         <div class="row mB10">
@@ -17,7 +17,7 @@
             <div class="col-md-3 col-lg-2">
                 <div class="actions">
                     {% if can_edit %}<div><a href="{% url "admin:pois_zone_change" zone.id %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <small>{% trans "edit" %}</small></a></div>{% endif %}
-                    <div><a href="/indice-zona/{{ zone.slug }}/" title="{% trans "show the resources by theme area" %}" rel="tooltip"><i class="fa fa-list" aria-hidden="true"></i> <small>{% trans "show the resources by theme area" %}</small></a></div>
+                    {% if poi_dict_list %}<div><a href="/indice-zona/{{ zone.slug }}/" title="{% trans "show the resources by theme area" %}" rel="tooltip"><i class="fa fa-list" aria-hidden="true"></i> <small>{% trans "show the resources by theme area" %}</small></a></div>{% endif %}
                     {% comment %}
                     {% if map and zone.has_geom and poi_dict_list %}
                         <div><a href="/mappa-zona/{{ zone.slug }}/"><i class="fa fa-filter" aria-hidden="true"></i> <small>{% trans "filter resources by category also" %}</small></a></div>
@@ -41,14 +41,16 @@
             </div>
             {% endif %}
         </div>
+        {% if zone.zonetype_id != 2 %}
         <div><table class="table table-striped table-list"><tbody id="resources">
             {% for poi_dict in poi_dict_list %}{% include "pois/_poi_list_item.html" %}
             {% empty %}
             <tr><td class="td-total-white">{% trans "No resource is present" %}.</td></tr>
             {% endfor %}
         </tbody></table></div>
+        {% endif %}
     </div>
-{% endblock %}
+{% endblock content %}
 
 {% block mapjs %}
 

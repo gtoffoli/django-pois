@@ -16,7 +16,7 @@
                     <p>{{ poi.short}}</p>
                     <div class="demiBold">{% trans "Theme areas" %}</div>
                     <p>{% for tag in poi.tags.all %}{{tag }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-                    <div class="demiBold">{% trans "Street name" %}{% if poi.housenumber %}, {% trans "House number" %}{% endif %}{% if poi.zipcode %} - {% trans "Zipcode" %}{% endif %}</div>
+                    <div class="demiBold">{% trans "Street name" %}{% if poi.housenumber %}, {% trans "House number" %}{% endif %}{% if poi.zipcode %} - {% trans "zipcode"|capfirst %}{% endif %}</div>
                     <p>{{ poi.street }}{% if poi.housenumber %}, {{poi.housenumber}}{% endif %}{% if poi.zipcode %} - {{poi.zipcode}}{% endif %}</p>
                     {% if poi.phone %}
                     <div class="demiBold">{% trans "Phone" %}</div>

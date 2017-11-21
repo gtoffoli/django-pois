@@ -104,13 +104,13 @@ CAPZONE = 6
 MUNICIPIO = 7
 
 zone_prefix_dict = {
-    'R': ('rione', _('rione'), _('rioni - historical quarters')),
+    'R': ('rione', _('historical quarter'), _('historical quarters')),
     'Q': ('quartiere', _('quarter'), _('quarters')),
     'S': ('suburbio', _('quarter extension'), _('quarter extensions')),
     'Z': ('zona', _('suburban zone'), _('suburban zones')),
     'M': ('municipio', _('municipality'), _('municipalities')),
     'C': ('comune', _('town'), _('towns')),
-    '0': ('cap', _('Zipcode'), _('Zipcode areas')),
+    '0': ('cap', _('zipcode'), _('zipcode areas')),
 }
 
 def rebuild_icon_map():

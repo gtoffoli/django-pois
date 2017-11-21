@@ -38,12 +38,14 @@
             {% for macrozone in macrozones %}{% if not macrozone.id == 90 %}<div class="val"><a href="/{{ urlprefix }}/{{ macrozone.slug }}/" rel="tooltip" title="{% trans "show" %} {% trans "macrozone" %} {{ macrozone.name }}"><span class="notranslate">{{ macrozone.name }}</span></a></div>{% endif %}{% endfor %}
         </div>
     {% endif %}
+    {% if zone.zonetype_id != 2 %}
     <div class="summary mB20">
         {% for item in zone.neighbouring %}
             <div class="eti">{{ item.0|capfirst }}</div>
             {% for neighbour in item.2 %}<div {% if not forloop.last %}class="val"{% endif %}><a href="/{{ urlprefix }}/{{ neighbour.slug }}/" rel="tooltip" title="{% trans "show" %} {{ item.1}} {{ neighbour.name }}"><span class="notranslate">{{ neighbour.name }}</span>{% if neighbour.zonetype_id == 3 %} <small class="notranslate">({{ neighbour.code }})</small>{% endif %}</a></div>{% endfor %}
         {% endfor %}
     </div>
+    {% endif %}
 {% comment %} MMR 20170912
 <div class="summary mB20">
 	<div class="eti">{% trans "zones" %} {% trans "partially overlapping" %}</div>

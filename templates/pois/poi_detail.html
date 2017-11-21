@@ -1,8 +1,8 @@
 {% extends "roma/roma_base.html" %}
 {% load staticfiles i18n set_var %}
 
-{% block head_title %}{{ poi_dict.prefixed_name }}, {{poi_dict.comune.0}}{% endblock %}
-{% block meta_description %}{{ poi_dict.short }} - {% trans "Category" %}: {{ poi_dict.category }} - {% trans "Theme areas" %}: {{ theme_names }}{% endblock %}
+{% block head_title %}{{ poi_dict.prefixed_name }}, {{poi_dict.comune.0}}{% if poi_dict.comune.1 != 'roma' %} - {{ poi_dict.zone_parent }}{% else %} - {% for zone in zone_list %}{{zone.name}}{%if not forloop.last %}, {% endif %}{% endfor %}{% endif %}{% endblock %}
+{% block meta_description %}{{ poi_dict.short }} | {{ poi_dict.category }}{% endblock %}
 {% block extra_meta %}<meta name="date" content="{{ poi_dict.modified }}">{% endblock %}
 
 {% block content %}
@@ -193,6 +193,9 @@
                 <div class="box-res text-center back-box display-box"><div><i class="fa fa-rss"></i> rss</div></div>
             {% endif %}
             </div>
+            <div class="col-md-6 col-lg-6">
+                {% include 'google/ann_in_poi.html' %}
+            </div>
         </div>
         {% set careof = poi_dict.careof %}
         <div class="row">
@@ -214,6 +217,7 @@
         </div>   
     </div>
 {% endblock content %}
+{% block bottom-banner %}{% endblock bottom-banner %}
 
 {% if poi_dict.point %}
 {% block mapjs %}

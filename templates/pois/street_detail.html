@@ -21,14 +21,14 @@
                 {% if view_type == 'street' %}
                     {% if zone_zipcode_list %}
                         <div class="summary {% if not zone_list %}mB20{% endif %}">
-                            <div class="eti">{% trans "Zipcode areas" %}</div>
+                            <div class="eti">{% trans "zipcode areas"|capfirst %}</div>
                             {% for zone in zone_zipcode_list %}<div class="val"><a href="/indice-zona/{{ zone.slug }}/" rel="tooltip" title="{% trans "list the resources" %}"><span class="notranslate">{{ zone.name }}</span></a></div>{% endfor %}
                         </div>
                     {% endif %}
                     {% if zone_list %}
                         <div class="summary mB20">
                             <div class="eti">{% trans "related zones"|capfirst %}</div>
-                            {% for zone in zone_list %}<div class="val"><a href="/indice-zona/{{ zone.slug }}/" rel="tooltip" title="{% trans "list the resources" %}">{% if zone.zonetype_id == 3 %}{{ zone.code }} - {% endif %}{{ zone.name }}</a></div>{% endfor %}
+                            {% for zone in zone_list %}<div class="val"><a href="/indice-zona/{{ zone.slug }}/" rel="tooltip" title="{% trans "list the resources" %}">{{ zone.name }}{% if zone.zonetype_id == 3 %} <small>({{ zone.code }})</small>{% endif %}</a></div>{% endfor %}
                         </div>
                     {% endif %}
                 {% endif %}
@@ -36,22 +36,24 @@
             <div class="col-md-3 col-lg-2">
                 <div class="actions">
                     {% if can_edit %}<div><a href="{% url "admin:pois_odonym_change" street_id %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <small>{% trans "edit" %}</small></a></div>{% endif %}
+                    {% if poi_dict_list %}
                     {% if view_type == 'street' %}
                         <div><a id="explore_viewport" href="#"><i class="fa fa-map-o" aria-hidden="true"></i> <small>{% trans "explore the resources in the neighbourhood" %}</small></a></div>
                     {% endif %}
                     <div id="live-geolocation"></div>
-                    {% if poi_dict_list %}
-                        {% include "pois/_help_block.html" %}
+                    {% include "pois/_help_block.html" %}
                     {% endif %}
                 </div>
             </div>
         </div>
         {% if view_type == 'street' %}
+        {% if poi_dict_list %}
         <div class="row mB20">
             <div class="col-sm-12 col-md-12 col-lg-12 mB10">
                 <div id="map" class="mapZone"></div>
             </div>
         </div>
+        {% endif %}
         {% elif view_type == 'viewport' %}
         <div class="row mB20">
             <div class="{% if poi_dict_list %}col-sm-12 col-md-9 col-lg-10{% else %}col-sm-12 col-md-12 col-lg-12{% endif %} mB10">

@@ -4,7 +4,7 @@
 {{ current_path }}
 
 {% block head_title %}{% if zone.zonetype_id == 3 %}{{zone.code}}-{% elif zone.zonetype_id == 6 %}{{zonetype_label}} {% endif %}{{ zone.name }} - {% trans "Resources by theme area"|lower %}{% endblock %}
-
+{% block meta_description %}{% if zone.zonetype_id == 3 or zone.zonetype_id == 6 %}{{ zone.zonetype_label|capfirst }} {% endif %}{{ zone.name }}: {% trans "list of resources grouped by thematic area"%}{% endblock meta_description %}
 {% block content %}
     <div class="boxcontent">
         <div class="row mB10">
@@ -31,9 +31,9 @@
                      <article class="view-list height30vh box-scroll" style="display:none">
                          <dl>
                          {% for prefix, poitype_slug, poitype_name, poitype_icon, n, category_in_theme, poi_url in poitype_poi_list %}
-                             <dd><ul class="list-unstyled"><li class="pL26" style="background: url('{{ STATIC_URL }}roma/img/icons/{{ poitype_icon.name }}.png') no-repeat top left;">{{ prefix }} {{ poitype_name }}
+                             <dd><ul class="list-unstyled"><li class="pL26TB5 bBdotted" style="background: url('{{ STATIC_URL }}roma/img/icons/{{ poitype_icon.name }}.png') no-repeat center left;">{{ prefix }} {{ poitype_name }}
                              {% if n == 1 %}
-                                 <span class="text-pre-wrap">[ <a href="{{ poi_url }}" title="{% trans "show resource" %}" rel="tooltip">{{ n }}</a> ]</span>
+                                 <span class="text-pre-wrap">[ <a href="{{ poi_url }}" title="{% trans "show resource" %} {% trans "of the category" %} {{poitype_name}}" rel="tooltip">{{ n }}</a> ]</span>
                              {% else %}
                                  <span class="text-pre-wrap">[ <a href="/categoria/{{ poitype_slug }}/zona/{{ zone.slug }}/" title="{%blocktrans%}show the resources of the category {{poitype_name}} on the map{%endblocktrans%}" rel="tooltip">{{ n }}</a> ]</span>
                              {% endif %}

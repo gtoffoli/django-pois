@@ -106,7 +106,7 @@ def zone_index_map(request, zonetype_id=1, prefix='', render_view=True):
             region = prefix=='RM.' and 'ROMA' or prefix=='PR.' and 'LAZIO'
         elif zonetype_id==3 and prefix:
             zone_list = Zone.objects.filter(zonetype=zonetype_id, code__istartswith=prefix).exclude(geom__isnull=True).order_by('name')
-            zonetype_label = prefix=='R.' and _('rioni - historical quarters') or prefix=='Q.' and _('quarters') or prefix=='S.' and _('quarter extensions') or prefix=='Z.' and _('suburban zones')
+            zonetype_label = prefix=='R.' and _('historical quarters') or prefix=='Q.' and _('quarters') or prefix=='S.' and _('quarter extensions') or prefix=='Z.' and _('suburban zones')
             region = 'ROMA'
         elif zonetype_id==7 and prefix:
             zone_list = Zone.objects.filter(zonetype=zonetype_id, code__istartswith=prefix).exclude(geom__isnull=True)
@@ -1198,7 +1198,7 @@ def poi_detail(request, poi_id, poi=None):
         zone_parent = None
         for zone in zones:
             if zone.zonetype_id == 3: # zona toponomastica
-                zone_list.append({ 'name': '%s %s' % (zone.code, zone.name), 'url': '/zona/%s/' % zone.slug, 'slug': zone.slug})
+                zone_list.append({ 'name': '%s (%s)' % (zone.name, zone.code), 'url': '/zona/%s/' % zone.slug, 'slug': zone.slug})
             else: # municipio
                 zone_list.append({ 'name': zone.name, 'url': '/zona/%s/' % zone.slug, 'slug': zone.slug})
                 zone_parent = zone.zone_parent()

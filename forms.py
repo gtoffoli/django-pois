@@ -433,7 +433,7 @@ class PoiUserForm(ModelForm):
             required=False,
             widget=forms.TextInput(attrs={'class':'form-control'}))
     zipcode = forms.CharField(
-            label=_("Zipcode"),
+            label=_("zipcode").title(),
             required=False,
             widget=forms.TextInput(attrs={'class':'form-control'}))
     phone = forms.CharField(
@@ -558,9 +558,9 @@ class PoiAnnotationForm(forms.Form):
     id = forms.IntegerField(widget=forms.HiddenInput, required=False) 
     notes = forms.CharField(
             label=_("Notes"),
-            help_text= string_concat(_("If you aren't a registered user"), " ", _("please"), " ", _("add"), " ", _("your contact data: Full name, Email and/or Phone")),
+            help_text=_("If you aren't a registered user, please enter here your contact data: Full name, Email and/or Phone"),
             required=True,
-            widget=forms.Textarea(attrs={'class':'span6', 'cols': 60, 'rows': 3}))
+            widget=forms.Textarea(attrs={'cols': 60, 'rows': 3}))
     captcha = CaptchaField(
             label=_("Control string"),
             help_text=_("Enter these 5 characters in the textbox on the right"),

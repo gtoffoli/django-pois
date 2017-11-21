@@ -1,12 +1,11 @@
-{% extends "roma/gridA.html" %}
+{% extends "roma/roma_base.html" %}
 {% load staticfiles i18n %}
 
-{% block head_title %}{% trans "Index of zone types" %}{% endblock %}
+{% block head_title %}{% trans "Index of zone types" %}{% endblock %}      
 
-{% block title-page %}{% trans "Index of zone types" %}{% endblock %}        
-{% block no-view-map %}{% endblock %}
-{% block list %}
-
+{% block content %}
+    <div class="boxcontent">
+<h1>{% trans "Index of zone types" %}</h1>  
   {% if zonetype_list %}
     	<ul style="list-style-type: none;">
         {% for zonetype, zonetype_name, zones_count in zonetype_list %}
@@ -18,6 +17,6 @@
     {% else %}
     <p>{% trans "No zone type is present" %}.</p>
     {% endif %}
-{% endblock %}
-{% block blog %}{% endblock %}
-{% block portlets %}{% endblock %}
+    </div>
+{% endblock content %}
+

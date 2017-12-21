@@ -2,7 +2,7 @@
 {% load staticfiles i18n set_var %}
 
 {% block head_title %}{% if zone.zonetype_id == 3 %}{{ zone.code }} - {% elif zone.zonetype_id == 6 %}{{ zone.zonetype_label|capfirst }} {% endif %}{{ zone.name }}, {{zone.prefix|lower|capfirst}}{% endblock %}
-{% block meta_description %}{% if zone.zonetype_id == 3 or zone.zonetype_id == 6 %}{{ zone.zonetype_label|capfirst }} {% endif %}{{ zone.name }}: {% trans "map of geolocalised resources" %}{% endblock meta_description %} 
+{% block meta_description %}{% if zone.zonetype_id == 3 or zone.zonetype_id == 6 %}{{ zone.zonetype_label|capfirst }} {% endif %}{{ zone.name }}: {% trans "map of georeferenced resources" %}{% endblock meta_description %} 
 {% block content %}
     <div class="boxcontent">
         <div class="row mB10">
@@ -150,7 +150,7 @@
             }
         }
         map.div.oncontextmenu = function noContextMenu(e){return false;};
-        map.addControl(new OpenLayers.Control.MousePosition());
+        // map.addControl(new OpenLayers.Control.MousePosition());
         map.addControl(new OpenLayers.Control.LayerSwitcher());
         map.addControl(new OpenLayers.Control.ScaleLine({geodesic: 'true'}));
         var gmap = new OpenLayers.Layer.Google("Google Streets", { numZoomLevels: 20 });
@@ -172,14 +172,14 @@
         vectors.styleMap = zone_style_map;
 // pois = new OpenLayers.Layer.Vector("Risorse");
         pois = new OpenLayers.Layer.Vector("{% trans "Resources" %}", { strategies: [centered_cluster_strategy]});
-        n_pois = 0;
+        // n_pois = 0;
         {% if poi_dict_list %}
             {% for poi_dict in poi_dict_list %}
                 {% if poi_dict.point %}
                     poi = geojson_format.read({{poi_dict.point|safe}})[0]; // We mark it 'safe' so that Django doesn't escape the quotes.
                     poi.attributes = { id: {{poi_dict.id}}, name: "{{poi_dict.safe_name}}".replace("&#39;", "'"), type: "{{poi_dict.category}}", icon_name: "{{poi_dict.icon}}", icon_color: "{{poi_dict.color}}", url: "{{poi_dict.url}}" };
                     pois.addFeatures(poi);
-                    n_pois++;
+                    // n_pois++;
                 {% endif %}
             {% endfor %}
         {% endif %}
@@ -201,15 +201,20 @@
             }
         });
         map.addControl(fpControl);
-        if (pois.features.length && n_pois > 10) {
+        /*if (pois.features.length > 10) {
             map.zoomToExtent(pois.getDataExtent());
         } else {
             map.zoomToExtent(vectors.getDataExtent());
         }
-        if(map.getZoom() > MAX_ZOOM)
+        if(map.getZoom() > MAX_ZOOM) {
             map.zoomTo(MAX_ZOOM);
-        else
+        } else if (map.getZoom() < MIN_ZOOM) {
+            map.zoomTo(MIN_ZOOM);
+        } else {
             set_viewport();
+        }*/
+        map.zoomToExtent(vectors.getDataExtent());
+        set_viewport();
     }
 
     function set_viewport() {

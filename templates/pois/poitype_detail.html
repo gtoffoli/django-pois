@@ -9,7 +9,7 @@
             <div class="col-md-12 col-lg-12">
                 <div class="segnaposto notranslate">{{ region }}</div>
             </div>
-            <div class="{% if zone_list %}col-md-9 col-lg-10{% else %}col-md-12 col-lg-12{% endif %}">
+            <div class="col-md-9 col-lg-10">
                 <h1>{{ poitype.name }}</h1>
                 <div class="mB20">
                 {% if not poitype.active %}
@@ -32,13 +32,11 @@
                 {% endif %}
                 </div>
             </div>
-            {% if zone_list %}
-                <div class="col-md-3 col-lg-2">
-                    <div class="actions">
-                        {% include "pois/_help_block.html" %}
-                    </div>
+            <div class="col-md-3 col-lg-2">
+                <div class="actions">
+                    {% include "pois/_help_block.html" %}
                 </div>
-            {% endif %}
+            </div>
         </div>
         {% if zone_list %}
             <div class="summary mB10">

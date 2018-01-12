@@ -212,7 +212,7 @@ class Zone(geomodels.Model):
     # campi originali
     code = models.CharField('Codice', max_length=10)
     name = models.CharField('Nome', max_length=50)
-    zonetype = models.ForeignKey(Zonetype, blank=True, null=True)
+    zonetype = models.ForeignKey(Zonetype, models.PROTECT, blank=True, null=True)
     pro_com = models.IntegerField('Comune', blank=True, null=True, default=58091)
     slug = AutoSlugField(unique=True, populate_from='name', editable=True)
     short = models.CharField(verbose_name='Toponimi', max_length=200, null=True, blank=True)
@@ -227,7 +227,7 @@ class Zone(geomodels.Model):
     objects = geomodels.GeoManager()
     # campi originali
     pois = models.ManyToManyField('Poi', related_name='zone_pois', through='PoiZone')
-    careof = models.ForeignKey('Poi', related_name='zone_careof', verbose_name='A cura di', blank=True, null=True)
+    careof = models.ForeignKey('Poi', models.SET_NULL, related_name='zone_careof', verbose_name='A cura di', blank=True, null=True)
     modified = models.DateTimeField(verbose_name='Mod. il', auto_now=True, blank=True, null=True)
 
     class Meta:
@@ -532,8 +532,8 @@ class TempZone(geomodels.Model):
 
 @python_2_unicode_compatible
 class ZoneZone(models.Model):
-    from_zone = models.ForeignKey(Zone)
-    to_zone = models.ForeignKey(Zone)
+    from_zone = models.ForeignKey(Zone, models.CASCADE)
+    to_zone = models.ForeignKey(Zone, models.CASCADE)
     overlap = models.IntegerField('Overlap area', blank=True, null=True, default=0)
     distance = models.IntegerField('Distance', blank=True, null=True, default=0)
 
@@ -783,8 +783,8 @@ class Tag(models.Model):
 
 @python_2_unicode_compatible
 class TagTag(models.Model):
-    from_tag = models.ForeignKey(Tag)
-    to_tag = models.ForeignKey(Tag)
+    from_tag = models.ForeignKey(Tag, models.CASCADE)
+    to_tag = models.ForeignKey(Tag, models.CASCADE)
 
     class Meta:
         verbose_name = "relazione tag-tag"
@@ -880,8 +880,8 @@ class Poitype(models.Model):
 
 @python_2_unicode_compatible
 class PoitypeTag(models.Model):
-    poitype = models.ForeignKey(Poitype)
-    tag = models.ForeignKey(Tag)
+    poitype = models.ForeignKey(Poitype, models.CASCADE)
+    tag = models.ForeignKey(Tag, models.CASCADE)
 
     class Meta:
         verbose_name = "relazione tiporisorsa-tag"
@@ -895,7 +895,7 @@ class PoitypeTag(models.Model):
 @python_2_unicode_compatible
 class Poi(geomodels.Model):
     name = models.CharField(verbose_name='Nome', max_length=100)
-    poitype = models.ForeignKey(Poitype, related_name='poi_poitype', to_field='klass', verbose_name='Categoria primaria', null=True, blank=True)
+    poitype = models.ForeignKey(Poitype, models.PROTECT, related_name='poi_poitype', to_field='klass', verbose_name='Categoria primaria', null=True, blank=True)
     moretypes = models.ManyToManyField(Poitype, related_name='poi_moretypes', through='PoiPoitype', blank=True, verbose_name='Altre categorie')
     code = models.CharField('Codice', max_length=20, blank=True, null=True)
     short = models.CharField(verbose_name='Descriz. breve', max_length=120, null=True, blank=True)
@@ -906,7 +906,7 @@ class Poi(geomodels.Model):
     routes = models.ManyToManyField('Route', through='PoiRoute', blank=True, verbose_name='Route')
     pro_com = models.IntegerField('Comune', blank=True, null=True, default=58091)
     street_address = models.CharField(verbose_name='Indirizzo', max_length=100, blank=True)
-    street = models.ForeignKey(Odonym, related_name='poi_street', verbose_name='Toponimo (es: Via Po)', blank=True, null=True)
+    street = models.ForeignKey(Odonym, models.PROTECT, related_name='poi_street', verbose_name='Toponimo (es: Via Po)', blank=True, null=True)
     housenumber = models.CharField(verbose_name='Civico', max_length=16, blank=True)
     zipcode = models.CharField('CAP', max_length=5, blank=True)
     latitude = models.FloatField('Latitudine', blank=True, null=True)
@@ -923,25 +923,25 @@ class Poi(geomodels.Model):
     # pois = models.ManyToManyField('self', through='PoiPoi', verbose_name='Vedi anche') # new: 130327
     pois = models.ManyToManyField('self', through='PoiPoi', symmetrical=False, verbose_name='Risorse correlate') # new: 130610 no symmetrical
     notes = models.TextField(verbose_name='Note', blank=True, null=True)   
-    sourcetype = models.ForeignKey(Sourcetype, verbose_name='Tipo di fonte', blank=True, null=True)
+    sourcetype = models.ForeignKey(Sourcetype, models.PROTECT, verbose_name='Tipo di fonte', blank=True, null=True)
     """
     source = models.ForeignKey('self', related_name='poi_source', verbose_name='Fonte', blank=True, null=True)
     sourceel = models.PositiveSmallIntegerField(verbose_name='Fonte', blank=True, null=True)
     sourceid = models.IntegerField(verbose_name='Codice fonte', blank=True, null=True)
     """
     source = models.TextField(verbose_name='Fonte', blank=True)
-    owner = models.ForeignKey(User, related_name='poi_owner', blank=True, null=True)
+    owner = models.ForeignKey(User, models.SET_NULL, related_name='poi_owner', blank=True, null=True)
     contributor = models.CharField(verbose_name='Contributo di', max_length=20, blank=True)
     creator = models.CharField(verbose_name='Compilatore', max_length=20, blank=True)
-    lasteditor = models.ForeignKey(User, related_name='poi_lasteditor', blank=True, null=True, verbose_name='Mod. da')
+    lasteditor = models.ForeignKey(User, models.SET_NULL, related_name='poi_lasteditor', blank=True, null=True, verbose_name='Mod. da')
     modified = models.DateField(verbose_name='Mod. il', auto_now=True, blank=True, null=True)
     # aggiunto 130606
-    host = models.ForeignKey('self', related_name='poi_host', verbose_name='Ospitato da', blank=True, null=True)
+    host = models.ForeignKey('self', models.SET_NULL, related_name='poi_host', verbose_name='Ospitato da', blank=True, null=True)
     logo = models.ImageField(upload_to='logos', null=True, blank=True, verbose_name='Logo (immagine)')
     slug = AutoSlugField(unique=True, populate_from='name', editable=True, blank=True, null=True)
     # aggiunto 130808
     members = models.ManyToManyField(User, related_name='poi_members', through='PoiMember', symmetrical=False, verbose_name='Membri')
-    careof = models.ForeignKey('self', related_name='poi_careof', verbose_name='A cura di', blank=True, null=True)
+    careof = models.ForeignKey('self', models.SET_NULL, related_name='poi_careof', verbose_name='A cura di', blank=True, null=True)
     KIND_CHOICES = (
         (0, 'servizio'),
         (1, 'struttura'),
@@ -1492,8 +1492,8 @@ post_save.connect(update_poi_coordinates, sender=Poi)
 
 @python_2_unicode_compatible
 class PoiPoitype(models.Model):
-    poi = models.ForeignKey(Poi)
-    poitype = models.ForeignKey(Poitype)
+    poi = models.ForeignKey(Poi, models.CASCADE)
+    poitype = models.ForeignKey(Poitype, models.PROTECT)
 
     class Meta:
         verbose_name = "relazione risorsa-categoria secondaria"
@@ -1506,8 +1506,8 @@ class PoiPoitype(models.Model):
 
 @python_2_unicode_compatible
 class PoiZone(models.Model):
-    poi = models.ForeignKey(Poi)
-    zone = models.ForeignKey(Zone)
+    poi = models.ForeignKey(Poi, models.CASCADE)
+    zone = models.ForeignKey(Zone, models.PROTECT)
 
     class Meta:
         verbose_name = "relazione risorsa-zona"
@@ -1565,8 +1565,8 @@ def PoiZone_spatialize_macrozones():
 
 @python_2_unicode_compatible
 class PoiRoute(models.Model):
-    poi = models.ForeignKey(Poi)
-    route = models.ForeignKey(Route)
+    poi = models.ForeignKey(Poi, models.CASCADE)
+    route = models.ForeignKey(Route, models.PROTECT)
     order = models.PositiveIntegerField(blank=True, null=True)
 
     class Meta:
@@ -1580,8 +1580,8 @@ class PoiRoute(models.Model):
 
 @python_2_unicode_compatible
 class PoiTag(models.Model):
-    poi = models.ForeignKey(Poi)
-    tag = models.ForeignKey(Tag)
+    poi = models.ForeignKey(Poi, models.CASCADE)
+    tag = models.ForeignKey(Tag, models.CASCADE)
 
     class Meta:
         verbose_name = "relazione risorsa-tag"
@@ -1630,8 +1630,8 @@ def resources_by_topo_count(zone):
 
 @python_2_unicode_compatible
 class PoiPoi(models.Model):
-    from_poi = models.ForeignKey(Poi)
-    to_poi = models.ForeignKey(Poi)
+    from_poi = models.ForeignKey(Poi, models.CASCADE)
+    to_poi = models.ForeignKey(Poi, models.CASCADE)
     # reltype_id = models.IntegerField('Tipo relazione', null=True, default=1)
     RELTYPE_CHOICES = (
         (1, 'risorsa affiliata a ..'),
@@ -1649,8 +1649,8 @@ class PoiPoi(models.Model):
 
 @python_2_unicode_compatible
 class PoiMember(models.Model):
-    poi = models.ForeignKey(Poi)
-    member = models.ForeignKey(User)
+    poi = models.ForeignKey(Poi, models.CASCADE)
+    member = models.ForeignKey(User, models.CASCADE)
 
     class Meta:
         verbose_name = "relazione risorsa-membro"

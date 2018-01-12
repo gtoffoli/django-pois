@@ -224,7 +224,7 @@ class Zone(geomodels.Model):
     shape_area = models.FloatField('Area', blank=True, null=True)
     shape_len = models.FloatField('Perimetro', blank=True, null=True)
     geom = geomodels.MultiPolygonField('Geometria', srid=srid_ISTAT, blank=True, null=True)
-    objects = geomodels.GeoManager()
+    # objects = geomodels.GeoManager()
     # campi originali
     pois = models.ManyToManyField('Poi', related_name='zone_pois', through='PoiZone')
     careof = models.ForeignKey('Poi', models.SET_NULL, related_name='zone_careof', verbose_name='A cura di', blank=True, null=True)
@@ -528,7 +528,7 @@ class TempZone(geomodels.Model):
         include un sottoinsieme dei campi di Zone """
     code = models.CharField('Codice', max_length=10)
     geom = geomodels.MultiPolygonField('Geometria', srid=srid_ISTAT, blank=True, null=True)
-    objects = geomodels.GeoManager()
+    # objects = geomodels.GeoManager()
 
 @python_2_unicode_compatible
 class ZoneZone(models.Model):
@@ -595,7 +595,7 @@ class Route(geomodels.Model):
     web = models.TextField(verbose_name='Siti web', blank=True, help_text='uno per riga')
     coords = models.TextField(verbose_name='Coordinate', blank=True, null=True)
     geom = geomodels.MultiLineStringField('Geometria', srid=srid_GPS, blank=True, null=True)
-    objects = geomodels.GeoManager()
+    # objects = geomodels.GeoManager()
     width = models.IntegerField('Larghezza (m)', blank=True, null=True, default=200)
     pois = models.ManyToManyField('Poi', related_name='poi_route', through='PoiRoute')
     modified = models.DateTimeField(verbose_name='Mod. il', auto_now=True, blank=True, null=True)
@@ -914,7 +914,7 @@ class Poi(geomodels.Model):
     # point = geomodels.PointField(verbose_name='Posizione', help_text="", srid=srid_ISTAT, blank=True, null=True)
     point = geomodels.PointField(verbose_name='Posizione', help_text="", srid=srid_GPS, blank=True, null=True)
     # You MUST use GeoManager to make Geo Queries
-    objects = geomodels.GeoManager()
+    # objects = geomodels.GeoManager()
     phone = models.TextField(verbose_name='Numeri telefonici', blank=True, help_text='uno per riga')
     email = models.TextField('Indirizzi email', blank=True, help_text='uno per riga')
     web = models.TextField(verbose_name='Indirizzi web', blank=True, help_text='uno per riga')

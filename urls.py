@@ -41,6 +41,7 @@ urlpatterns = patterns('',
     url(r'^network/(?P<poi_id>\d+)/$', 'pois.views.poi_network'),
     )
 """
+app_name="pois"
 
 urlpatterns = [
     url(r'^zonetypes$', views.zonetype_index),

@@ -293,7 +293,7 @@ class Zone(geomodels.Model):
     # vedi metodo PoiAdmin.save_model
     def can_edit(self, request):
         user = request.user
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False
         if user.is_superuser:
             return True
@@ -614,7 +614,7 @@ class Route(geomodels.Model):
 
     def can_edit(self, request):
         user = request.user
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False
         return user.is_superuser or user.is_staff
 
@@ -1004,7 +1004,7 @@ class Poi(geomodels.Model):
     # vedi metodo PoiAdmin.save_model
     def can_edit(self, request):
         user = request.user
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False
         if user.is_superuser:
             return True
@@ -1710,7 +1710,7 @@ class Blog(models.Model):
 
     def can_edit(self, request):
         user = request.user
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False
         if user.is_superuser or (user.is_staff and user==self.author):
             return True
@@ -1718,7 +1718,7 @@ class Blog(models.Model):
 
     def can_post(self, request):
         user = request.user
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False
         if user==self.author:
             return True
@@ -1756,7 +1756,7 @@ Post.blog_title = blog_title
 
 def post_can_edit(self, request):
     user = request.user
-    if not user.is_authenticated():
+    if not user.is_authenticated:
         return False
     if user.is_superuser or user==self.author or user==self.blog.author:
         return True

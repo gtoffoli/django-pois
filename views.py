@@ -1284,7 +1284,7 @@ def poi_save(request):
         if form.is_valid():
             # human = True
             poi = form.save()
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 poi.owner = request.user
                 poi.save()
             return HttpResponseRedirect('/nuova-risorsa/%s/' % poi.id)
@@ -1344,7 +1344,7 @@ def my_resources(request, n=MAX_POIS):
     n = int(n)
     poi_dict_list = []
     count = 0
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         instances = Poi.objects.filter(owner=request.user).order_by('-id')[:n]
         count = instances.count()
         poi_dict_list = [poi.make_dict() for poi in instances]

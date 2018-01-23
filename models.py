@@ -340,7 +340,6 @@ class Zone(geomodels.Model):
         zone_dict['code'] = self.code
         zone_dict['name'] = self.name
         zone_dict['slug'] = self.slug
-        # zone_dict['url'] = '/zona/%s/' % self.slug
         zone_dict['url'] = '/indice-zona/%s/' % self.slug
         zone_dict['safe_code'] = self.safe_code()
         zone_dict['zonetype_id'] = self.zonetype_id
@@ -551,7 +550,7 @@ def ZoneZone_populate(zonetypes=[1,3,6], skip=0):
     n_types = len(zonetypes)
     zones = Zone.objects.filter(zonetype__in=zonetypes).order_by('zonetype', 'id')
     n = len(zones)
-    print ('n = %d' % n)
+    # print ('n = %d' % n)
     j = 0
     for i in range(n):
         if skip and i<skip:
@@ -583,7 +582,7 @@ def ZoneZone_populate(zonetypes=[1,3,6], skip=0):
                 zz.save()
                 zz = ZoneZone(from_zone=to_zone, to_zone=from_zone, overlap=int(overlap), distance=int(distance))
                 zz.save()
-                print (j, from_zone.code, to_zone.code, int(overlap), int(distance))
+                # print (j, from_zone.code, to_zone.code, int(overlap), int(distance))
 
 @python_2_unicode_compatible
 class Route(geomodels.Model):
@@ -805,7 +804,7 @@ class Poitype(models.Model):
     icon = models.CharField(max_length=20, blank=True, null=True)
     color = models.CharField(max_length=20, blank=True, null=True)
     active = models.BooleanField(default=False)
-    tags = models.ManyToManyField('Tag', through='PoitypeTag', blank=True, null=True) # new: 130308
+    tags = models.ManyToManyField('Tag', through='PoitypeTag', blank=True) #MMR 20181701 tolto null=True # new: 130308
     # slug = AutoSlugField(unique=True, populate_from='name_it', editable=True)
     slug = AutoSlugField(unique=True, populate_from='name', editable=True)
     modified = models.DateTimeField(verbose_name='Mod. il', auto_now=True, blank=True, null=True)
@@ -1205,13 +1204,11 @@ class Poi(geomodels.Model):
         try:
             macrozone.geom = MultiPolygon(macro_geom)
         except:
-            print ('error in get_macrozone')
             macrozone.geom = macro_geom
         return macrozone
 
     def macrozone_geom_OSM(self):
         macrozone = self.compute_macrozone()
-        print ('macrozona: ', macrozone)
         if macrozone.geom:
             # print macrozone.geom
             return macrozone.geom.transform(srid_OSM, clone=True)
@@ -1269,7 +1266,6 @@ class Poi(geomodels.Model):
         point = self.get_point()
         if point:
             target_zones = Zone.objects.filter(zonetype__id__in=zonetypes, geom__contains=point)
-        print ('target zones = ', target_zones)
         target_ids = [zone.id for zone in target_zones]
         for zone in self.zones.all():
             if zone.id not in target_ids:
@@ -1463,22 +1459,23 @@ class Poi(geomodels.Model):
             """
             poi_dict['blogs'] = []
         return poi_dict
-
+"""
+MMR 20181701 non utilizzato
     # riadattato da funzione javascript make_poi_el in zone_map.html
     def make_html_element(self):
         poi_dict = self.make_dict()
-        s = """<div class="row">\
+        s = <div class="row">\
                  <div class="span5"><a class="ele nameRes" title="visualizza risorsa" href="%s">%s</a></div>\
                  <div class="span5"><a class="ele" title="visualizza strada, piazza ..." href="%s">%s</a> - <a class="ele" title="visualizza zona CAP" href="/zona-cap/%s/">%s</a> %s</div>\
                  </div>\
                  <div class="row rowRes">\
                  <div class="span10" style="padding-left: 2px;">%s</div>\
                  </div>
-"""
+
         ## return s % (poi_dict['url'], poi_dict['name'], poi_dict['street_url'], poi_dict['street_name'], poi_dict['number'], poi_dict['cap'], poi_dict['cap'], poi_dict['short']);
         #return s % (poi_dict['url'], poi_dict['name'], poi_dict['street_url'], poi_dict['street_name'], poi_dict['number'], poi_dict['cap'], poi_dict['cap'], poi_dict['comune'], poi_dict['short']);
         return s % (poi_dict['url'], poi_dict['name'], poi_dict['street_url'], poi_dict['street_address'], poi_dict['cap'], poi_dict['cap'], poi_dict['comune'], poi_dict['short']);
-
+"""
 # @receiver(post_save, sender=Poi)
 def update_poi_coordinates(sender, **kwargs):
     poi = kwargs['instance']
@@ -1544,13 +1541,12 @@ def PoiZone_populate(zonetype=3, poitypes=[]):
                 pz = PoiZone(poi=poi, zone=zone)
                 pz.save()
                 m += 1
-                print (poi, zone)
-    print (n, m)
+                # print (poi, zone)
+    # print (n, m)
 
 def PoiZone_spatialize_macrozones():
     macrozones = Zone.objects.filter(zonetype=0)
     for macrozone in macrozones:
-        print (macrozone.code)
         # geoms = [zone.geom for zone in macrozone.zones.all()]
         geoms = [zone.geom for zone in macrozone.zones.filter(zonetype=7)]
         macro_geom = geoms[0]
@@ -1559,7 +1555,6 @@ def PoiZone_spatialize_macrozones():
         try:
             macrozone.geom = MultiPolygon(macro_geom)
         except:
-            print ('error')
             macrozone.geom = macro_geom
         macrozone.save()
 

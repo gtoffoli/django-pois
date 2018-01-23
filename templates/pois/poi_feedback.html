@@ -17,7 +17,7 @@
                         {% for field in form.visible_fields %}
                             <div class="form-group">
                                 <label for="{{ field.name }}" {% if field.field.required %}class="required"{% endif %}>{{ field.label|capfirst}}</label>
-                                {% if field.help_text %}<small id="{{ field.name }}helpBlock" class="help-block mT0">{{ field.help_text }}</small>{% endif %}
+                                <small id="{{ field.name }}helpBlock" class="help-block mT0">{{ field.help_text }}</small>
                                 {% if field.errors %}<div class="error">{{ field.errors }}</div>{% endif %}
                                 {{ field }}
                             </div>

@@ -94,7 +94,8 @@
         zones = new OpenLayers.Layer.Vector("Zone");
         zones.styleMap = zone_style_map;
         {% if zone_list.0.count %}centroids = new OpenLayers.Layer.Vector("Baricentri");{% endif %}
-        {% for zone in zone_list %}{% if zone.has_geom %}
+        {% for zone in zone_list %}
+        {% if zone.has_geom %}
             {% if zone.zonetype_id == 0 or zone.zonetype_id == 1 or zone.zonetype_id == 3 or zone.zonetype_id == 6  or zone.zonetype_id == 7 %}
                 ol_zone = geojson_format.read(json_zones['{{ zone.safe_code }}'])[0];
             {% else %}
@@ -111,7 +112,6 @@
             zones.addFeatures(ol_zone);
         {% endif %}{% endfor %}
         map.addLayer(zones);
-        console.log(zones);
         {% if zone_list.0.count %}
             map.addLayer(centroids);
             centroids.styleMap = centroid_style_map;

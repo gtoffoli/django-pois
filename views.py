@@ -159,17 +159,23 @@ def tag_set(request, tag_id, redirect=True):
 def tag_toggle(request, tag_id, redirect=True):
     focus = get_focus(request)
     tags = focus.get('tags', [])
+    """
+    MMR 20181701
     print ('TAG_TOGGLE')
     print ('tag_id: ', tag_id)
     print ('focus: ', focus)
     print ('tags: ', tags)
+    """
     if tag_id in tags:
         tags.remove(tag_id)
     else:
         tags.append(tag_id)
     set_focus(request, tags=tags)
+    """
+    MMR 20181701
     print ('focus: ', get_focus(request))
     print ('tags: ', tags)
+    """
     if redirect:
         referer = request.META.get('HTTP_REFERER', None)
         redirect_to = urlsplit(referer, 'http', False)[2]
@@ -374,7 +380,11 @@ def street_detail(request, street_id, street=None):
             try:
                 streets_cache.set(key, data_dict)
             except:
+                """
+                MMR 20181701
                 print (data_dict)
+                """
+                pass
     can_edit = street.can_edit(request)
     data_dict['can_edit'] = can_edit
     return render(request, 'pois/street_detail.html', data_dict)
@@ -404,18 +414,19 @@ def zone_detail(request, zone_id, zone=None):
         subzone_list = []
         zone_dict = zone.make_dict()
         zone_dict['prefix'] = zone.zone_parent()
-        
         zone_dict['type_subzones'] = [z.make_dict(list_item=True) for z in zone.type_subzones()]
         zone_dict['sametype_zones'] = [z.make_dict(list_item=True) for z in zone.sametype_zones()]
-        # zone_dict['neighbouring'] = [z.make_dict(list_item=True) for z in zone.neighbouring()]
         zone_dict['neighbouring'] = zone.neighbouring()
-        # zone_dict['overlapping'] = [z.make_dict(list_item=True) for z in zone.overlapping()]
+        """
+        MMR 20181701
+        overlapping rimosso
+        zone_dict['overlapping'] = [z.make_dict(list_item=True) for z in zone.overlapping()]
+        """
         if zone.zonetype_id == MACROZONE:
             subzone_list = zone.list_subzones(zonetype_id=TOPOZONE)
         elif zone.zonetype_id in [TOPOZONE, MUNICIPIO]:
             macrozones = Zone.objects.filter(zonetype_id=MACROZONE, zones=zone)
             macrozones = [z.make_dict for z in macrozones]
-        # pois = Poi.objects.select_related().filter(zones=zone, state=1).order_by('name')
         # VEDI def make_zone_subquery(zone): in models.py
         if zone.zonetype_id == CAPZONE:
             pois = Poi.objects.select_related().filter(zipcode=zone.code, state=1) # .order_by('name')
@@ -430,14 +441,17 @@ def zone_detail(request, zone_id, zone=None):
         pois = pois.order_by('name')
         poi_dict_list_no_sorted = [poi.make_dict(list_item=True) for poi in pois]
         poi_dict_list = sorted(poi_dict_list_no_sorted, key=lambda k: k['name'].lower())
-        # initial={'tags': []}
         form = PoiBythemeForm()
         data_dict = {'help': help_text, 'zone': zone_dict, 'macrozones': macrozones, 'subzone_list': subzone_list, 'poi_dict_list': poi_dict_list, 'form': form}
         if language.startswith('it'):
             try:
                 zonemaps_cache.set(key, data_dict)
             except:
+                """
+                MMR 20181701
                 print (data_dict)
+                """
+                pass
     data_dict['can_edit'] = zone.can_edit(request)
     return render(request, 'pois/zone_detail.html', data_dict)
 
@@ -573,7 +587,10 @@ def zone_net(request):
         centroid = zone.geom.centroid
         x = centroid.x
         y = centroid.y
+        """
+        MMR 20181701
         print (x, y)
+        """
         min_x = min(x, min_x)
         max_x = max(x, max_x)
         min_y = min(y, min_y)
@@ -667,7 +684,10 @@ def zone_net(request):
         y = cy - dy * fy * factor
         node['y'] = int(y)
     zone_dict = { 'nodes': nodes, 'links': links, }
+    """
+    MMR 20181701
     print (nodes)
+    """
     resp = simplejson.dumps(zone_dict)
     return HttpResponse(resp, content_type='application/json')
 
@@ -802,7 +822,11 @@ def zone_tag_index(request, zone_id, zone=None):
             try:
                 zones_cache.set(key, tag_poitype_list)
             except:
+                """
+                MMR 20181701
                 print (tag_poitype_list)
+                """
+                pass
     cache = caches['custom']
     key = 'allzones_' + language
     if request.GET.get('nocache', None):
@@ -912,7 +936,6 @@ def tag_detail(request, tag_id, tag=None):
                 poitype_instances_list.append([poitype.make_dict(), n, category_in_theme, pois[0].friendly_url()])
                 n_pois += n
         n_poitype_list = len(poitype_instances_list)
-        print (n_poitype_list)
         resto_2 = n_poitype_list % 2
         cols_2 = n_poitype_list // 2
         resto_3 = n_poitype_list % 3
@@ -937,7 +960,11 @@ def tag_detail(request, tag_id, tag=None):
             try:
                 themes_cache.set(key, data_dict)
             except:
+                """
+                MMR 20181701
                 print (data_dict)
+                """
+                pass
     # return render_to_response('pois/tag_detail.html', {'tag': tag, 'poitype_list': poitype_instances_list,}, context_instance=RequestContext(request))
     return render(request, 'pois/tag_detail.html', data_dict)
 
@@ -1013,7 +1040,6 @@ def poitype_detail(request, klass, poitype=None):
             else:
                 klasses = poitype.sub_types(return_klasses=True)
                 poi_list = Poi.objects.filter(poitype_id__in=klasses, state=1).order_by('name')
-            # theme_list = poitype.tags.all()
             if poi_list.count() > MAX_POIS and not list_all:
                 zones = Zone.objects.filter(zonetype_id=0).exclude(code='ROMA')
                 zone_list = zone_list_no_sorted = []
@@ -1021,7 +1047,8 @@ def poitype_detail(request, klass, poitype=None):
                     pois = resources_by_category_and_zone(klass, zone)
                     if pois:
                         n = pois.count()
-                        max_count = max(n, max_count); min_count = min(n, min_count)
+                        max_count = max(n, max_count)
+                        min_count = min(n, min_count)
                         zone_dict = zone.make_dict()
                         zone_dict['url'] = '/categoria/%s/zona/%s/' % (poitype.slug, zone.slug)
                         zone_dict['count'] = n
@@ -1056,7 +1083,11 @@ def poitype_detail(request, klass, poitype=None):
             try:
                 categories_cache.set(key, data_dict)
             except:
+                """
+                MMR 20181701
                 print (data_dict)
+                """
+                pass
     return render(request, 'pois/poitype_detail.html', data_dict)
 
 def poitype_detail_by_slug(request, klass_slug):
@@ -1153,7 +1184,11 @@ def poitype_zone_detail(request, klass, zone_id, poitype=None, zone=None):
             try:
                 catzones_cache.set(key, data_dict)
             except:
+                """
+                MMR 20181701
                 print (data_dict)
+                """
+                pass
     data_dict['zone'] = zone
     return render(request, 'pois/poitype_zone_detail.html', data_dict)
 
@@ -1188,10 +1223,6 @@ def poi_detail(request, poi_id, poi=None):
     if not data_dict:
         print ('invalid cache for ', key)
         poi_dict = poi.make_dict() # 140603
-        """
-        zone_list = Zone.objects.filter(pois=poi_id, zonetype__id__in=[0,7,1,3]).order_by('-zonetype__id', 'id')
-        zone_list = [{ 'name': zone.name_with_code(), 'url': zone.friendly_url()} for zone in zone_list]
-        """
         zones = Zone.objects.filter(pois=poi_id, zonetype__id__in=[3,7]).order_by('zonetype__id')
         zone_list = []
         macrozone = None
@@ -1465,7 +1496,7 @@ def pois_to_excel(poi_list):
 def poi_network(request, poi_id, poi=None):
     list_all = request.GET.get('all', None)
     formato = request.GET.get('format', None)
-    zone_list = []
+    zone_list = zone_list_no_sorted = []
     poi_dict_list = []
     max_count = 0
     min_count = 10000
@@ -1490,15 +1521,18 @@ def poi_network(request, poi_id, poi=None):
                 n = pois.count()
                 max_count = max(n, max_count)
                 min_count = min(n, min_count)
-                zone.count = n
-                zone.url = '/rete/%s/zona/%s/' % (poi.slug, zone.slug)
-                zone_list.append(zone)
+                zone_dict = zone.make_dict()
+                zone_dict['count'] = n
+                zone_dict['url'] = '/rete/%s/zona/%s/' % (poi.slug, zone.slug)
+                # zone_list.append(zone_dict)
+                zone_list_no_sorted.append(zone_dict)
+                zone_list = sorted(zone_list_no_sorted, key=lambda k: k['name'].lower())
         zone = None
         help_text = FlatPage.objects.get(url='/help/big-list/').content
     else:
         poi_dict_list = [poi.make_dict(list_item=True) for poi in poi_list]
     region = 'ROMA'
-    if zone_list and poi_dict_list: 
+    if zone_list and poi_list:
         for item in zone_list:
             if 'provincia' in item['name'].lower():
                 region = 'LAZIO' 
@@ -1587,8 +1621,7 @@ def resource_maps(request):
 
 def viewport_get_pois(request, viewport, street_id=None, tags=[]):
     w, s, e, n = viewport
-    geom = Polygon(LinearRing([Point(w, n), Point(e, n), Point(e, s), Point(w, s), Point(w, n)]))
-    geom.set_srid(srid_OSM)
+    geom = Polygon(LinearRing([Point(w, n), Point(e, n), Point(e, s), Point(w, s), Point(w, n)]),srid=srid_OSM)
     geom.transform(srid_GPS)
     geo_query = Q(point__within=geom)
     state_query = Q(state=1)

@@ -133,7 +133,7 @@ function map_init(){
 	    }
 	}
 	map.div.oncontextmenu = function noContextMenu(e){return false;};
-	map.addControl(new OpenLayers.Control.MousePosition());
+// map.addControl(new OpenLayers.Control.MousePosition());
 	map.addControl(new OpenLayers.Control.LayerSwitcher());
 	map.addControl(new OpenLayers.Control.ScaleLine({geodesic: 'true'}));
 	var gmap = new OpenLayers.Layer.Google("Google Streets", { numZoomLevels: 20 });

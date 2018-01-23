@@ -558,7 +558,7 @@ class PoiAnnotationForm(forms.Form):
     id = forms.IntegerField(widget=forms.HiddenInput, required=False) 
     notes = forms.CharField(
             label=_("Notes"),
-            help_text=_("If you aren't a registered user, please enter here your contact data: Full name, Email and/or Phone"),
+            help_text="",
             required=True,
             widget=forms.Textarea(attrs={'cols': 60, 'rows': 3}))
     captcha = CaptchaField(

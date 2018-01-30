@@ -1434,7 +1434,7 @@ class Poi(geomodels.Model):
             careof = self.careof
             if careof:
                 logo = careof.logo
-                careof = { 'name': careof.name, 'url': careof.friendly_url(), 'web': careof.safe_web(), 'logo_url': logo and logo.url or ''}
+                careof = { 'name': careof.name, 'url': careof.friendly_url(), 'web': careof.safe_web()[0], 'logo_url': logo and logo.url or ''}
             poi_dict['careof'] = careof
             poi_dict['modified'] = str(self.modified)
             host = self.host

@@ -1806,7 +1806,7 @@ def search_by_string(request, q, n=None, short=False, pgtrgm=False, what=[], tex
         if tags:
             categories = categories.filter(query_categories_by_tags(tags))
         categories = categories.distinct().values_list('name', 'slug')[:n]
-        if categories.count() == n:
+        # if categories.count() == n:
             categories = list(categories)
             categories.append(['...', ''])
         queries['categories'] = categories
@@ -1824,6 +1824,7 @@ def search_by_string(request, q, n=None, short=False, pgtrgm=False, what=[], tex
                 zones = Zone.objects.filter( Q(name__iregex=REGEX_FINDTRAILER % q), zonetype_id__in=zonetypes).values_list('name', 'slug', 'code')[:n]
 
             if zones.count() == n:
+            # if len(zones) == n:
                 zones = list(zones)
                 zones.append(['...', ''])
             queries['zones'] = zones
@@ -1836,6 +1837,7 @@ def search_by_string(request, q, n=None, short=False, pgtrgm=False, what=[], tex
             else:
                 streets = Odonym.objects.filter(name__iregex=REGEX_FINDTRAILER % q, poi_street__isnull=False).distinct().values_list('name', 'slug')[:n]
             if streets.count() == n:
+            # if len(streets) == n:
                 streets = list(streets)
                 streets.append(['...', ''])
         queries['streets'] = streets

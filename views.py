@@ -1807,6 +1807,7 @@ def search_by_string(request, q, n=None, short=False, pgtrgm=False, what=[], tex
             categories = categories.filter(query_categories_by_tags(tags))
         categories = categories.distinct().values_list('name', 'slug')[:n]
         # if categories.count() == n:
+        if len(categories) == n: # this patch, required in Django 2, for a bug related to distinct()
             categories = list(categories)
             categories.append(['...', ''])
         queries['categories'] = categories

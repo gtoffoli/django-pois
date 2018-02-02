@@ -1870,7 +1870,8 @@ def search_all(request):
         else:
             form = PoiSearchForm()
     queries = search_by_string(request, q, n=100, pgtrgm=False, what=what, text_in=text_in, tags=tags)
-    n_results = len(queries['pois']) + len(queries['categories']) + len(queries['zones']) + len(queries['streets'])
+    # n_results = len(queries['pois']) + len(queries['categories']) + len(queries['zones']) + len(queries['streets'])
+    n_results = len(queries.get('pois', [])) + len(queries.get('categories', [])) + len(queries.get('zones', [])) + len(queries.get('streets', []))
     return render(request, 'pois/search_results.html', {'q': q, 'queries': queries, 'n_results': n_results, 'form': form,})
 
 

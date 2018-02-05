@@ -1,17 +1,21 @@
 {% extends "roma/roma_base.html" %}
 {% load staticfiles i18n set_var %}
 
-{% block head_title %}{% trans "Zone" %}: {% if zone.zonetype.id == 3 %}{{ zone.code }}-{% endif %}{% if zone.zonetype.id == 6 %}{{ zone.zonetype.name|capfirst }} {% endif %}{{ zone.name }}{% comment %}, Roma{% endcomment %}{% endblock %}
+{% block head_title %}{% if zone.zonetype.id == 3 %}{{ zone.code}}{% elif zone.zonetype.id == 6 %}{{zone.zonetype_label}} {% endif %}{{ zone.name }}, {{region}}{% endblock %}
 {% block meta_description %}{% trans "main streets and places"|capfirst %}: {{ zone.short }}{% endblock %}
 
+
+
 {% block content %}
+{% if zone.slug != 'roma' %}
     <div class="boxcontent">
+        
         <div class="row mB10">
             <div class="col-md-12 col-lg-12">
-                <div class="segnaposto notranslate">ROMA / LAZIO - {{ zone.type_label|capfirst }} {% if zone.zonetype.id == 3 %}{{ zone.code }}{% endif %}</div>
+                <div class="segnaposto notranslate">{{region}}</div>
             </div>
             <div class="col-md-9 col-lg-10">
-                <h1>{% if zone.zonetype_id == 3 %}{{ zone.code}} - {% elif zone.zonetype_id == 6 %}{{zone.zonetype_label|capfirst}} {% endif %}<span class="notranslate">{{ zone.name}}</span></h1>
+                <h1>{% if zone.zonetype_id == 3 %} {{ zone.code}} - {% elif zone.zonetype_id == 6 %}{{zone.zonetype_label|capfirst}} {% endif %}<span class="notranslate">{{ zone.name}}</span></h1>
                 {% set urlprefix = 'mappa-zona' %}
                 {% include "pois/_pois_zone_view_summary.html" %}
             </div>
@@ -46,7 +50,12 @@
 
 <h4 class="char-spacing mT20 mB5 demiBold">{% trans "The resources of the category selected" %}</h4>
 
-<div id="resources"></div>
+
+        <div><table class="table table-striped table-list"><tbody id="resources">
+            {% for poi_dict in poi_dict_list %}{% include "pois/_poi_list_item.html" %}{% endfor %}
+        </tbody></table></div>
+
+
 
 {% if zone.description %}
 <div  class="box-desc">{{ zone.description|safe }}</div>
@@ -57,11 +66,14 @@
 	<div>{{ zone.render_web|safe }}</div>
 </div>
 {% endif %}
-</div>
+
+    </div>
+    {% endif %}
 {% endblock content %}
 
-{% block mapjs %}
 
+{% block mapjs %}
+{% if zone.slug != 'roma' %}
 <script type="text/javascript" src="{% static "pois/CenteredCluster.js" %}"></script>
 <script type="text/javascript" src="{% static "pois/patches_OL-popup-autosize.js" %}"></script>
 <script type="text/javascript" src="{% static "pois/FeaturePopups.js" %}"></script>
@@ -311,9 +323,11 @@ function refresh_viewport(form) {
 
     map_init();
 </script>
+{% endif %}
 {% endblock mapjs %}
 
 {% block body_scripts %}
+{% if zone.slug != 'roma' %}
 <script type="text/javascript">
 function make_theme_el(theme) {
 	if (theme[2] != '') {
@@ -417,4 +431,6 @@ $(document).ready(function() {
 	call_server_and_update_theme(null, url = '/zone_themes/'); // Inizializza la bottoniera dei temi e le linguette delle categorie
 })
 </script>
+{% endif %}
 {% endblock body_scripts %}
+

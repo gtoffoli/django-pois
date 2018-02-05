@@ -1,42 +1,11 @@
-{% extends "roma/gridA.html" %}
-{% load staticfiles i18n macros %}
-
-{% block head_title %}{% trans "choose your zone"|capfirst %}{% endblock %}
-
-{% block mapjs %}
-<script type="text/javascript" src="{% static "pois/geoPosition.js" %}" ></script>
-<script type="text/javascript" src="{% static "pois/pois_map.js" %}" ></script>
-<script>
-function supports(bool, suffix) {
-	  var s = "{% trans 'your browser'|capfirst %} ";
-	  if (bool) {
-	    s += "{% trans 'supports' %} " + suffix + ".";
-	  } else {
-	    s += "{% trans 'does not support' %} " + suffix + ". :(";
-	  }
-	  return s;
-	}
-
-function lookup_location() {
-	  geoPosition.getCurrentPosition(explore_location, location_error);
-}
-function location_error() {
-	$("#live-geolocation").html("{% trans 'unable to determine your location'|capfirst %}.");
-}
-
-$(function() {
-	if (geoPosition.init()) {
-		$("#live-geolocation").html(supports(true, "{% trans 'geolocation' %}") + ' <a href="#" onclick="lookup_location();return false"><br />{% trans "explore the zone around your current position"|capfirst %}</a>.');
-	} else {
-		$("#live-geolocation").html(supports(false, "{% trans 'geolocation' %}"));
-	}
-});
-</script>
-{% endblock %}
-
-{% block title-page %}{% trans "choose your zone"|capfirst %}{% endblock %}
-
-{% block content-page %}
-<div id="live-geolocation"></div>
-{% endblock %}
-
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset="utf-8" />
+        <title>Pagina rimossa {% if site_name %} | {{ site_name }}{% endif %}</title>
+    </head>
+    <body>
+    <h2>Pagina rimossa</h2>
+    <h3><a href="/">Torna alla Home page di RomaPaese</a></h3>
+    </body>
+</html>

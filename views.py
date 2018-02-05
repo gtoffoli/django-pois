@@ -200,10 +200,12 @@ def zone_map(request, zone_id, render_view=True, zone=None):
         macrozones = Zone.objects.filter(zonetype_id=MACROZONE, zones=zone)
     poi_list = Poi.objects.filter(q & Q(state=1))
     poitype_ids = poi_list.values_list('poitype_id', flat=True).distinct()
-
+    region = "ROMA"
+    if zone.code.startswith('PR') or zone.code.startswith('COM'):
+        region="LAZIO"
     # compute categories (poitypes) and themes (tags) for all resources in region
     poitypes = Poitype.objects.filter(klass__in=poitype_ids).order_by('klass')
-    tags = Tag.objects.filter(Q(poitype__in=poitypes) | Q(poi__in=poi_list)).distinct() # 130729 esteso: OK
+    tags = Tag.objects.filter(Q(poitype__in=poitypes) | Q(poi__in=poi_list)).exclude(id=49).distinct() # 130729 esteso: OK
 
     focus = get_focus(request)
     focus_tag_ids = focus.get('tags', [])
@@ -240,8 +242,7 @@ def zone_map(request, zone_id, render_view=True, zone=None):
     for poitype in poitypes:
         poitype_dict[poitype.id] = [poitype]
     poitype_list = [[key, poitype_dict[key]] for key in poitype_ids]
-
-    data_dict = {'zone': zone, 'macrozones': macrozones, 'subzone_list': subzone_list, 'tag_list': tag_list, 'tag_id': selected_tag, 'poitype_list': poitype_list, 'can_edit': can_edit,}
+    data_dict = {'zone': zone, 'macrozones': macrozones, 'subzone_list': subzone_list, 'tag_list': tag_list, 'tag_id': selected_tag, 'poitype_list': poitype_list, 'region': region, 'can_edit': can_edit,}
     if render_view:
         flatpage = FlatPage.objects.get(url='/help/zonemap/')
         data_dict['help'] = flatpage.content
@@ -712,7 +713,7 @@ def resources_by_tags(tag_ids, q=None):
 def resources_by_tags_and_type(in_tag_ids, in_klass, q=None, count_only=False):
     """ riporta le risorse taggate direttamente, o indirettamente attraverso la categoria;
         consente di filtrare le risorse mediante una condizione aggiuntiva """
-    tag_ids = Tag.objects.filter(poitype__klass=in_klass).values_list('id', flat=True)
+    tag_ids = Tag.objects.filter(poitype__klass=in_klass).exclude(id=49).values_list('id', flat=True)
     tag_intersection = set(tag_ids) & set(in_tag_ids)
     if tag_intersection:
         if q:
@@ -732,7 +733,7 @@ def resources_by_tags_and_type(in_tag_ids, in_klass, q=None, count_only=False):
         return pois
 
 def resources_by_tag_and_zone(tag, zone=None, list_all=False):
-    poitype_klasses = Poitype.objects.filter(tags=tag).values_list('klass', flat=True)
+    poitype_klasses = Poitype.objects.filter(tags=tag).exclude(id=49).values_list('klass', flat=True)
     if zone:
         q = make_zone_subquery(zone)
         tag_poitype_klasses = Poi.objects.filter(Q(tags=tag, state=1) & q).values_list('poitype_id', flat=True).distinct()
@@ -784,7 +785,7 @@ def tag_index(request):
     list_all = request.GET.get('all', None) is not None
     if list_all:
         refresh_configuration()
-    tag_list = Tag.objects.all().order_by('weight')
+    tag_list = Tag.objects.all().exclude(id=49).order_by('weight')
     tag_poitype_list = []
     for tag in tag_list:
         tag_id = tag.id
@@ -811,7 +812,7 @@ def zone_tag_index(request, zone_id, zone=None):
         print ('%s valid' % key)
     tag_poitype_list = None
     if not tag_poitype_list:
-        tag_list = Tag.objects.all().order_by('weight')
+        tag_list = Tag.objects.all().exclude(id=49).order_by('weight')
         tag_poitype_list = []
         for tag in tag_list:
             n_pois, poitype_instances_list = resources_by_tag_and_zone(tag, zone=zone, list_all=False)
@@ -992,10 +993,9 @@ def tag_zone_detail(request, tag_id, zone_id, tag=None, zone=None):
         if n:
             poitype_tag_ids = poitype.tags.all().values_list('id', flat=True)
             category_in_theme = tag.id in poitype_tag_ids
-            # poitype_instances_list.append([poitype, n, category_in_theme])
-            poitype_instances_list.append([poitype, n, category_in_theme, pois[:1]])
+            poitype_instances_list.append([poitype, n, category_in_theme])
             n_pois += n
-    return render('pois/tag_zone_detail.html', {'tag': tag, 'zone': zone, 'poitype_list': poitype_instances_list,})
+    return render(request,'pois/tag_zone_detail.html', {'tag': tag, 'zone': zone, 'poitype_list': poitype_instances_list,} )
 
 def tag_zone_detail_by_slug(request, tag_slug, zone_slug):
     tag = get_object_or_404(Tag, slug=tag_slug)
@@ -1249,7 +1249,7 @@ def poi_detail(request, poi_id, poi=None):
                 poitype = { 'name': poitype.name, 'url': '/categoria/%s/zona/%s/' % (poitype.slug, macrozone)}
             else:
                 poitype = { 'name': poitype.name, 'url': poitype.friendly_url()}
-        theme_list = [{ 'id': theme.id, 'name': theme.name, 'slug': theme.slug } for theme in poi.get_all_themes()]
+        theme_list = [{ 'id': theme.id, 'name': theme.name, 'slug': theme.slug } for theme in poi.get_all_themes() if theme.id != 49]
         data_dict = {'poi_dict': poi_dict, 'poitype': poitype, 'theme_list': theme_list, 'hosted_list': hosted_list, 'zone_list': zone_list, 'poi_list': poi_list, 'n_caredby': n_caredby,}
         if macrozone:
             data_dict['macrozone'] = macrozone
@@ -1708,7 +1708,7 @@ class PoiAutocomplete(autocomplete.Select2QuerySetView):
 
 class TagAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
-        qs = Tag.objects.all().order_by('name')
+        qs = Tag.objects.all().exclude(id=49).order_by('name')
 
         if self.q:
             qs = qs.filter(name__icontains=self.q)

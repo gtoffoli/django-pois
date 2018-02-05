@@ -1,19 +1,17 @@
-{% extends "roma/gridA.html" %}
+{% extends "roma/roma_base.html" %}
 {% load staticfiles i18n %}
 
 {% block head_title %}{% trans "Zones of Rome or Lazio of type" %} {{ zonetype_name|capfirst }}{% endblock %}
 
-{% block title-page%}{% trans "Zones of Rome or Lazio of type" %} "{{ zonetype_name|capfirst }}"{% endblock %}
-{% block no-view-map %}{% endblock %}
-{% block list %}
-    {% if zone_list %}
-        {% for zone in zone_list %}
-            <div><a href="{{ zone.friendly_url }}">{{ zone.code }}</a>{% if zone.zonetype.id != 6 %} - {{ zone.name }}{% endif %}</div>
+{% block content %}
+    <div class="boxcontent">
+        <h1>{% trans "Zones of Rome or Lazio of type" %} "{{ zonetype_name|capfirst }}"</h1>
+        {% if zone_list %}
+            {% for zone in zone_list %}
+                <div><a href="{{ zone.friendly_url }}">{{ zone.code }}</a>{% if zone.zonetype.id != 6 %} - {{ zone.name }}{% endif %}</div>
             {% endfor %}
-    {% else %}
-    <p>{% trans "No zone is present" %}.</p>
-    {% endif %}
-{% endblock %}
-{% block blog %}{% endblock %}
-{% block portlets %}{% endblock %}
-
+        {% else %}
+            <p>{% trans "No zone is present" %}.</p>
+        {% endif %}
+    </div>
+{% endblock content %}

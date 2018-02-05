@@ -1,27 +1,22 @@
-{% extends "roma/gridA.html" %}
+{% extends "roma/roma_base.html" %}
 {% load staticfiles i18n %}
 
 {{ current_path }}
 
-{% block head_title %}{% trans "Theme area" %}: {{ tag.name|capfirst }} - {{ zone.zonetype.name }} {{ zone.name }}{% endblock %}
+{% block head_title %}{{ tag.name|capfirst }} - {{ zone.name }}{% endblock %}
 
-{% block title-page %}{% trans "Theme area" %}: {{ tag.name|capfirst }} - {{ zone.zonetype.name }} <span style="color: black;">{{ zone.name }}</span>{% endblock %}
-{% block no-view-map %}{% endblock %}
-
-{% block list %}
-    {% if poitype_list %}
-	    <p>{% trans "Click on the number in parentheses, next to a category, to get a list of resources of that category" %}.</p>
-		<div class="summary">
-			<div class="icon-hand-right"></div><div class="eti">{% trans "related categories" %}</div>
-		</div>
-		<div id="resources" class="pT10">
-        {% for poitype,  n, category_in_theme in poitype_list %}
-            <div style="margin-bottom: 3px;">{{ poitype.name }} <a href="/categoria/{{ poitype.slug }}/zona/{{ zone.slug }}/">[{{ n }}]</a></div>
-        {% endfor %}
-        </div>
-    {% else %}
-        <p>{% trans "No resource is present" %} {% trans "for this theme area" %} {% trans "for this zone" %}.</p>
-    {% endif %}
-{% endblock %}
-{% block blog %}{% endblock %}
-{% block portlets %}{% endblock %}
+{% block content %}
+    <div class="boxcontent">
+        <h1>{{ tag.name|capfirst }} - {{ zone.name }}</h1>
+        {% if poitype_list %}
+            <p>{% trans "Click on the number in parentheses, next to a category, to get a list of resources of that category" %}.</p>
+            <div class="pT10">
+                {% for poitype,  n, category_in_theme in poitype_list %}
+                    <div style="margin-bottom: 5px;">{{ poitype.name }} <a href="/categoria/{{ poitype.slug }}/zona/{{ zone.slug }}/">[{{ n }}]</a></div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>{% trans "No resource is present" %} {% trans "for this theme area" %} {% trans "for this zone" %}.</p>
+        {% endif %}
+    </div>
+{% endblock content %}

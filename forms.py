@@ -295,7 +295,7 @@ class PoiForm(ModelForm):
         )
     pro_com = forms.ChoiceField(choices=COMUNE_CHOICES,
         required=False,
-        label="Comune"
+        label="Comune")
     street_address = forms.CharField(required=False, widget=forms.TextInput(attrs={'style':'width:50em','maxlength':100}))
     street = forms.ModelChoiceField(Odonym.objects.all(),
         required=False,

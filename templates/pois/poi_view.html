@@ -5,44 +5,47 @@
 
 {% block content %}
     <div class="boxcontent">
-        <div class="container">
-            <h1>{% trans "Thanks for your recommendation" %}</h1>
-            <div class="mB20">{{ text_body|safe }}</div>
-            <div class="row">
-                <div class="col-lg-offset-1 col-lg-8 pTB12LR24 back-box">
-                    <div class="demiBold">{% trans "Name of the resource" %}</div>
-                    <p>{{ poi.name }}</p>
-                    <div style="font-weight:600">{% trans "Type of resource" %}</div>
-                    <p>{{ poi.short}}</p>
-                    <div class="demiBold">{% trans "Theme areas" %}</div>
-                    <p>{% for tag in poi.tags.all %}{{tag }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-                    <div class="demiBold">{% trans "Street name" %}{% if poi.housenumber %}, {% trans "House number" %}{% endif %}{% if poi.zipcode %} - {% trans "zipcode"|capfirst %}{% endif %}</div>
-                    <p>{{ poi.street }}{% if poi.housenumber %}, {{poi.housenumber}}{% endif %}{% if poi.zipcode %} - {{poi.zipcode}}{% endif %}</p>
-                    {% if poi.phone %}
-                    <div class="demiBold">{% trans "Phone" %}</div>
-                     <p>{{ poi.phone }}</p>
-                    {% endif %}
-                    {% if poi.email %}
-                    <div class="demiBold">{% trans "Email" %}</div>
-                    <p>{{ poi.email }}</p>
-                    {% endif %}
-                    {% if poi.web %}
-                    <div class="demiBold">{% trans "Web" %}</div>
-                    <p>{{ poi.web }}</p>
-                    {% endif %}
-                    {% if poi.video %}
-                    <div class="demiBold">{% trans "Youtube" %}</div>
-                    <p>{{ poi.video }}</p>
-                    {% endif %}
-                    {% if poi.description %}
-                    <div class="demiBold">{% trans "Description" %}</div>
-                    <p>{{ poi.description }}</p>
-                    {% endif %}
-                    {% if poi.notes %}
-                    <div class="demiBold">{% trans "Notes" %}</div>
-                    <p>{{ poi.notes }}</p>
-                    {% endif %}
-                </div>
+        <div class="row">
+            <div class="col-lg-offset-2 col-lg-9">
+                <h1>{% trans "Thanks for your recommendation" %}</h1>
+                <div class="mB20">{{ text_body|safe }}</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-offset-2 col-lg-8">
+            <div class="pTB12LR24 back-box">
+                <div class="demiBold">{% trans "Name of the resource" %}</div>
+                <p>{{ poi.name }}</p>
+                <div class="demiBold">{% trans "Type of resource" %}</div>
+                <p>{{ poi.short}}</p>
+                <div class="demiBold">{% trans "Theme areas" %}</div>
+                <p>{% for tag in poi.tags.all %}{{tag }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                <div class="demiBold">{% trans "Address" %}</div>
+                <p>{% if poi.street %}{{ poi.street }}{% else %}{{ poi.street_address }}{% endif %}{% if poi.housenumber %}, {{poi.housenumber}}{% endif %} - {% if poi.zipcode %}{{poi.zipcode}} {% endif %}{{poi.comune.0}}</p>
+                {% if poi.phone %}
+                <div class="demiBold">{% trans "Phone" %}</div>
+                <p style="white-space:pre-wrap">{{ poi.phone }}</p>
+                {% endif %}
+                {% if poi.email %}
+                <div class="demiBold">{% trans "Email" %}</div>
+                <p>{{ poi.email }}</p>
+                {% endif %}
+                {% if poi.web %}
+                <div class="demiBold">{% trans "Web and/or Facebook" %}</div>
+                <p style="white-space:pre-wrap">{{ poi.web }}</p>
+                {% endif %}
+                {% if poi.video %}
+                <div class="demiBold">{% trans "Youtube" %}</div>
+                <p>{{ poi.video }}</p>
+                {% endif %}
+                {% if poi.description %}
+                <div class="demiBold">{% trans "Description" %}</div>
+                <p>{{ poi.description }}</p>
+                {% endif %}
+                {% if poi.notes %}
+                <p style="white-space:pre-wrap">{{ poi.notes }}</p>
+                {% endif %}
+            </div>
             </div>
         </div>
     </div>

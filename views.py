@@ -1249,6 +1249,7 @@ def poi_detail(request, poi_id, poi=None):
                 poitype = { 'name': poitype.name, 'url': '/categoria/%s/zona/%s/' % (poitype.slug, macrozone)}
             else:
                 poitype = { 'name': poitype.name, 'url': poitype.friendly_url()}
+        
         theme_list = [{ 'id': theme.id, 'name': theme.name, 'slug': theme.slug } for theme in poi.get_all_themes() if theme.id != 49]
         data_dict = {'poi_dict': poi_dict, 'poitype': poitype, 'theme_list': theme_list, 'hosted_list': hosted_list, 'zone_list': zone_list, 'poi_list': poi_list, 'n_caredby': n_caredby,}
         if macrozone:
@@ -1301,11 +1302,19 @@ def poi_edit(request, poi_id):
     form = PoiUserForm(instance=poi)
     return (request, 'pois/poi_edit.html', {'poi': poi, 'form': form})
 
+from django.core.mail import send_mail
+from roma.settings import SERVER_EMAIL, SITE_NAME
 def poi_new(request):
     flatpage = FlatPage.objects.get(url='/risorse/segnala/')
     text_body = flatpage.content
-    form = PoiUserForm()
+    user = request.user
+    if user.is_authenticated:
+        fullname ='%s %s' % (user.first_name, user.last_name)
+        form = PoiUserForm(initial={'fullname': fullname,'user_email': user.email})
+    else:
+       form = PoiUserForm()
     return render(request, 'pois/poi_edit.html', {'poi': '', 'form': form, 'text_body': text_body})
+
 
 def poi_save(request):
     flatpage = FlatPage.objects.get(url='/risorse/segnala/')
@@ -1314,10 +1323,39 @@ def poi_save(request):
         form = PoiUserForm(request.POST)
         if form.is_valid():
             # human = True
+            web = request.POST['web']
+            facebook = request.POST['facebook']
+            now = datetime.datetime.now()
+            fullname = request.POST['fullname']
+            user_email = request.POST['user_email']
+            notes = """----- risorsa segnalata in data %s -----
+----- da %s - %s -----
+""" % (now, fullname, user_email)
             poi = form.save()
             if request.user.is_authenticated:
                 poi.owner = request.user
-                poi.save()
+            poi.notes = notes
+            if web and facebook:
+                poi.web = '%s\n%s' % (web, facebook)
+            elif facebook:
+                poi.web = facebook
+            poi.save()
+            subject='%s - nuova risorsa: %s' % (SITE_NAME, poi.name)
+            message='risorsa: %s (id: %s)\n\n----- risorsa segnalata in data %s -----\n\n-----da: %s - %s -----' % (poi.name, poi.id, now, fullname, user_email)
+            result=send_mail(
+                subject,
+                message,
+                SERVER_EMAIL,
+                fail_silently=False,
+            )
+            subject='%s - risorsa segnalata: %s' % (SITE_NAME, poi.name)
+            message="Gentile %s,\n\n Grazie per averci segnalato la risorsa --- %s ---\nAppena potremo pubblicheremo il profilo della risorsa, dopo avere rivisto ed eventualmente integrato l'informazione da lei fornita.\n\nLo staff di Romapaese\n\n http:%s" % (fullname, poi.name, request.META['HTTP_HOST'])
+            result=send_mail(
+                subject,
+                message,
+                SERVER_EMAIL,
+                fail_silently=False,
+            )
             return HttpResponseRedirect('/nuova-risorsa/%s/' % poi.id)
         else:
             return render(request, 'pois/poi_edit.html', {'form': form, 'text_body': text_body})
@@ -1328,6 +1366,7 @@ def poi_view(request,poi_id):
     poi = get_object_or_404(Poi, pk=poi_id)
     flatpage = FlatPage.objects.get(url='/risorse/riscontro/')
     text_body = flatpage.content
+    poi.comune = poi.get_comune()
     return render(request, 'pois/poi_view.html', {'poi': poi, 'text_body': text_body})
 
 def poi_add_note(request, poi_id, poi=None):
@@ -1345,18 +1384,32 @@ def poi_add_note_by_slug(request, poi_slug):
 def poi_save_note(request):
     poi_id = int(request.POST.get('id', 0))
     poi = get_object_or_404(Poi, pk=poi_id)
+    flatpage = FlatPage.objects.get(url='/risorsa/annota/')
+    text_body = flatpage.content
     form = PoiAnnotationForm(request.POST)
     if form.is_valid():
         now = datetime.datetime.now()
         comment = request.POST['notes']
+        fullname = request.POST['name']
+        email = request.POST['email']
         poi.notes = """----- commento in data %s -----
 %s
+%s - %s
 -----
-%s""" % (now, comment, poi.notes)
+%s
+""" % (now, comment, fullname, email, poi.notes)
         poi.save()
+        subject='%s - nota su risorsa: %s' % (SITE_NAME, poi.name)
+        message='risorsa: %s (id: %s) http://%s/risorsa/%s/\n\n----- nota in data %s -----\n\n nota inviata tramite il sito da: %s - %s' % (poi.name, poi.id, request.META['HTTP_HOST'], poi.slug, now, fullname, email)
+        result=send_mail(
+            subject,
+            message,
+            SERVER_EMAIL,
+            fail_silently=False,
+        )
         return HttpResponseRedirect('/risorsa/%s/?comment=true' % poi.slug)
     else:
-        return render(request, 'pois/poi_feedback.html', {'form': form})
+        return render(request, 'pois/poi_feedback.html', {'form': form, 'text_body': text_body})
 
 def pois_recent(request, n=MAX_POIS):
     # instances = Poi.objects.filter(state=1).order_by('-id')[:n]

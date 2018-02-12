@@ -295,7 +295,7 @@ class PoiForm(ModelForm):
         )
     pro_com = forms.ChoiceField(choices=COMUNE_CHOICES,
         required=False,
-        label='Comune')
+        label="Comune"
     street_address = forms.CharField(required=False, widget=forms.TextInput(attrs={'style':'width:50em','maxlength':100}))
     street = forms.ModelChoiceField(Odonym.objects.all(),
         required=False,
@@ -394,100 +394,117 @@ class PoiForm(ModelForm):
             'feeds': forms.Textarea(attrs={'cols': 60, 'rows': 2}),
             'notes': forms.Textarea(attrs={'cols': 60, 'rows': 3}),
         }
- 
-# MMR old version - class PoiUserForm(autocomplete_light.GenericModelForm):
+
 class PoiUserForm(ModelForm):
-    """
-    error_css_class = 'error'
-    required_css_class = 'required'
-    """
+
     class Meta:
         model = Poi
-        fields = ('name', 'short', 'tags', 'street', 'housenumber', 'zipcode', 'phone', 'email', 'web', 'video', 'description', 'notes',)
+        fields = ('name', 'short', 'tags', 'pro_com', 'street', 'street_address', 'housenumber', 'zipcode', 'phone', 'email', 'web', 'facebook', 'video', 'description',)
 
     name = forms.CharField(
-            label=_("Name of the resource"),
+            label=_("name of the resource"),
             required=True,
             widget=forms.TextInput(attrs={'class':'form-control'}))
     short = forms.CharField(
-            label=_("Type of resource"),
+            label=_("type of resource"),
             required=True,
             widget=forms.TextInput(attrs={'class':'form-control'}))
     tags = forms.ModelMultipleChoiceField(Tag.objects.all().exclude(id=49),
-            label=_('Theme areas'),
+            label=_('theme areas'),
             help_text=_("Choose 1 or 2 theme areas"),
             required=True,
             widget=forms.CheckboxSelectMultiple())
-    street = forms.ModelChoiceField(queryset=Odonym.objects.all(),
-            label=_('Street name'),
-            help_text=_("Enter at least 3 characters of the name, wait for some suggestions and choose one"),
-            required=True,
-            widget=autocomplete.ModelSelect2(url='toponimo-autocomplete', attrs={'data-minimum-input-length': 3})
-
-            # MMR temporaneamente disattivato
-            #widget=autocomplete_light.ChoiceWidget(autocomplete='OdonymAutocomplete',
-            #   attrs={'minimum_characters': 3, 'placeholder': 'Enter a few characters and choose'})
-            )
-    housenumber = forms.CharField(
-            label=_("House number"),
+    pro_com = forms.ChoiceField(choices=COMUNE_CHOICES,
             required=False,
-            widget=forms.TextInput(attrs={'class':'form-control'}))
+            label=_('town'),
+            widget=forms.Select(attrs={'class':'form-control','style':'width:20em',}))
+    street = forms.ModelChoiceField(queryset=Odonym.objects.all(),
+            label='Roma: %s' % (_('street name')),
+            help_text=_("Enter at least 3 characters of the name, wait for some suggestions and choose one"),
+            required=False,
+            widget=autocomplete.ModelSelect2(url='toponimo-autocomplete', attrs={'data-minimum-input-length': 3,'data-placeholder': _('Selected ROMA: enter the street here')})
+            )
+    street_address = forms.CharField(
+            required=False,
+            label='%s: %s' % (_('Other town'), _('street name')),
+            widget=forms.TextInput(attrs={'class':'form-control','maxlength':100, 'placeholder':_('If you have chosen ANOTHER TOWN, enter the street here')}))
+    housenumber = forms.CharField(
+            label=_("house number"),
+            required=False,
+            widget=forms.TextInput(attrs={'class':'form-control',}))
     zipcode = forms.CharField(
             label=_("zipcode").title(),
             required=False,
-            widget=forms.TextInput(attrs={'class':'form-control'}))
+            widget=forms.TextInput(attrs={'class':'form-control',}))
     phone = forms.CharField(
-            label=_("Phone"),
+            label=_("phone"),
             required=False,
             widget=forms.Textarea(attrs={'class':'form-control', 'rows': 2, 'cols': 60}))
     email = forms.EmailField(
-            label=_("Email"),
+            label=_("email"),
             required=False,
             widget=forms.TextInput(attrs={'class':'form-control'}))
     web = forms.URLField(
-            label=_("Web"),
+            label=_("web"),
+            required=False,
+            widget=forms.TextInput(attrs={'class': 'form-control'}))
+    facebook = forms.URLField(
+            label=_("facebook"),
             required=False,
             widget=forms.TextInput(attrs={'class': 'form-control'}))
     video = forms.URLField(
-            label=_("Youtube"),
+            label=_("youtube"),
             required=False,
             widget=forms.TextInput(attrs={'class':'form-control',}))
     description = forms.CharField(
-            label=_('Description'),
+            label=_('description'),
             required=False,
             widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 6, 'cols': 60}))
+    """
     notes = forms.CharField(
             label=_("Notes"),
-            help_text=_("If you aren't a registered user, please enter here your contact data: Full name, Email and/or Phone"),
+            help_text="",
             required=False,
             widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'cols': 60}))
+    """
+    fullname = forms.CharField(
+            label=_("Full Name"),
+            help_text=_("If you aren't a connected user, please enter here Full Name"),
+            required=True,
+            widget=forms.TextInput(attrs={'class':'form-control'}))
+    user_email = forms.EmailField(
+            label=_("your email"),
+            help_text=_("If you aren't a connected user, please enter here your email"),
+            required=True,
+            widget=forms.TextInput(attrs={'class':'form-control'}))
     captcha = CaptchaField(
-            label=_("Control string"),
+            label=_("control string"),
             help_text=_("Enter these 5 characters in the textbox on the right"),
             widget=CaptchaTextInput(attrs={'class': 'form-control'})
             )
-    """
-    class Meta:
-        model = Poi
-        fields = (
-            'name',
-            'short',
-            'tags',
-            'street',
-            'housenumber',
-            'zipcode',
-            'phone',
-            'email',
-            'web',
-            'notes',
-        )
-        widgets = {
-            'phone': forms.Textarea(attrs={'cols': 60, 'rows': 2}),
-            'email': forms.Textarea(attrs={'cols': 60, 'rows': 2}),
-            'web': forms.Textarea(attrs={'cols': 60, 'rows': 2}),
-            'notes': forms.Textarea(attrs={'cols': 60, 'rows': 3}),
-        }
-    """
+
+    def clean_tags(self):
+        tags = self.cleaned_data['tags']
+        if len(tags) > 2:
+            raise forms.ValidationError(_('Too many thematic areas chosen.'), code='invalid')
+        return tags
+    
+    def clean_street(self):
+        pro_com = self.cleaned_data['pro_com']
+        if (pro_com == str(COMUNE_CHOICES[0][0])):
+            street = self.cleaned_data['street']
+            if street == None:
+                raise forms.ValidationError(_('This field is required.'), code='required')
+            return street
+    
+    def clean_street_address(self):
+        pro_com = self.cleaned_data['pro_com']
+        if (pro_com != str(COMUNE_CHOICES[0][0])):
+            street_address = self.cleaned_data['street_address']
+            if street_address == '':
+                raise forms.ValidationError(_('This field is required.'), code='required')
+            return street_address
+        
 
 class PoiBythemeForm(forms.Form):
     """
@@ -555,12 +572,22 @@ class PoiAnnotationForm(forms.Form):
         self.fields['id'].initial = poi_id
     """
 
-    id = forms.IntegerField(widget=forms.HiddenInput, required=False) 
+    id = forms.IntegerField(widget=forms.HiddenInput, required=False)
+    name = forms.CharField(
+            label=_("Full Name"),
+            help_text="",
+            required=True,
+            widget=forms.TextInput(attrs={'class':'form-control'}))
+    email = forms.EmailField(
+            label=_("email"),
+            help_text="",
+            required=True,
+            widget=forms.TextInput(attrs={'class':'form-control'}))
     notes = forms.CharField(
             label=_("Notes"),
             help_text="",
             required=True,
-            widget=forms.Textarea(attrs={'cols': 60, 'rows': 3}))
+            widget=forms.Textarea(attrs={'class':'form-control', 'rows': 3,}))
     captcha = CaptchaField(
             label=_("Control string"),
             help_text=_("Enter these 5 characters in the textbox on the right"),

@@ -1,15 +1,19 @@
 {% extends "roma/roma_base.html" %}
-{% load staticfiles i18n set_var %}
+{% load staticfiles i18n %}
 
 {% block head_title %}{% trans "Remarks on the resource" %} {{ poi.name }}{% endblock %}
 
 {% block content %}
 <div class="boxcontent">
-    <div class="container">
-        <h1>{% trans "Remarks on the resource" %}: <span class="ntranslate">{{ poi.name }}</span></h1>
-        <div class="mB20">{{ text_body|safe }}</div>
-        <div class="row">
-            <div class="col-lg-offset-1 col-lg-8 pTB12LR24 back-box">
+    <div class="row">
+        <div class="col-lg-offset-2 col-lg-9">
+            <h1>{% trans "Remarks on the resource" %}: <span class="ntranslate">{{ poi.name }}</span></h1>
+            <div class="mB20">{{ text_body|safe }}</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-offset-2 col-lg-6">
+            <div class="pTB12LR24 back-box">
                 <form action="/pois/save_note" method="post" id="feedback_form">
                     {% csrf_token %}
                     {% for field in form.hidden_fields %}{{ field }}{% endfor %}

@@ -1346,6 +1346,7 @@ def poi_save(request):
                 subject,
                 message,
                 SERVER_EMAIL,
+                [SERVER_EMAIL,],
                 fail_silently=False,
             )
             subject='%s - risorsa segnalata: %s' % (SITE_NAME, poi.name)
@@ -1354,6 +1355,7 @@ def poi_save(request):
                 subject,
                 message,
                 SERVER_EMAIL,
+                [user_email],
                 fail_silently=False,
             )
             return HttpResponseRedirect('/nuova-risorsa/%s/' % poi.id)
@@ -1405,6 +1407,7 @@ def poi_save_note(request):
             subject,
             message,
             SERVER_EMAIL,
+            [SERVER_EMAIL],
             fail_silently=False,
         )
         return HttpResponseRedirect('/risorsa/%s/?comment=true' % poi.slug)

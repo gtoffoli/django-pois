@@ -13,6 +13,9 @@
             </div>
             <div class="col-md-9 col-lg-10">
                 <h1 class="notranslate">{{ poi_dict.prefixed_name }}</h1>
+                {% if can_edit and poi_dict.state != 'ok' %}
+                   <div>Stato: {{poi_dict.state}}</div>
+                {% endif %}
             </div>
             <div class="col-md-3 col-lg-2">
                 <div class="actions">
@@ -156,7 +159,7 @@
             </div>
             <div class="col-md-6 col-lg-6 mB20">
             {% if poi_dict.video %}
-                <div class="box-res"><iframe src="http://{{ poi_dict.video }}?autoplay=1" frameborder="0" allowfullscreen=""></iframe></div>
+                <div class="box-res"><iframe src="{{ poi_dict.video.0 }}?autoplay=1" frameborder="0" allowfullscreen=""></iframe></div>
             {% else %}
                 <div class="box-res back-box display-box"><div><i class="fa fa-play"></i> video</div></div>
             {% endif %}
@@ -214,7 +217,7 @@
                     <div>{% trans "If the information in this page isn't correct, up-to-date and complete" %}, <a href="/annota-risorsa/{{ poi_dict.slug }}/">{% trans "send us a note" %}</a>. {% trans "Thanks" %}!</div>
                 {% endif %}
             </div>
-        </div>   
+        </div>
     </div>
 {% endblock content %}
 {% block bottom-banner %}{% endblock bottom-banner %}

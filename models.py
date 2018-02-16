@@ -1369,6 +1369,25 @@ class Poi(geomodels.Model):
             return None
         return '<a href="%s">%s</a>' % (host.get_url(), host.prefixed_name())
 
+    def get_video(self):
+        urls = []
+        if self.video:
+            lines = self.video.split('\n')
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    continue
+                words = line.split()
+                url = words[0]
+                if not url:
+                    continue
+                if url.startswith('http:'):
+                    url = url.replace('http:','https:',6)
+                elif not url.startswith('https'):
+                    url = 'https://%s' % url
+                urls.append(url)
+        return urls
+        
     def get_feeds(self):
         feeds = []
         if self.feeds:
@@ -1425,7 +1444,7 @@ class Poi(geomodels.Model):
             poi_dict['phones'] = self.clean_phones()
             poi_dict['emails'] = self.clean_emails()
             poi_dict['webs'] = self.clean_webs()
-            poi_dict['video'] = self.video
+            poi_dict['video'] = self.get_video()
             poi_dict['logo'] = self.logo and self.logo.url or ''
             if self.owner:
                 poi_dict['owner'] = '%s %s' % (self.owner.first_name, self.owner.last_name)
@@ -1458,6 +1477,18 @@ class Poi(geomodels.Model):
             poi_dict['blogs'] = blogs
             """
             poi_dict['blogs'] = []
+            poi_dict['state'] = STATE_CHOICES[self.state][1]
+        return poi_dict
+    
+    def make_short_dict(self, list_item=False):
+        poi_dict = {}
+        poi_dict['id'] = self.id
+        poi_dict['name'] = self.getName().strip()
+        poi_dict['safe_name'] = self.safe_name().strip()
+        poi_dict['url'] = self.friendly_url()
+        if not list_item:
+            poi_dict['slug'] = self.slug
+            poi_dict['webs'] = self.clean_webs()
         return poi_dict
 """
 MMR 20181701 non utilizzato

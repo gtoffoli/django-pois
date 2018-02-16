@@ -21,6 +21,7 @@
                 </div>
             </div>
         </div>
+        {% if zone.description %}<div class="mT20">{{ zone.description|safe }}</div>{% endif %}
         {% if tag_poitype_list %}
 {% comment %}<p class="help-block">{% trans "In this list a category can occur in several theme areas" %}.</p>{% endcomment %}
             <div class="row">
@@ -47,7 +48,6 @@
         {% else %}
             <p>{% trans "No theme areas or resource categories are present" %} {% trans "for this zone" %}.</p>
         {% endif %}
-        {% if zone.description %}<div  class="box-desc">{{ zone.description|safe }}</div>{% endif %}
     </div>
 {% endblock content %}
 

@@ -1470,7 +1470,9 @@ def poi_analysis(request):
     todo_list = []
     comment_list = []
     notes_list = []
+    web_list = web_list_no_sorted = []
     poi_list = []
+    state = -1
     if request.user.is_superuser or request.user.is_staff:
         value_get = request.GET.get('field','')
         state = request.GET.get('state','')
@@ -1478,7 +1480,10 @@ def poi_analysis(request):
             qs = Poi.objects.filter(state=state)
         else:
             qs = Poi.objects.all()
-        if value_get in ['all', 'geo'] :
+        if value_get in ['all', 'web']:
+            web_list_no_sorted = [poi.make_short_dict() for poi in qs.order_by('name').exclude(web__isnull=True).exclude(web__exact='')]
+            web_list = sorted(web_list_no_sorted, key=lambda k: k['name'].lower())
+        if value_get in ['all', 'geo']:
             no_geo_list = [poi.make_dict() for poi in qs.filter(point__isnull=True)]
         if value_get in ['all', 'theme']:
             no_theme_list = [poi.make_dict() for poi in qs.filter(tags__isnull=True, poitype__tags__isnull=True)]
@@ -1507,7 +1512,7 @@ def poi_analysis(request):
                         item = poi.make_dict()
                         item.update({'notes': notes})
                         notes_list.append(item)
-    return render(request, 'pois/poi_analysis.html', {'no_geo_list': no_geo_list, 'no_theme_list': no_theme_list, 'todo_list': todo_list, 'comment_list': comment_list, 'notes_list': notes_list,})
+    return render(request, 'pois/poi_analysis.html', {'stato': state, 'web_list': web_list, 'no_geo_list': no_geo_list, 'no_theme_list': no_theme_list, 'todo_list': todo_list, 'comment_list': comment_list, 'notes_list': notes_list,})
 
 
 def decimal_to_exagesimal(coord):

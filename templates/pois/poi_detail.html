@@ -67,33 +67,35 @@
                         {% endif %}
                         <tr><th>{% trans "Address" %}:</th><td>
                         {% if  poi_dict.street_url %}<a rel="tooltip" href="{{ poi_dict.street_url }}" title="{% trans "show" %} {{ poi_dict.street_name }}"><span class="notranslate">{{ poi_dict.street_name }}</span></a><span class="notranslate">, {{ poi_dict.number }}</span>{% else %}<span class="notranslate">{{ poi_dict.street_address }}</span>{% endif %} - <a href="/indice-zona/{{poi_dict.cap }}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the zone with zipcode" %} {{poi_dict.cap }}"><span class="notranslate">{{ poi_dict.cap }}</span></a> {% if poi_dict.comune.1 == 'roma' %}<span class="notranslate">{{ poi_dict.comune.0 }}</span>{% else %}<a href="/indice-zona/{{poi_dict.comune.1}}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the town" %} {{ poi_dict.comune.0 }}"><span class="notranslate">{{ poi_dict.comune.0 }}</span></a>{% endif %}</td></tr>
-                        <tr><th>{% trans "Phone" %}:</th><td>
                         {% if poi_dict.phones %}
+                        <tr><th>{% trans "Phone" %}:</th><td>
                              <div class="summary notranslate">
+                                <div>{{poi_dict.phones|length}}</div>
                              {% for phone in poi_dict.phones %}
                                  <div class="val">{{ phone }}</div>
                              {% endfor %}
                              </div>
-                        {% endif %}
                         </td></tr>
-                        <tr><th>E-mail:</th><td>
+                        {% endif %}
                         {% if poi_dict.emails %}
+                        <tr><th>E-mail:</th><td>
                              <ul class="list-unstyled notranslate">
                              {% for email in poi_dict.emails %}
                                  <li><a rel="tooltip" href="{{ email.0 }}">{{ email.1 }}</a></li>
                              {% endfor %}
                              </ul>
-                        {% endif %}
                         </td></tr>
-                        <tr><th class="notranslate">Web:</th><td>
+                        {% endif %}
                         {% if poi_dict.webs %}
+                        <tr><th class="notranslate">Web:</th><td>
                             <ul class="list-unstyled">
                             {% for web in poi_dict.webs %}
                                 <li><a rel="tooltip" href="{{ web.0 }}" target="_blank">{{ web.1 }}</a></li>
                             {% endfor %}
                             </ul>
-                        {% endif %}
                         </td></tr>
+                        {% endif %}
+                        {% if request.user.is_superuser or request.user.is_staff %}
                         {% if poi_dict.routes %}
                             <tr><th>{% trans "Routes" %}:</th>
                                 <td><ul class="list-unstyled notranslate">
@@ -102,6 +104,7 @@
                                 {% endfor %}
                                 </ul></td>
                             </tr>
+                        {% endif %}
                         {% endif %}
                         {% if poi_dict.affiliations %}
                             <tr><th>{% trans "Affiliation" %}:</th>

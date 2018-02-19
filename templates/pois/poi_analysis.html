@@ -18,7 +18,7 @@
             <tr>
                 <td>
                     <div class="row">
-                    <div class="col-lg-6">{{forloop.counter }}. {{ poi_dict.name }} <a href="{% url "admin:pois_poi_change" poi_dict.id %}">MODIFICA</a> - <a href="risorsa/{{poi_dict.slug}}">VEDI</a></div>
+                    <div class="col-lg-6">{{forloop.counter }}. [{{poi_dict.modified}}] {{ poi_dict.name }} <a href="{% url "admin:pois_poi_change" poi_dict.id %}">MODIFICA</a> - <a href="risorsa/{{poi_dict.slug}}">VEDI</a></div>
                     <div class="col-lg-6">{% for web in poi_dict.webs %}<div><a href="{{web.0}}" target="_blank">{{web.0}}</a></div>{% endfor %}</div>
                     </div>
                 </td>
@@ -33,7 +33,7 @@
             <tr>
                 <td>
                     <div class="row">
-                    <div class="col-lg-7">{{forloop.counter }}. <a href="{% url "admin:pois_poi_change" poi_dict.id %}">{{ poi_dict.name }}</a></div>
+                    <div class="col-lg-7">{{forloop.counter }}. [{{poi_dict.modified}}] <a href="{% url "admin:pois_poi_change" poi_dict.id %}">{{ poi_dict.name }}</a></div>
                     <div class="col-lg-5">{{ poi_dict.street_address }} -  {{poi_dict.cap }} {{ poi_dict.comune.0 }}</div>
                     <div class="col-lg-12">{{ poi_dict.short }}</div>
                     <div class="col-lg-12">{{ poi_dict.notes }}</div>
@@ -50,7 +50,7 @@
             <tr>
                 <td>
                     <div class="row">
-                    <div class="col-lg-7">{{forloop.counter }}. <a href="{% url "admin:pois_poi_change" poi_dict.id %}">{{ poi_dict.name }}</a></div>
+                    <div class="col-lg-7">{{forloop.counter }}. [{{poi_dict.modified}}] {{ poi_dict.name }} <a href="{% url "admin:pois_poi_change" poi_dict.id %}">MODIFICA</a> - <a href="risorsa/{{poi_dict.slug}}">VEDI</a></div>
                     <div class="col-lg-5">{{ poi_dict.street_address }} -  {{poi_dict.cap }} {{ poi_dict.comune.0 }}</div>
                     <div class="col-lg-12">{{ poi_dict.short }}</div>
                     <div class="col-lg-12">{{ poi_dict.notes }}</div>
@@ -67,7 +67,7 @@
             <tr>
                 <td>
                     <div class="row">
-                    <div class="col-lg-7">{{forloop.counter }}. <a href="{% url "admin:pois_poi_change" poi_dict.id %}">{{ poi_dict.name }}</a></div>
+                    <div class="col-lg-7">{{forloop.counter }}. [{{poi_dict.modified}}] {{ poi_dict.name }} <a href="{% url "admin:pois_poi_change" poi_dict.id %}">MODIFICA</a> - <a href="risorsa/{{poi_dict.slug}}">VEDI</a></div>
                     <div class="col-lg-5">{{ poi_dict.street_address }} -  {{poi_dict.cap }} {{ poi_dict.comune.0 }}</div>
                     <div class="col-lg-12">{{ poi_dict.short }}</div>
                     <div class="col-lg-12">{{ poi_dict.notes }}</div>
@@ -84,8 +84,8 @@
             <tr>
                 <td>
                     <div class="row">
-                    <div class="col-lg-7">{{forloop.counter }}. <a href="{% url "admin:pois_poi_change" poi_dict.id %}">{{ poi_dict.name }}</a></div>
-                    <div class="col-lg-5">{{ poi_dict.street_address }} -  {{poi_dict.cap }} {{ poi_dict.comune.0 }}</div>
+                    <div class="col-lg-7">{{forloop.counter }}. [{{poi_dict.modified}}] {{ poi_dict.name }} <a href="{% url "admin:pois_poi_change" poi_dict.id %}">MODIFICA</a> - <a href="risorsa/{{poi_dict.slug}}">VEDI</a></div>
+                    <div class="col-lg-5">{{ poi_dict.street_address }} - {{poi_dict.cap }} {{ poi_dict.comune.0 }}</div>
                     <div class="col-lg-12">{{ poi_dict.short }}</div>
                     <div class="col-lg-12">{{ poi_dict.notes }}</div>
                     </div>
@@ -101,7 +101,7 @@
             <tr>
                 <td>
                     <div class="row">
-                    <div class="col-lg-7">{{forloop.counter }}. <a href="{% url "admin:pois_poi_change" poi_dict.id %}">{{ poi_dict.name }}</a></div>
+                    <div class="col-lg-7">{{forloop.counter }}. [{{poi_dict.modified}}] {{ poi_dict.name }} <a href="{% url "admin:pois_poi_change" poi_dict.id %}">MODIFICA</a> - <a href="risorsa/{{poi_dict.slug}}">VEDI</a></div>
                     <div class="col-lg-5">{{ poi_dict.street_address }} -  {{poi_dict.cap }} {{ poi_dict.comune.0 }}</div>
                     <div class="col-lg-12">{{ poi_dict.short }}</div>
                     <div class="col-lg-12">{{ poi_dict.notes }}</div>

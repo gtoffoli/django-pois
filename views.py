@@ -1481,14 +1481,14 @@ def poi_analysis(request):
         else:
             qs = Poi.objects.all()
         if value_get in ['all', 'web']:
-            web_list_no_sorted = [poi.make_short_dict() for poi in qs.order_by('name').exclude(web__isnull=True).exclude(web__exact='')]
+            web_list_no_sorted = [poi.make_short_dict() for poi in qs.exclude(web__isnull=True).exclude(web__exact='')]
             web_list = sorted(web_list_no_sorted, key=lambda k: k['name'].lower())
         if value_get in ['all', 'geo']:
-            no_geo_list = [poi.make_dict() for poi in qs.filter(point__isnull=True)]
+            no_geo_list = [poi.make_dict() for poi in qs.filter(point__isnull=True).order_by('-modified')]
         if value_get in ['all', 'theme']:
-            no_theme_list = [poi.make_dict() for poi in qs.filter(tags__isnull=True, poitype__tags__isnull=True)]
+            no_theme_list = [poi.make_dict() for poi in qs.filter(tags__isnull=True, poitype__tags__isnull=True).order_by('-modified')]
         if value_get in ['all','todo','comment','notes']:
-            poi_list = qs.exclude(notes='').exclude(notes__isnull=True)
+            poi_list = qs.exclude(notes='').exclude(notes__isnull=True).order_by('-modified')
         if poi_list:
             if value_get in ['all','todo']:
                 for poi in poi_list:

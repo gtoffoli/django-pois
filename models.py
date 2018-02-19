@@ -288,7 +288,7 @@ class Zone(geomodels.Model):
             macrozones=Zone.objects.filter(zonetype_id=0, pro_com=self.pro_com)
             if macrozones:
                 return macrozones[0].name
-            return ''
+            return 'LAZIO'
 
     # vedi metodo PoiAdmin.save_model
     def can_edit(self, request):
@@ -1486,6 +1486,7 @@ class Poi(geomodels.Model):
         poi_dict['name'] = self.getName().strip()
         poi_dict['safe_name'] = self.safe_name().strip()
         poi_dict['url'] = self.friendly_url()
+        poi_dict['modified'] = str(self.modified)
         if not list_item:
             poi_dict['slug'] = self.slug
             poi_dict['webs'] = self.clean_webs()

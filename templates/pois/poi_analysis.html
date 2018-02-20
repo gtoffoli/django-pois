@@ -26,6 +26,21 @@
             {% endfor %}
             </tbody></table></div>
         {% endif %}
+        {% if feeds_list %}
+            <h4>Risorse con feeds</h4>
+            <div><table class="table table-striped table-list"><tbody>
+            {% for poi_dict in feeds_list %}
+            <tr>
+                <td>
+                    <div class="row">
+                    <div class="col-lg-6">{{forloop.counter }}. [{{poi_dict.modified}}] {{ poi_dict.name }} <a href="{% url "admin:pois_poi_change" poi_dict.id %}">MODIFICA</a> - <a href="risorsa/{{poi_dict.slug}}">VEDI</a></div>
+                    <div class="col-lg-6"><div><a href="{{feeds.0}}" target="_blank">{{poi_dict.feeds}}</a></div></div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody></table></div>
+        {% endif %}
         {% if comment_list %}
             <h4>Risorse con commento nel campo Note</h4>
             <div><table class="table table-striped table-list"><tbody>

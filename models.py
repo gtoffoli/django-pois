@@ -1056,7 +1056,7 @@ class Poi(geomodels.Model):
     def get_affiliations(self):
         affiliations = []
         poipois = PoiPoi.objects.filter(from_poi=self)
-        return [poipoi.to_poi for poipoi in poipois]
+        return [poipoi.to_poi for poipoi in poipois if poipoi.reltype_id == 1]
 
     def get_url(self):
         return '/pois/%s/' % self.id
@@ -1099,7 +1099,7 @@ class Poi(geomodels.Model):
             zone = Zone.objects.get(pro_com=self.pro_com)
             return zone.name, zone.slug
         except:
-            return 'Roma', 'roma' # obj.pro_com
+            return 'Roma', 'roma'
             
     def fw_core_location(self):
         return {'wgs84': self.position()}
@@ -1468,7 +1468,7 @@ class Poi(geomodels.Model):
             poi_dict['affiliation'] = affiliation
             """
             affiliations = self.get_affiliations()
-            poi_dict['affiliations'] = [{ 'name': affiliation.name, 'url': affiliation.friendly_url(), 'logo': affiliation.logo and affiliation.logo.url or '' } for affiliation in affiliations]
+            poi_dict['affiliations'] = [{'name': affiliation.name, 'url': affiliation.friendly_url(), 'logo': affiliation.logo and affiliation.logo.url or '' } for affiliation in affiliations if affiliation.state == 1]
             """
             MMR temporaneamente disattivato
             blogs = self.get_blogs()
@@ -1480,16 +1480,17 @@ class Poi(geomodels.Model):
             poi_dict['state'] = STATE_CHOICES[self.state][1]
         return poi_dict
     
-    def make_short_dict(self, list_item=False):
+    def make_short_dict(self):
         poi_dict = {}
         poi_dict['id'] = self.id
         poi_dict['name'] = self.getName().strip()
         poi_dict['safe_name'] = self.safe_name().strip()
         poi_dict['url'] = self.friendly_url()
+        poi_dict['slug'] = self.slug
+        poi_dict['feeds'] = self.feeds
+        poi_dict['webs'] = self.clean_webs()
+        poi_dict['state'] = STATE_CHOICES[self.state][1]
         poi_dict['modified'] = str(self.modified)
-        if not list_item:
-            poi_dict['slug'] = self.slug
-            poi_dict['webs'] = self.clean_webs()
         return poi_dict
 """
 MMR 20181701 non utilizzato

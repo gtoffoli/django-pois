@@ -1236,9 +1236,9 @@ def poi_detail(request, poi_id, poi=None):
                 macrozone = zone.get_macrozone_slug()
         poi_dict['zone_parent'] = zone_parent
         hosted_list = Poi.objects.filter(host=poi).order_by('name')
-        hosted_list = [{ 'name': p.name, 'url': p.friendly_url()} for p in hosted_list]
+        hosted_list = [{ 'name': p.name, 'url': p.friendly_url()} for p in hosted_list if p.state == 1]
         poi_list = Poi.objects.filter(pois=poi).order_by('name')
-        poi_list = [{ 'name': p.name, 'url': p.friendly_url()} for p in poi_list]
+        poi_list = [{ 'name': p.name, 'url': p.friendly_url()} for p in poi_list if p.state == 1]
         n_caredby = Poi.objects.filter(careof=poi).count()
         poitype = poi.poitype
         if poitype:
@@ -1471,6 +1471,7 @@ def poi_analysis(request):
     comment_list = []
     notes_list = []
     web_list = web_list_no_sorted = []
+    feeds_list = feed_list_no_sorted = []
     poi_list = []
     state = -1
     if request.user.is_superuser or request.user.is_staff:
@@ -1480,9 +1481,12 @@ def poi_analysis(request):
             qs = Poi.objects.filter(state=state)
         else:
             qs = Poi.objects.all()
-        if value_get in ['all', 'web']:
+        if value_get in ['web']:
             web_list_no_sorted = [poi.make_short_dict() for poi in qs.exclude(web__isnull=True).exclude(web__exact='')]
             web_list = sorted(web_list_no_sorted, key=lambda k: k['name'].lower())
+        if value_get in ['feeds']:
+            feeds_list_no_sorted = [poi.make_short_dict() for poi in qs.exclude(feeds__isnull=True).exclude(feeds__exact='')]
+            feeds_list = sorted(feeds_list_no_sorted, key=lambda k: k['name'].lower())
         if value_get in ['all', 'geo']:
             no_geo_list = [poi.make_dict() for poi in qs.filter(point__isnull=True).order_by('-modified')]
         if value_get in ['all', 'theme']:
@@ -1512,7 +1516,7 @@ def poi_analysis(request):
                         item = poi.make_dict()
                         item.update({'notes': notes})
                         notes_list.append(item)
-    return render(request, 'pois/poi_analysis.html', {'stato': state, 'web_list': web_list, 'no_geo_list': no_geo_list, 'no_theme_list': no_theme_list, 'todo_list': todo_list, 'comment_list': comment_list, 'notes_list': notes_list,})
+    return render(request, 'pois/poi_analysis.html', {'stato': state, 'web_list': web_list, 'feeds_list': feeds_list, 'no_geo_list': no_geo_list, 'no_theme_list': no_theme_list, 'todo_list': todo_list, 'comment_list': comment_list, 'notes_list': notes_list,})
 
 
 def decimal_to_exagesimal(coord):

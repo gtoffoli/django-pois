@@ -70,7 +70,6 @@
                         {% if poi_dict.phones %}
                         <tr><th>{% trans "Phone" %}:</th><td>
                              <div class="summary notranslate">
-                                <div>{{poi_dict.phones|length}}</div>
                              {% for phone in poi_dict.phones %}
                                  <div class="val">{{ phone }}</div>
                              {% endfor %}

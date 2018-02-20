@@ -5,7 +5,7 @@
 <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
 {{ media }}
     {% comment %}<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script><!-- OK -->{% endcomment %}
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.30&key={{maps_key}}"></script><!-- OK -->
+    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?v=3.30&key={{maps_key}}"></script><!-- OK -->
     <script src="{% static "pois/pois_geocode.js" %}" type="text/javascript"></script>
 {% endblock %}
 

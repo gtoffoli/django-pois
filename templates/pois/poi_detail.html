@@ -161,7 +161,10 @@
             </div>
             <div class="col-md-6 col-lg-6 mB20">
             {% if poi_dict.video %}
-                <div class="box-res"><iframe src="{{ poi_dict.video.0 }}?autoplay=1" frameborder="0" allowfullscreen=""></iframe></div>
+                <div class="box-res">
+                    {% if show_element %}
+                    <iframe src="{{ poi_dict.video.0 }}?autoplay=1" frameborder="0" allowfullscreen=""></iframe></div>
+                    {% endif %}
             {% else %}
                 <div class="box-res back-box display-box"><div><i class="fa fa-play"></i> video</div></div>
             {% endif %}
@@ -171,6 +174,7 @@
             <div class="col-md-6 col-lg-6 mB20">
             {% if feeds %}
                 <div class="box-res box-scroll back-box">
+                {% if show_element %}
                 {% for feed in feeds %}
                 <div>
                     <div class="box-header">{% trans "articles from"|capfirst %} {% if feed.title %}{{ feed.title }}{% else %}<span class="notranslate">{{ poi.name }}</span>{% endif %}</div>
@@ -193,13 +197,16 @@
                     </ul>
                 </div>
                 {% endfor %}
+                {% endif %}
                 </div>
             {% else %}
                 <div class="box-res text-center back-box display-box"><div><i class="fa fa-rss"></i> rss</div></div>
             {% endif %}
             </div>
             <div class="col-md-6 col-lg-6">
-                {% include 'google/ann_in_poi.html' %}
+                {% if site_url == "www.romapaese.it" %}{% if show_element %}{% if not user.is_superuser or not user.is_staff %}
+                    {% include 'google/ann_in_poi.html' %}
+                {% endif %}{% endif %}{% endif %}
             </div>
         </div>
         {% set careof = poi_dict.careof %}

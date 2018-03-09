@@ -25,11 +25,11 @@
         {% if tag_poitype_list %}
 {% comment %}<p class="help-block">{% trans "In this list a category can occur in several theme areas" %}.</p>{% endcomment %}
             <div class="row">
-            {% for tag_url, tag_name, tag_slug, m, poitype_poi_list in tag_poitype_list %}
-            
+            {% for tag_id, tag_url, tag_name, tag_slug, m, poitype_poi_list in tag_poitype_list %}
+                 {% if tag_id != 49 or request.user.is_superuser or request.user.is_staff %}
                  <div class="col-md-6 col-lg-3">
-                     <h5 class="back-LightSkyBlue panel-header"><a href="#" class="toggleIcon"><i class="fa fa-plus-square"></i></a> {{ tag_name|capfirst }} [{{ m }}]</h5>
-                     <article class="view-list height30vh box-scroll" style="display:none">
+                     <h5 class="back-LightSkyBlue panel-header"><a href="#" class="toggleIcon"><i class="fa fa-plus-square"></i><span> {{ tag_name|capfirst }}</span></a> <span class="text-wrap">[{{ m }}]</span></h5>
+                     <article id="tema_{{ forloop.counter }}" class="view-list height30vh box-scroll" style="display:none">
                          <dl>
                          {% for prefix, poitype_slug, poitype_name, poitype_icon, n, category_in_theme, poi_url in poitype_poi_list %}
                              <dd><ul class="list-unstyled"><li class="pL26TB5 bBdotted" style="background: url('{{ STATIC_URL }}roma/img/icons/{{ poitype_icon.name }}.png') no-repeat center left;">{{ prefix }} {{ poitype_name }}
@@ -43,6 +43,7 @@
                         </dl>
                      </article>
                  </div>
+                 {% endif %}
             {% endfor %}
             </div>
         {% else %}
@@ -59,6 +60,16 @@
                 $("body").css("cursor", "default");
                 var accordion = $(this).parent().parent();
                 var accordionContent = accordion.children('article');
+                idAccordionContent = accordionContent.attr('id');
+                if ($("#accordion").find("div.open")) {
+                    contentOpen = $("div.open").children('article');
+                    idContent = contentOpen.attr('id');
+                    if (idContent != idAccordionContent) {
+                        $("div.open h5 a.toggleIcon").children('i').attr("class","fa fa-plus-square");
+                        contentOpen.slideToggle(250);
+                        $("div.open").toggleClass("open", false);
+                    }
+                }
                 var accordionToggleIcon = $(this);
                 accordion.toggleClass("open");
                 accordionContent.slideToggle(250);

@@ -818,7 +818,7 @@ def zone_tag_index(request, zone_id, zone=None):
             n_pois, poitype_instances_list = resources_by_tag_and_zone(tag, zone=zone, list_all=False)
             if n_pois:
                 # tag_poitype_list.append([tag, tag_name, tag_slug, n_pois, poitype_instances_list])
-                tag_poitype_list.append([tag.friendly_url(), tag.name, tag.slug, n_pois, poitype_instances_list])
+                tag_poitype_list.append([tag.id, tag.friendly_url(), tag.name, tag.slug, n_pois, poitype_instances_list])
         if language.startswith('it'):
             try:
                 zones_cache.set(key, tag_poitype_list)

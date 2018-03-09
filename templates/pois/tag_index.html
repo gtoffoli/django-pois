@@ -27,7 +27,7 @@
                 {% for tag_id, tag_url, tag_name, tag_slug, m, poitype_poi_list in tag_poitype_list %}
                     {% if tag_id != 49 or request.user.is_superuser or request.user.is_staff %}
                     <div class="col-md-6 col-lg-3">
-                        <h5 class="back-LightSkyBlue panel-header"><a name="{{ tag_slug }}"></a><a href="#" class="toggleIcon"><i class="fa fa-plus-square"></i></a> {{ tag_name|capfirst }} <span class="text-wrap">[ {{ m }} ]</span></h5>
+                        <h5 class="back-LightSkyBlue panel-header"><a name="{{ tag_slug }}"></a><a href="#" class="toggleIcon"><i class="fa fa-plus-square"></i><span> {{ tag_name|capfirst }}</span></a> <span class="text-wrap">[{{ m }}]</span></h5>
                         <article id="tema_{{ forloop.counter }}" class="view-list height30vh box-scroll" style="display:none">
                             {% for prefix, poitype_slug, poitype_name, poitype_icon, n, category_in_theme, poi_url in poitype_poi_list %}
                                 <p class="pL26TB5 bBdotted" style="background: url('{{ STATIC_URL }}roma/img/icons/{{ poitype_icon.name }}.png') no-repeat center left;">{{ prefix }} {{ poitype_name }}

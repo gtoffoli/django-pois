@@ -11,6 +11,7 @@
     <meta property="og:type" content="article">
     <meta property="og:title" content="{{ poi_dict.prefixed_name }}">
     <meta property="og:description" content="{{ poi_dict.short }}">
+    <meta property="og:image" content="https://{{site_url}}/media/romapaese_facebook.jpg">
     <meta property="og:site_name" content="RomaPaese">
 {% endblock facebook_data %}
 {% block content %}
@@ -235,24 +236,28 @@
                 {% endif %}
             </div>
         </div>
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = 'https://connect.facebook.net/it_IT/sdk.js#xfbml=1&version=v2.12';
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
+        <div class="mT20 text-center">
+            <div id="fb-root"></div>
+            <script>(function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = 'https://connect.facebook.net/it_IT/sdk.js#xfbml=1&version=v2.12';
+            fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));</script>
 
-  <div class="fb-like" 
-    data-href="https://{{site_url}}{{poi_dict.url}}"
-     data-layout="box_count"
-      data-action="recommend" 
-      data-size="small" 
-      data-show-faces="false" 
-      data-share="true"></div>
+            <div class="fb-like" 
+                data-href="https://{{site_url}}{{poi_dict.url}}"
+                data-layout="button_count"
+                data-action="recommend" 
+                data-size="small" 
+                data-show-faces="false" 
+                data-share="true">
+            </div>
+        </div>
     </div>
 {% endblock content %}
+
 {% block bottom-banner %}{% endblock bottom-banner %}
 
 {% if poi_dict.point %}

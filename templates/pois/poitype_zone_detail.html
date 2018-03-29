@@ -1,7 +1,7 @@
 {% extends "roma/roma_base.html" %}
 {% load staticfiles i18n %}
 
-{% block head_title %}{{ poitype.name }} - {{ zone.name }}{% endblock %}
+{% block head_title %}{{ poitype.name }} - {{ zone.name }}{% if zone.zonetype.id == 3 %}({{ zone.code}}){% endif %}{% endblock %}
 
 {% block content %}
     <div class="boxcontent">
@@ -10,7 +10,7 @@
                 <div class="segnaposto notranslate">{{ region }}</div>
             </div>
             <div class="col-md-9 col-lg-10">
-                <h1><span class="notranslate">{{zone.name}}</span></h1>
+                <h1><span class="notranslate">{% if zone.zonetype_id == 3 %} {{ zone.code}} - {% endif %}{{zone.name}}</span></h1>
                 <h3 class="mT0 mB10">{{ poitype.name }}</h3>
                 <div class="mB10">
                 {% if not poitype.active %}

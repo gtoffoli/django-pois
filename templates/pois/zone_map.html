@@ -379,7 +379,8 @@ function call_server_and_update_theme(el, url) {
 			if (i < n_types-1)
 			   $('#tabres').append('<li class="bull">&bull;</li>');
 			// assegna gli event handler dinamicamente - MMR aggiunto tooltip
-		  $('#cat'+poitype_dict['klass']).tooltip();
+			// disattivato tooltip
+		  /*$('#cat'+poitype_dict['klass']).tooltip();*/
 			$('#cat'+poitype_dict['klass']).click(category_click);
 		}
 		category = data['category'];
@@ -404,7 +405,7 @@ function call_server_and_update_category(el) {
 		$("ul.tabs li.tabele").attr("class","tabele cursor"); //tabs
 		// MMR rimosso title standard e aggiunto tooltip
 	//	$("ul.tabs li.tabele").attr("title","{% trans "list the resources" %}"); //tabs 
-		$("ul.tabs li.tabele").tooltip();
+		// disattivato $("ul.tabs li.tabele").tooltip();
 		el.attr("class","tabele active");
 		// MMR rimosso tooltip su elemento selezionato
 		$("#"+el.attr("id")).tooltip('destroy');

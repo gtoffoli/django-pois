@@ -4,8 +4,8 @@ from django.contrib.gis.geos import Point
 from tinymce.widgets import TinyMCE
 
 
-from pois.models import Zonetype, Zone, ZoneZone, Route, Odonym, Tag, TagTag, Poitype, Sourcetype, Poi, PoiZone, PoiRoute, PoiPoi # MMR temporaneamente disattivato -, Blog
-from pois.forms import ZoneForm, RouteForm, PoiForm  # MMR temporaneamente disattivato -, BlogForm
+from pois.models import Zonetype, Zone, ZoneZone, Route, Odonym, Tag, TagTag, Poitype, Sourcetype, Poi, PoiZone, PoiRoute, PoiPoi, Confighome #  MMR temporaneamente disattivato -, Blog
+from pois.forms import ZoneForm, RouteForm, PoiForm, ConfighomeForm # MMR temporaneamente disattivato -, BlogForm
 
 from roma.settings import srid_OSM
 srid_GPS = 4326 # WGS84 = World Geodetic System 1984 (the reference system used by GPS)
@@ -144,8 +144,8 @@ class PoiAdmin(MultiGeoAdmin):
     default_zoom = 13
     form = PoiForm
     # list_display = ('id', 'name', 'kind', 'category_short', 'list_themes', 'comune', 'zipcode', 'lat_long', 'street_name', 'housenumber', 'list_zones', 'short', 'list_web', 'state', 'N', 'careof_name', 'owner', 'lasteditor', 'modified',)
-    list_display = ('id', 'name', 'category_short', 'list_themes', 'comune', 'zipcode', 'lat_long', 'get_street_address', 'list_zones', 'short', 'list_web', 'state', 'N', 'careof_name', 'owner', 'lasteditor', 'modified',)
-    list_filter = ('poitype__name',)
+    list_display = ('id', 'name', 'category_short', 'list_themes', 'comune', 'zipcode', 'lat_long', 'get_street_address', 'list_zones', 'short', 'list_web', 'state', 'N', 'owner', 'created', 'lasteditor', 'modified', 'careof_name', )
+    list_filter = ('state','tags__name','poitype__name',)
     search_fields = ['name', 'description',]
     # inlines = [PoiInLine]
         
@@ -283,6 +283,12 @@ class PoiPoiAdmin(admin.ModelAdmin):
     list_display = ('from_poi', 'to_poi', 'reltype_id',)
     search_fields = ['from_poi', 'to_poi',]
 
+#180409 MMR
+class ConfighomeAdmin(admin.ModelAdmin):
+    form = ConfighomeForm
+    list_display = ('id','poi','poitype','image', 'order', 'view','created','modified')
+    list_filter = ('view',)
+
 """
 MMR temporaneamente disattivato
 class BlogAdmin(admin.ModelAdmin):
@@ -304,6 +310,8 @@ admin.site.register(Poi, PoiAdmin)
 admin.site.register(PoiZone, PoiZoneAdmin)
 admin.site.register(PoiRoute, PoiRouteAdmin)
 admin.site.register(PoiPoi, PoiPoiAdmin)
+#180409 MMR
+admin.site.register(Confighome, ConfighomeAdmin)
 """
 MMR temporaneamente disattivato
 admin.site.register(Blog, BlogAdmin)

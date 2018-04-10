@@ -1771,9 +1771,27 @@ class PoiAutocomplete(autocomplete.Select2QuerySetView):
 
         return qs
 
+class PoiOkAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = Poi.objects.all().order_by('name')
+
+        if self.q:
+            qs = qs.filter(state=1,name__icontains=self.q)
+
+        return qs
+
 class TagAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = Tag.objects.all().exclude(id=49).order_by('name')
+
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
+
+        return qs
+
+class PoitypeAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = Poitype.objects.all().exclude(klass__endswith='0000').exclude(active=False).order_by('name')
 
         if self.q:
             qs = qs.filter(name__icontains=self.q)

@@ -960,7 +960,14 @@ class Poi(geomodels.Model):
         (2, 'off'),)
     """
     state = models.IntegerField(verbose_name='Stato', choices=STATE_CHOICES, default=0, null=True)
-
+    #180405 MMR
+    TYPECARD_CHOICES = (
+        (0, 'free'),
+        (1, 'a pagamento'),
+        (2, 'pubblica'),)
+    typecard = models.IntegerField(verbose_name='Tipo di scheda', choices=TYPECARD_CHOICES, default=0, null=True)
+    created = models.DateField(verbose_name='Creata il', auto_now_add=True, blank=True, null=True)
+    
     class Meta:
         verbose_name = "risorsa"
         verbose_name_plural = "risorse"
@@ -1688,6 +1695,24 @@ class PoiMember(models.Model):
 
     def __str__(self):
         return '%s in %s' % (self.member, self.poi.poi())
+        
+        
+#MMR 180406
+#risorse e categorie da visualizzare in Homepage
+@python_2_unicode_compatible
+class Confighome(models.Model):
+    poi = models.ForeignKey(Poi, models.CASCADE, blank=True, null=True)
+    poitype = models.ForeignKey(Poitype, models.CASCADE, blank=True, null=True)
+    image = models.ImageField(upload_to='mappe', null=True, blank=True, verbose_name='immagine')
+    order = models.IntegerField(verbose_name='posizione', default=0)
+    view = models.BooleanField(verbose_name='mostra', default=False)
+    created = models.DateTimeField(verbose_name='Creata il', auto_now_add=True, blank=True, null=True)
+    modified = models.DateTimeField(verbose_name='Mod. il', auto_now=True, blank=True, null=True)
+    class Meta:
+        verbose_name = "configurazione homepage"
+        verbose_name_plural = "configurazione homepage"
+        db_table = 'pois_confighome'
+
 """
 MMR temporaneamente disattivato
 class Blog(models.Model):

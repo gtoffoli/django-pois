@@ -27,7 +27,7 @@ MMR temporaneamente disattivato
 from richtext_blog.models import Post, Tag as BlogTag
 from richtext_blog.forms import CommentForm
 """
-from pois.models import Zonetype, Zone, Route, Tag, Poitype, Poi, Odonym # MMR temporaneamente disattivato - , Blog
+from pois.models import Zonetype, Zone, Route, Tag, Poitype, Poi, Odonym, Confighome #MMR temporaneamente disattivato - , Blog
 # from pois.utils.gmap_widget import GoogleMapsWidget
 
 """
@@ -215,9 +215,7 @@ class PoiForm(ModelForm):
     poitype = forms.ChoiceField(label="Tipo di risorsa", choices=(),
                                        widget=forms.Select(attrs={'class':'selector'}))
     """
-    #name = forms.TextInput(attrs={'size':'80', 'style':'width:60%'})
     name = forms.CharField(widget=forms.TextInput(attrs={'style':'width:50em','maxlength':100}))
-    # othertags = forms.TextInput(attrs={'size':'80', 'style':'width:60%'})
     short = forms.CharField(widget=forms.TextInput(attrs={'style':'width:60em','maxlength':120}))
     """
     phone = forms.Textarea(attrs={'cols': 60, 'rows': 2})
@@ -251,47 +249,26 @@ class PoiForm(ModelForm):
         required=False,
         label='Ospitata da',
         widget=autocomplete.ModelSelect2(url='risorsa-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Scegli risorsa','style':'width:60%'})
-        # MMR temporaneamente disattivato
-        # widget=autocomplete_light.ChoiceWidget(autocomplete='PoiAutocomplete',
-        #    attrs={'minimum_characters': 3,
-        #                                'placeholder': 'Scegli risorsa'})
         )
     pois = forms.ModelMultipleChoiceField(Poi.objects.all(),
         required=False,
         label='Risorse correlate',
         widget=autocomplete.ModelSelect2Multiple(url='risorsa-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Scegli risorsa', 'style':'width:60%'})
-        # MMR temporaneamente disattivato
-        # widget=autocomplete_light.MultipleChoiceWidget('PoiAutocomplete',
-        #    attrs={'minimum_characters': 3,
-        #                               'placeholder': 'Aggiungi risorsa'})
         )
     tags = forms.ModelMultipleChoiceField(Tag.objects.all(),
         required=False,
         label='Aree tematiche',
         widget=autocomplete.ModelSelect2Multiple(url='tema-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Aggiungi area tematica', 'style':'width:60%'})
-
-        # MMR temporaneamente disattivato
-        # widget=autocomplete_light.MultipleChoiceWidget('TagAutocomplete',
-        #    attrs={'minimum_characters': 3,
-        #                               'placeholder': 'Aggiungi area tematica'})
         )
     zones = forms.ModelMultipleChoiceField(Zone.objects.all(),
         required=False,
         label="Zone",
         widget=autocomplete.ModelSelect2Multiple(url='zona-autocomplete', attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Aggiungi zona', 'style':'width:60%'})
-        # MMR temporaneamente disattivato
-        # widget=autocomplete_light.MultipleChoiceWidget(autocomplete='ZoneAutocomplete',
-        #    attrs={'minimum_characters': 3,
-        #                                'placeholder': 'Aggiungi zona'})
         )
     routes = forms.ModelMultipleChoiceField(Route.objects.all(),
         required=False,
         label="Route",
         widget=autocomplete.ModelSelect2Multiple(url='itinerario-autocomplete', attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Aggiungi itinerario', 'style':'width:60%'})
-        # MMR temporaneamente disattivato
-        # widget=autocomplete_light.MultipleChoiceWidget(autocomplete='RouteAutocomplete',
-        #   attrs={'minimum_characters': 3,
-        #                               'placeholder': 'Aggiungi itinerario'})
         )
     pro_com = forms.ChoiceField(choices=COMUNE_CHOICES,
         required=False,
@@ -301,20 +278,7 @@ class PoiForm(ModelForm):
         required=False,
         label='Via o Piazza o ..',
         widget=autocomplete.ModelSelect2(url='toponimo-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Scegli via o ..'})
-        # MMR temporaneamente disattivato
-        # widget=autocomplete_light.ChoiceWidget(autocomplete='OdonymAutocomplete',
-        #    attrs={'minimum_characters': 3,
-        #                               'placeholder': 'Scegli via o ..'})
         )
-    # point = GeometryField(widget=PoiWidget())
-    """
-    source = forms.ModelChoiceField(Poi.objects.all(),
-        required=False,
-        label='Fonte (risorsa)',
-        widget=autocomplete_light.ChoiceWidget(autocomplete='PoiAutocomplete',
-            attrs={'minimum_characters': 3,
-                                        'placeholder': 'Scegli risorsa'}))
-    """
     owner = forms.ModelChoiceField(User.objects.all(),
         required=False,
         label='Proprietario',
@@ -324,23 +288,13 @@ class PoiForm(ModelForm):
         required=False,
         label='A cura di',
         widget=autocomplete.ModelSelect2(url='risorsa-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Scegli risorsa', 'style':'width:30%'})
-
-        # MMR temporaneamente disattivato
-        # widget=autocomplete_light.ChoiceWidget(autocomplete='PoiAutocomplete',
-        #   attrs={'minimum_characters': 3,
-        #                               'placeholder': 'Scegli risorsa'})
         )
     members = forms.ModelMultipleChoiceField(User.objects.all(),
         required=False,
         label='Membri (utenti)',
         widget=autocomplete.ModelSelect2Multiple(url='utente-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Aggiungi membro', 'style':'width:30%'})
-
-        # MMR temporaneamente disattivato
-        # widget=autocomplete_light.MultipleChoiceWidget('UserAutocomplete',
-        #   attrs={'minimum_characters': 3,
-        #                               'placeholder': 'Aggiungi membro'})
         )
-
+        
     class Meta:
         model = Poi
         fields = (
@@ -383,10 +337,9 @@ class PoiForm(ModelForm):
             'state', # aggiunto 130808
             'partnership', # aggiunto 130808
             'members', # aggiunto 130808
+            'typecard', # MMR aggiunto 180405
         )
         widgets = {
-            # 'name': forms.TextInput(attrs={'size':'80'}),
-            # 'othertags': forms.TextInput(attrs={'size':'80'}),
             'phone': forms.Textarea(attrs={'cols': 60, 'rows': 2}),
             'email': forms.Textarea(attrs={'cols': 60, 'rows': 2}),
             'web': forms.Textarea(attrs={'cols': 60, 'rows': 2}),
@@ -399,14 +352,15 @@ class PoiUserForm(ModelForm):
 
     class Meta:
         model = Poi
-        fields = ('name', 'short', 'tags', 'pro_com', 'street', 'street_address', 'housenumber', 'zipcode', 'phone', 'email', 'web', 'facebook', 'video', 'description',)
+        # fields = ('name', 'short', 'tags', 'pro_com', 'street', 'street_address', 'housenumber', 'zipcode', 'phone', 'email', 'web', 'facebook', 'video', 'description',)
+        fields = ('name', 'short', 'tags', 'pro_com', 'street', 'street_address', 'housenumber', 'zipcode', 'phone', 'email', 'web', 'facebook',)
 
     name = forms.CharField(
             label=_("name of the resource"),
             required=True,
             widget=forms.TextInput(attrs={'class':'form-control'}))
     short = forms.CharField(
-            label=_("type of resource"),
+            label=_("short description"),
             required=True,
             widget=forms.TextInput(attrs={'class':'form-control'}))
     tags = forms.ModelMultipleChoiceField(Tag.objects.all().exclude(id=49),
@@ -452,6 +406,7 @@ class PoiUserForm(ModelForm):
             label=_("facebook"),
             required=False,
             widget=forms.TextInput(attrs={'class': 'form-control'}))
+    """
     video = forms.URLField(
             label=_("youtube"),
             required=False,
@@ -460,7 +415,6 @@ class PoiUserForm(ModelForm):
             label=_('description'),
             required=False,
             widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 6, 'cols': 60}))
-    """
     notes = forms.CharField(
             label=_("Notes"),
             help_text="",
@@ -592,3 +546,16 @@ class PoiAnnotationForm(forms.Form):
             label=_("Control string"),
             help_text=_("Enter these 5 characters in the textbox on the right"),
             required=True,)
+
+#180409 MMR
+class ConfighomeForm(ModelForm):
+    poi = forms.ModelChoiceField(Poi.objects.all(),
+        required=False,
+        label="Risorsa",
+        widget=autocomplete.ModelSelect2(url='risorsa-ok-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Scegli risorsa','style':'width:40%'})
+        )
+    poitype = forms.ModelChoiceField(Poitype.objects.all(),
+        required=False,
+        label="Categoria",
+        widget=autocomplete.ModelSelect2(url='categoria-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Scegli risorsa','style':'width:40%'})
+    )

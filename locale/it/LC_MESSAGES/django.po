@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-12 10:42+0100\n"
-"PO-Revision-Date: 2018-02-12 10:41+0100\n"
+"PO-Revision-Date: 2018-04-05 12:53+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -165,7 +165,7 @@ msgstr "nome"
 
 #: .\pois\forms.py:552
 msgid "short description"
-msgstr "descrizione breve"
+msgstr "breve descrizione"
 
 #: .\pois\forms.py:557
 msgid "Choose theme areas (no selection = all areas)"

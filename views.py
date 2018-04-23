@@ -733,7 +733,7 @@ def resources_by_tags_and_type(in_tag_ids, in_klass, q=None, count_only=False):
         return pois
 
 def resources_by_tag_and_zone(tag, zone=None, list_all=False):
-    poitype_klasses = Poitype.objects.filter(tags=tag).exclude(id=49).values_list('klass', flat=True)
+    poitype_klasses = Poitype.objects.filter(tags=tag).values_list('klass', flat=True)
     if zone:
         q = make_zone_subquery(zone)
         tag_poitype_klasses = Poi.objects.filter(Q(tags=tag, state=1) & q).values_list('poitype_id', flat=True).distinct()
@@ -748,7 +748,6 @@ def resources_by_tag_and_zone(tag, zone=None, list_all=False):
     poitypes = Poitype.objects.filter(klass__in=klasses).order_by('name')
     if not m:
         return 0, []
-
     n_pois = 0
     poitype_instances_list = []
     for poitype in poitypes:
@@ -851,6 +850,8 @@ def zone_tag_index_by_slug(request, zone_slug):
     zone = get_object_or_404(Zone, slug=zone_slug)
     return zone_tag_index(request, zone.id, zone=zone)
 
+"""
+180411 MMR non utilizzata
 @xframe_options_exempt
 def poitype_index(request):
     list_all = request.GET.get('all', None) is not None
@@ -861,8 +862,8 @@ def poitype_index(request):
         n = len(pois)
         if n or list_all:
             poitype_instances_list.append([poitype, n, pois[:1]])
-    return render(rquest, 'pois/poitype_index.html', {'poitype_instances_list': poitype_instances_list,})
-
+    return render(request, 'pois/poitype_index.html', {'poitype_instances_list': poitype_instances_list,})
+"""
 @xframe_options_exempt
 def category_index(request):
     list_all = request.GET.get('all', None) is not None
@@ -874,11 +875,14 @@ def category_index(request):
     last_category = None
     m = 0
     poitypes = Poitype.objects.all().order_by('klass')
+    poitypes = Poitype.objects.all().exclude(klass__endswith = '0000').order_by('klass')
     for poitype in poitypes:
         klass = poitype.klass
-        if not poitype.active:
-            continue
+        """
         if klass[4:] == '0000':
+            continue
+        """
+        if not poitype.active:
             continue
         pois = Poi.objects.filter(poitype=klass, state=1)
         n = len(pois)
@@ -1296,7 +1300,18 @@ def street_autocomplete(request):
         results = [{'id': street.id, 'text': street.name} for street in qs]
     body = json.dumps({'results': results, 'pagination': {'more': False}})
     return HttpResponse(body, content_type='application/json')
-    
+
+def poi_promote(request):
+    flatpage = FlatPage.objects.get(url='/risorse/promuovi/')
+    text_body = flatpage.content
+    flatpage = FlatPage.objects.get(url='/risorse/promuovi-desktop/')
+    table_desktop = flatpage.content
+    flatpage = FlatPage.objects.get(url='/risorse/promuovi-tablet/')
+    table_tablet = flatpage.content
+    flatpage = FlatPage.objects.get(url='/risorse/promuovi-phone/')
+    table_phone = flatpage.content
+    return render(request, 'pois/poi_promote.html', {'text_body': text_body, 'table_desktop': table_desktop, 'table_tablet': table_tablet, 'table_phone': table_phone, })
+
 def poi_edit(request, poi_id):
     poi = get_object_or_404(Poi, pk=poi_id)
     form = PoiUserForm(instance=poi)
@@ -1314,7 +1329,6 @@ def poi_new(request):
     else:
        form = PoiUserForm()
     return render(request, 'pois/poi_edit.html', {'poi': '', 'form': form, 'text_body': text_body})
-
 
 def poi_save(request):
     flatpage = FlatPage.objects.get(url='/risorse/segnala/')

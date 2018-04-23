@@ -986,6 +986,9 @@ class Poi(geomodels.Model):
 
     def getName(self):
         return self.name
+    
+    def getLogo(self):
+        return self.logo
 
     def prefixed_name(self):
         name = self.safe_name()
@@ -1006,7 +1009,10 @@ class Poi(geomodels.Model):
                 # name = '%s %s' % (prefix.capitalize(), name)
                 name = '%s %s' % (prefix, name)
         return name
-
+        
+    def getTypecard(self):
+        return self.typecard
+        
     # vedi metodo PoiAdmin.save_model
     def can_edit(self, request):
         user = request.user
@@ -1703,7 +1709,7 @@ class PoiMember(models.Model):
 class Confighome(models.Model):
     poi = models.ForeignKey(Poi, models.CASCADE, blank=True, null=True)
     poitype = models.ForeignKey(Poitype, models.CASCADE, blank=True, null=True)
-    image = models.ImageField(upload_to='mappe', null=True, blank=True, verbose_name='immagine')
+    image = models.ImageField(upload_to='img_home', null=True, blank=True, verbose_name='immagine')
     order = models.IntegerField(verbose_name='posizione', default=0)
     view = models.BooleanField(verbose_name='mostra', default=False)
     created = models.DateTimeField(verbose_name='Creata il', auto_now_add=True, blank=True, null=True)

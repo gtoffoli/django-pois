@@ -23,7 +23,7 @@
                 <div class="segnaposto notranslate">{% if poi_dict.comune.1 != 'roma' %}{{ poi_dict.zone_parent|upper }} - {% endif %}{{ poi_dict.comune.0|upper }}</div>
             </div>
             <div class="col-md-9 col-lg-10">
-                <h1 class="notranslate">{{ poi_dict.prefixed_name }}</h1>
+                <h1>{% if poi_dict.logo %}<img src="{{poi_dict.logo}}" alt=""> {% endif %}<span class="notranslate">{{ poi_dict.prefixed_name }}</span></h1>
                 {% if can_edit and poi_dict.state != 'ok' %}
                    <div>Stato: {{poi_dict.state}}</div>
                 {% endif %}

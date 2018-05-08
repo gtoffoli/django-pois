@@ -5,7 +5,7 @@ from tinymce.widgets import TinyMCE
 
 
 from pois.models import Zonetype, Zone, ZoneZone, Route, Odonym, Tag, TagTag, Poitype, Sourcetype, Poi, PoiZone, PoiRoute, PoiPoi, Confighome #  MMR temporaneamente disattivato -, Blog
-from pois.forms import ZoneForm, RouteForm, PoiForm, ConfighomeForm # MMR temporaneamente disattivato -, BlogForm
+from pois.forms import TagForm, PoitypeForm, ZoneForm, RouteForm, PoiForm, ConfighomeForm # MMR temporaneamente disattivato -, BlogForm
 
 from roma.settings import srid_OSM
 srid_GPS = 4326 # WGS84 = World Geodetic System 1984 (the reference system used by GPS)
@@ -109,11 +109,12 @@ class OdonymAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 class TagAdmin(admin.ModelAdmin):
+    form = TagForm
     fieldsets = [
-        (None, {'fields': ['name_en', 'name', 'slug', 'weight', 'color', 'tags',]}),
+        (None, {'fields': ['name_en', 'name', 'slug', 'short', 'weight', 'color', 'tags',]}),
     ]
-    list_display = ('id', 'name_en', 'name', 'slug', 'modified', 'weight', 'color',)
-    search_fields = ['name_en', 'name',]
+    list_display = ('id', 'name_en', 'name', 'slug', 'short', 'modified', 'weight', 'color',)
+    search_fields = ['name_en', 'name', 'short']
 
 class TagTagAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -123,8 +124,12 @@ class TagTagAdmin(admin.ModelAdmin):
     search_fields = ['from_tag', 'to_tag',]
 
 class PoitypeAdmin(admin.ModelAdmin):
-    list_display = ('klass', 'name_en', 'name', 'slug', 'modified', 'active', 'list_themes', 'icon', 'color',)
-    search_fields = ['name_en', 'name',]
+    form = PoitypeForm
+    fieldsets = [
+        (None, {'fields': ['klass','name_en', 'name', 'slug', 'short', 'icon', 'color', 'tags',]}),
+    ]
+    list_display = ('klass', 'name_en', 'name', 'slug', 'short', 'modified', 'active', 'list_themes',  'color',)
+    search_fields = ['name_en', 'name','short']
 
     def list_themes(self, obj):
         tags = obj.tags.all()
@@ -144,11 +149,11 @@ class PoiAdmin(MultiGeoAdmin):
     default_zoom = 13
     form = PoiForm
     # list_display = ('id', 'name', 'kind', 'category_short', 'list_themes', 'comune', 'zipcode', 'lat_long', 'street_name', 'housenumber', 'list_zones', 'short', 'list_web', 'state', 'N', 'careof_name', 'owner', 'lasteditor', 'modified',)
-    list_display = ('id', 'name', 'category_short', 'list_themes', 'comune', 'zipcode', 'lat_long', 'get_street_address', 'list_zones', 'short', 'list_web', 'state', 'N', 'owner', 'created', 'lasteditor', 'modified', 'careof_name', )
-    list_filter = ('state','tags__name','poitype__name',)
-    search_fields = ['name', 'description',]
+    list_display = ('id', 'name', 'category_short', 'list_themes', 'comune_cap', 'lat_long', 'get_street_address', 'list_zones', 'short', 'D', 'W', 'V', 'state', 'typecard', 'N', 'owner', 'created', 'lasteditor', 'modified', 'careof_name', )
+    list_filter = ('state','typecard','tags__name','poitype__name',)
+    search_fields = ['name', 'short']
     # inlines = [PoiInLine]
-        
+
     def category_short(self, obj):
         if not obj.poitype:
             return ''
@@ -158,7 +163,7 @@ class PoiAdmin(MultiGeoAdmin):
         return name
     category_short.short_description = 'Categoria'
 
-    def comune(self, obj):
+    def comune_cap(self, obj):
         """
         try:
             zone = Zone.objects.get(pro_com=obj.pro_com)
@@ -166,8 +171,12 @@ class PoiAdmin(MultiGeoAdmin):
         except:
             return 'Roma' # obj.pro_com
         """
-        return obj.get_comune()
-
+        comune = obj.get_comune()
+        cap = obj.zipcode
+        return '%s \n %s' % (comune[0], cap)
+    comune_cap.short_description = 'Comune'
+    comune_cap.allow_tags = True
+    
     """
     def street_name(self, obj):
         return obj.street_name()
@@ -200,7 +209,12 @@ class PoiAdmin(MultiGeoAdmin):
         return ', '.join([zone.zone() for zone in zones])
     list_zones.short_description = 'Zone'
 
-    def list_web(self, obj):
+    def D(self, obj):
+        if obj.description:
+            return 'S'
+        return ''
+        
+    def W(self, obj):
         """
         web = obj.web
         if web:
@@ -209,6 +223,7 @@ class PoiAdmin(MultiGeoAdmin):
         web = ''
         urls = obj.safe_web()
         if urls:
+            """
             out = []
             for url in urls:
                 if not url:
@@ -220,10 +235,17 @@ class PoiAdmin(MultiGeoAdmin):
                 link = '<a href="%s" target="_blank">%s</a>' % (url, label)
                 out.append(link)
             web = ', '.join(out)
+            """
+            web = 'S'
         return web
-    list_web.short_description = 'Siti web'
-    list_web.allow_tags = True
+    #list_web.short_description = 'web'
+    # list_web.allow_tags = True
 
+    def V(self, obj):
+        if obj.video:
+            return 'S'
+        return ''
+    
     def N(self, obj):
         # return obj.notes and '*' or ''
         notes = obj.notes and obj.notes.strip() or ''
@@ -235,6 +257,7 @@ class PoiAdmin(MultiGeoAdmin):
         else:
             return ''
 
+        
     def careof_name(self, obj):
         careof = obj.careof
         if careof:

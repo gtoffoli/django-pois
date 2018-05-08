@@ -1781,7 +1781,7 @@ class PoiAutocomplete(autocomplete.Select2QuerySetView):
         qs = Poi.objects.all().order_by('name')
 
         if self.q:
-            qs = qs.filter(name__icontains=self.q)
+            qs = qs.filter(state=1,name__icontains=self.q)
 
         return qs
 

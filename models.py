@@ -122,7 +122,7 @@ def rebuild_icon_map():
         if len(klass)==8 and klass[4:]=='0000':
             klass = klass[:4]
         poi_icon_map[klass] = (pt.icon, pt.color)
-
+    
 poi_categories = []
 
 def rebuild_poi_categories():
@@ -746,7 +746,8 @@ class Tag(models.Model):
     color = models.CharField('Colore', max_length=20, blank=True, null=True)
     tags = models.ManyToManyField('self', through='TagTag', blank=True) # new: 130308
     modified = models.DateTimeField(verbose_name='Mod. il', auto_now=True, blank=True, null=True)
-
+    short = models.CharField(verbose_name='Descriz. breve', max_length=120, null=True, blank=True)
+    
     class Meta:
         verbose_name = "tag"
         verbose_name_plural = "tags"
@@ -777,7 +778,7 @@ class Tag(models.Model):
         return '/tema/%s/' % self.slug
 
     def make_dict(self):
-        tag_dict = { 'id': self.id, 'name': self.name, 'slug': self.slug, 'url': self.friendly_url() }
+        tag_dict = { 'id': self.id, 'name': self.name, 'slug': self.slug, 'url': self.friendly_url(), 'short': self.short }
         return tag_dict
 
 @python_2_unicode_compatible
@@ -808,6 +809,7 @@ class Poitype(models.Model):
     # slug = AutoSlugField(unique=True, populate_from='name_it', editable=True)
     slug = AutoSlugField(unique=True, populate_from='name', editable=True)
     modified = models.DateTimeField(verbose_name='Mod. il', auto_now=True, blank=True, null=True)
+    short = models.CharField(verbose_name='Descriz. breve', max_length=120, null=True, blank=True)
 
     class Meta:
         verbose_name = "tipo di risorsa"
@@ -874,7 +876,7 @@ class Poitype(models.Model):
 
     def make_dict(self):
         # poitype_dict = { 'name': self.name,  'slug': self.slug, 'active': self.active, 'icon': self.icon }
-        poitype_dict = { 'name': self.name,  'slug': self.slug, 'active': self.active, 'icon': self.get_icon() }
+        poitype_dict = { 'name': self.name,  'slug': self.slug, 'active': self.active, 'icon': self.get_icon(), 'short': self.short}
         return poitype_dict
 
 @python_2_unicode_compatible
@@ -965,7 +967,7 @@ class Poi(geomodels.Model):
         (0, 'free'),
         (1, 'a pagamento'),
         (2, 'pubblica'),)
-    typecard = models.IntegerField(verbose_name='Tipo di scheda', choices=TYPECARD_CHOICES, default=0, null=True)
+    typecard = models.IntegerField(verbose_name='Scheda', choices=TYPECARD_CHOICES, default=0, null=True)
     created = models.DateField(verbose_name='Creata il', auto_now_add=True, blank=True, null=True)
     
     class Meta:
@@ -998,6 +1000,7 @@ class Poi(geomodels.Model):
         klass = poitype.klass
         prefix_item = poi_klass_prefixes.get(klass, None)
         prefix = ''
+        print (prefix_item)
         if prefix_item:
             prefix = prefix_item[0]
             name_lower = name.lower()
@@ -1830,4 +1833,5 @@ def refresh_configuration():
 refresh_configuration()
 
 POI_CLASSES = Poitype.objects.filter(slug__in=POITYPE_SLUGS).values_list('klass', flat=True)
+
 

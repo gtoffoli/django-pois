@@ -42,7 +42,42 @@ autocomplete_light.register(Tag, search_fields=['name'])
 autocomplete_light.register(Poitype, search_fields=['name'])
 autocomplete_light.register(Poi)
 """
+class PoitypeForm(ModelForm):
+    name_en = forms.CharField(widget=forms.TextInput(attrs={'style':'width:40em','maxlength':80}))
+    name = forms.CharField(widget=forms.TextInput(attrs={'style':'width:40em','maxlength':80}))
+    slug = forms.CharField(widget=forms.TextInput(attrs={'style':'width:40em','maxlength':50}))
+    short = forms.CharField(widget=forms.TextInput(attrs={'style':'width:80em','maxlength':120}))
 
+    class Meta:
+        model = Poitype
+        fields = (
+            'klass',
+            'name_en',
+            'name',
+            'slug',
+            'short',
+            'icon',
+            'color',
+            'tags'
+        )
+
+class TagForm(ModelForm):
+    name_en = forms.CharField(widget=forms.TextInput(attrs={'style':'width:40em','maxlength':40}))
+    name = forms.CharField(widget=forms.TextInput(attrs={'style':'width:40em','maxlength':40}))
+    slug = forms.CharField(widget=forms.TextInput(attrs={'style':'width:40em','maxlength':50}))
+    short = forms.CharField(widget=forms.TextInput(attrs={'style':'width:80em','maxlength':120}))
+
+    class Meta:
+        model = Tag
+        fields = (
+            'name_en',
+            'name',
+            'slug',
+            'short',
+            'weight',
+            'color',
+            'tags'
+        )
 class ZoneForm(ModelForm):
 
     description = forms.CharField(required=False,widget=TinyMCE())
@@ -207,8 +242,6 @@ COMUNE_CHOICES = [(58091, 'Roma')] + [(zone.pro_com, zone.name) for zone in Zone
 
 # Create the form class.
 # class PoiForm(ModelForm):
-
-
 # MMR old version - class PoiForm(autocomplete_light.GenericModelForm):
 class PoiForm(ModelForm):
     """

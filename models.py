@@ -809,7 +809,7 @@ class Poitype(models.Model):
     # slug = AutoSlugField(unique=True, populate_from='name_it', editable=True)
     slug = AutoSlugField(unique=True, populate_from='name', editable=True)
     modified = models.DateTimeField(verbose_name='Mod. il', auto_now=True, blank=True, null=True)
-    #short = models.CharField(verbose_name='Descriz. breve', max_length=120, null=True, blank=True)
+    short = models.CharField(verbose_name='Descriz. breve', max_length=120, null=True, blank=True)
 
     class Meta:
         verbose_name = "tipo di risorsa"

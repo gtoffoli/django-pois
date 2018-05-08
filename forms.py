@@ -46,7 +46,7 @@ class PoitypeForm(ModelForm):
     name_en = forms.CharField(widget=forms.TextInput(attrs={'style':'width:40em','maxlength':80}))
     name = forms.CharField(widget=forms.TextInput(attrs={'style':'width:40em','maxlength':80}))
     slug = forms.CharField(widget=forms.TextInput(attrs={'style':'width:40em','maxlength':50}))
-    short = forms.CharField(widget=forms.TextInput(attrs={'style':'width:80em','maxlength':120}))
+    #short = forms.CharField(widget=forms.TextInput(attrs={'style':'width:80em','maxlength':120}))
 
     class Meta:
         model = Poitype
@@ -55,7 +55,6 @@ class PoitypeForm(ModelForm):
             'name_en',
             'name',
             'slug',
-            'short',
             'icon',
             'color',
             'tags'

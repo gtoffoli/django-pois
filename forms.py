@@ -456,12 +456,12 @@ class PoiUserForm(ModelForm):
     """
     fullname = forms.CharField(
             label=_("Full Name"),
-            help_text=_("If you aren't a connected user, please enter here Full Name"),
+            #help_text=_("If you aren't a connected user, please enter here Full Name"),
             required=True,
             widget=forms.TextInput(attrs={'class':'form-control'}))
     user_email = forms.EmailField(
             label=_("your email"),
-            help_text=_("If you aren't a connected user, please enter here your email"),
+            #help_text=_("If you aren't a connected user, please enter here your email"),
             required=True,
             widget=forms.TextInput(attrs={'class':'form-control'}))
     permission = forms.BooleanField(required=True, label=_('Pursuant to art. 13 of Legislative Decree 30 June 2003 n. 196 we wish to inform you that the personal data supplied by You with the compilation and submission of this form will only serve to have a contact for this report.'), widget=forms.CheckboxInput())

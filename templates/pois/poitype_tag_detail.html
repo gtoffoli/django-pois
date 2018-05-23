@@ -1,7 +1,8 @@
 {% extends "roma/roma_base.html" %}
 {% load staticfiles i18n %}
 
-{% block head_title %}{{ poitype.name|capfirst }} - {{ theme.name|capfirst }}) - {{ region|lower|capfirst }}{% endblock %}
+{% block head_title %}{{ title_page }}{% endblock %}
+{% block meta_description %}{{short_page}}{% endblock meta_description %}
 
 {% block content %}
     <div class="boxcontent">

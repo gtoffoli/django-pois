@@ -1,7 +1,8 @@
 {% extends "roma/roma_base.html" %}
 {% load staticfiles i18n %}
 
-{% block head_title %}{% if poi %}{% trans "Editing of the resource" %} {{ poi.name }}{% else %}{% trans "Recommend a new resource" %}{% endif %}{% endblock %}
+    {% block head_title %}{% if poi %}{% trans "Editing of the resource" %} {{ poi.name }}{% else %}{% trans "Recommend useful services in Roma and Lazio" %}{% endif %}{% endblock %}
+    {% block meta_description %}{% trans "If you know useful facilities and services, you can insert them for free, helping us to expand our resource map." %}{% endblock meta_description %}
     {% block extra_style %}
     <link href="{% static 'autocomplete_light/vendor/select2/dist/css/select2.css' %}" type="text/css" media="all" rel="stylesheet">
     <link href="{% static "autocomplete_light/select2.css" %}" rel="stylesheet">

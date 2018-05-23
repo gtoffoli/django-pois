@@ -13,7 +13,7 @@
         <div class="row">
             <div class="col-lg-offset-3 col-lg-6">
             {% for route in routes %}
-                <p class="notranslate"><a href="{{ route.friendly_url }}">{{ route.name }}</a></p>
+                <p class="notranslate"><a href="/report{{ route.friendly_url }}">{{ route.name }}</a></p>
             {% empty %}
                 <p>{% trans "No route is present" %}.</p>
             {% endfor %}

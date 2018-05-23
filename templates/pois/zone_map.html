@@ -22,7 +22,7 @@
             <div class="col-md-3 col-lg-2">
                 <div class="actions">
                     {% if can_edit %}<div><a href="{% url "admin:pois_zone_change" zone.id %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <small>{% trans "edit" %}</small></a></div>{% endif %}
-                    <div><a href="/indice-zona/{{ zone.slug }}/" title="{% trans "show the resources by theme area" %}" rel="tooltip"><i class="fa fa-list" aria-hidden="true"></i> <small>{% trans "show the resources by theme area" %}</small></a></div>
+                    <div><a href="{{indice_zona}}{{ zone.slug }}/" title="{% trans "show the resources by theme area" %}" rel="tooltip"><i class="fa fa-list" aria-hidden="true"></i> <small>{% trans "show the resources by theme area" %}</small></a></div>
                     {% if map and zone.has_geom %}
                         <div><a href="/zona/{{ zone.slug }}/"><i class="fa fa-map-o" aria-hidden="true"></i> <small>{% trans "filter resources only by theme area"|capfirst %}</small></a></div>
                         {% include "pois/_help_block.html" %}
@@ -288,7 +288,7 @@ function refresh_viewport(form) {
         } else {
             s+='<span class="notranslate">{6}</span>';
         }
-        s+=' - <a href="/indice-zona/{7}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the zone with zipcode" %} {7}"><span class="notranslate">{7}</span></a> ';
+        s+=' - <a href="{{indice_zona}}{7}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the zone with zipcode" %} {7}"><span class="notranslate">{7}</span></a> ';
         if (poi_dict['comune'][1]=='roma') {
             s+='<span class="notranslate">{8}</span>';
         } else {

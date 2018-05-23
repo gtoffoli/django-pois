@@ -17,7 +17,7 @@
             <div class="col-md-3 col-lg-2">
                 <div class="actions">
                     {% if can_edit %}<div><a href="{% url "admin:pois_zone_change" zone.id %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <small>{% trans "edit" %}</small></a></div>{% endif %}
-                    {% if poi_dict_list %}<div><a href="/indice-zona/{{ zone.slug }}/" title="{% trans "show the resources by theme area" %}" rel="tooltip"><i class="fa fa-list" aria-hidden="true"></i> <small>{% trans "show the resources by theme area" %}</small></a></div>{% endif %}
+                    {% if poi_dict_list %}<div><a href="{{indice_zona}}{{ zone.slug }}/" title="{% trans "show the resources by theme area" %}" rel="tooltip"><i class="fa fa-list" aria-hidden="true"></i> <small>{% trans "show the resources by theme area" %}</small></a></div>{% endif %}
                     {% comment %}
                     {% if map and zone.has_geom and poi_dict_list %}
                         <div><a href="/mappa-zona/{{ zone.slug }}/"><i class="fa fa-filter" aria-hidden="true"></i> <small>{% trans "filter resources by category also" %}</small></a></div>
@@ -273,11 +273,15 @@ function refresh_viewport(form) {
         } else {
             s+='<span class="notranslate">{6}</span>';
         }
-        s+=' - <a href="/indice-zona/{7}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the zone with zipcode" %} {7}"><span class="notranslate">{7}</span></a> ';
+        /* esclude link cap
+        s+=' - <a href="{{indice_zona}}{7}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the zone with zipcode" %} {7}"><span class="notranslate">{7}</span></a> ';
+        */
+        s+=' - <span class="notranslate">{7}</span> ';
+
         if (poi_dict['comune'][1]=='roma') {
             s+='<span class="notranslate">{8}</span>';
         } else {
-            s+='<a href="zona/{9}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the town" %} {8}"><span class="notranslate">{8}</span></a>';
+            s+='<a href="{{indice_zona}}{9}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the town" %} {8}"><span class="notranslate">{8}</span></a>';
         }
         s+='</small></div><div class="col-lg-9"><small>{10}</small></div></div>';
         return s.format(poi_dict['icon'],poi_dict['url'], poi_dict['name'], poi_dict['street_url'], poi_dict['street_name'], poi_dict['number'], poi_dict['street_address'], poi_dict['cap'], poi_dict['comune'][0], poi_dict['comune'][1],  poi_dict['short']);

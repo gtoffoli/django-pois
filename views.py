@@ -63,20 +63,23 @@ class ZoneAdmin(admin.OSMGeoAdmin):
     list_display = ('geom',)
 
 def zonetype_index(request):
-    # zonetypes = Zonetype.objects.filter(id__in=[0,7,1,3,6]).order_by('name')
-    zonetypes = [Zonetype.objects.get(pk=id) for id in [0,7,1,3,4,5,6]]
-    zonetype_list = []
-    for zt in zonetypes:
-        zonetype_list.append([zt, zt.name, Zone.objects.filter(zonetype=zt.pk).count()])
-    return render(request, 'pois/zonetype_index.html', {'zonetype_list': zonetype_list,})
+    if request.user.is_superuser or request.user.is_staff:
+        zonetypes = [Zonetype.objects.get(pk=id) for id in [0,7,1,3,4,5,6]]
+        zonetype_list = []
+        for zt in zonetypes:
+            zonetype_list.append([zt, zt.name, Zone.objects.filter(zonetype=zt.pk).count()])
+        return render(request, 'pois/pois_report/zonetype_index.html', {'zonetype_list': zonetype_list,})
+    return HttpResponseRedirect('/')
 
 def zonetype_detail(request, zonetype_id, zonetype=None):
-    if not zonetype:
-        zonetype = get_object_or_404(Zonetype, pk=zonetype_id)
-    zonetype_name = zonetype.name
-    zone_list = Zone.objects.filter(zonetype=zonetype_id).exclude(id=90).order_by('id')
-    return render(request,'pois/zonetype_detail.html', {'zonetype': zonetype, 'zonetype_name': zonetype_name, 'zone_list': zone_list,})
-
+    if request.user.is_superuser or request.user.is_staff:
+        if not zonetype:
+            zonetype = get_object_or_404(Zonetype, pk=zonetype_id)
+        zonetype_name = zonetype.name
+        zone_list = Zone.objects.filter(zonetype=zonetype_id).exclude(id=90).order_by('id')
+        return render(request,'pois/pois_report/zonetype_detail.html', {'zonetype': zonetype, 'zonetype_name': zonetype_name, 'zone_list': zone_list,})
+    return HttpResponseRedirect('/')
+    
 def zonetype_detail_by_slug(request, zonetype_slug):
     zonetype = get_object_or_404(Zonetype, slug=zonetype_slug)
     return zonetype_detail(request, zonetype.id, zonetype)
@@ -95,22 +98,30 @@ def zone_index(request, zonetype_id=None):
 
 def zone_index_map(request, zonetype_id=1, prefix='', render_view=True):
     zonetype = get_object_or_404(Zonetype, pk=zonetype_id)
-    zonetype_label = ''
+    zonetype_label = zonetype_short = ''
     region = 'LAZIO'
     user_agent = get_user_agent(request)
     view_map = user_agent.is_pc or user_agent.is_tablet
     if zonetype_id or zonetype_id==0:
         if zonetype_id==0 and prefix:
             zone_list = Zone.objects.filter(zonetype=zonetype_id, code__istartswith=prefix).exclude(geom__isnull=True).order_by('name')
-            zonetype_label = prefix=='RM.' and _('macrozones') or prefix=='PR.' and _('provinces')
+            zonetype_label = prefix=='RM.' and ('%s %s' %(_('macrozones'),_('of Roma'))) or prefix=='PR.' and ('%s %s' %(_('provinces'),_('of Lazio')))
+            zonetype_short = prefix=='RM.' and _('map of the macrozones of Roma') or prefix=='PR.' and _('map of the provinces of Lazio')
             region = prefix=='RM.' and 'ROMA' or prefix=='PR.' and 'LAZIO'
         elif zonetype_id==3 and prefix:
             zone_list = Zone.objects.filter(zonetype=zonetype_id, code__istartswith=prefix).exclude(geom__isnull=True).order_by('name')
-            zonetype_label = prefix=='R.' and _('historical quarters') or prefix=='Q.' and _('quarters') or prefix=='S.' and _('quarter extensions') or prefix=='Z.' and _('suburban zones')
+            if prefix=='Z.':
+                 zonetype_label = _('suburban zones')
+                 zonetype_short = _('map of the suburban zones')
+            else:
+                zonetype_label = prefix=='R.' and _('historical quarters') or prefix=='Q.' and _('quarters') or prefix=='S.' and _('quarter extensions')
+                zonetype_label += ' %s' % _('of Roma')
+                zonetype_short = prefix=='R.' and _('map of the historical quarters of Roma') or prefix=='Q.' and _('map of the quarters of Roma') or prefix=='S.' and _('map of the quarter extensions of Roma')
             region = 'ROMA'
         elif zonetype_id==7 and prefix:
             zone_list = Zone.objects.filter(zonetype=zonetype_id, code__istartswith=prefix).exclude(geom__isnull=True)
-            zonetype_label = prefix=='M.' and _('municipalities') or prefix=='COM.' and _('towns')
+            zonetype_label = prefix=='M.' and ('%s %s' %(_('municipalities'),_('of Roma'))) or prefix=='COM.' and ('%s %s' %_('towns',_('of Lazio')))
+            zonetype_short = prefix=='M.' and _('map of the municipalities of Roma') or prefix=='COM.' and _('map of the towns of Lazio')
             region = prefix=='M.' and 'ROMA' or prefix=='COM.' and 'LAZIO'
         else:
             zone_list = Zone.objects.filter(zonetype=zonetype_id).exclude(geom__isnull=True)
@@ -130,7 +141,9 @@ def zone_index_map(request, zonetype_id=1, prefix='', render_view=True):
         zone_list = Zone.objects.all()
     zcount = zone_list.count()
     zone_list = [zone.make_dict() for zone in zone_list]
-    data_dict = {'view_map': view_map, 'zonetype': zonetype, 'zone_list' : zone_list, 'zone_count' : zcount, 'zonetype_label': zonetype_label, 'region': region, 'prefix': prefix}
+    if zonetype_short:
+        zonetype_short += '. %s' % _('Find easily useful facilities and services in the area that interests you. Schools, social and health services, cultural resources and much more.')
+    data_dict = {'view_map': view_map, 'zonetype': zonetype, 'zone_list' : zone_list, 'zone_count' : zcount, 'zonetype_label': zonetype_label, 'zonetype_short': zonetype_short, 'region': region, 'prefix': prefix}
 
     if render_view:
        return render(request, 'pois/zone_index_map.html', data_dict)
@@ -144,10 +157,12 @@ def zone_kml(request, zonetype_id=6):
         zone_list = Zone.objects.all()
     return render_to_kml("zones.kml", {'zones' : zone_list}) 
 
+"""
 def muoviroma(request):
     flatpage = FlatPage.objects.get(url='/help/muoviroma/')
     text_body = flatpage.content
     return render(request, 'pois/muoviroma.html', {'text_body': text_body})
+"""
 
 def tag_set(request, tag_id, redirect=True):
     set_focus(request, tags=[tag_id])
@@ -461,25 +476,31 @@ def zone_detail_by_slug(request, zone_slug):
     return zone_detail(request, zone.id, zone)
 
 def route_index(request):
-    routes = Route.objects.all()
-    return render(request, 'pois/route_index.html', {'routes': routes,})
+    user = request.user
+    if user.is_superuser or user.is_staff:
+        routes = Route.objects.all()
+        return render(request, 'pois/pois_report/route_index.html', {'routes': routes,})
+    return HttpResponseRedirect('/')
 
 @xframe_options_exempt
 def route_detail(request, route_id, route=None):
-    if not route:
-        route = get_object_or_404(Route, pk=route_id)
-    data_dict = {}
-    can_edit = route.can_edit(request)
-    data_dict['can_edit'] = can_edit
-    route_dict = route.make_dict()
-    data_dict['route'] = route_dict
-    pois = route.pois.all()
-    poi_dict_list = [poi.make_dict(list_item=True) for poi in pois]
-    data_dict['poi_dict_list'] = poi_dict_list
-    near_pois = route.get_near_pois(distance=50)
-    near_poi_dict_list = [poi.make_dict(list_item=True) for poi in near_pois if not poi in pois]
-    data_dict['near_poi_dict_list'] = near_poi_dict_list
-    return render(request, 'pois/route_detail.html', data_dict)
+    user = request.user
+    if user.is_superuser or user.is_staff:
+        if not route:
+            route = get_object_or_404(Route, pk=route_id)
+        data_dict = {}
+        can_edit = route.can_edit(request)
+        data_dict['can_edit'] = can_edit
+        route_dict = route.make_dict()
+        data_dict['route'] = route_dict
+        pois = route.pois.all()
+        poi_dict_list = [poi.make_dict(list_item=True) for poi in pois]
+        data_dict['poi_dict_list'] = poi_dict_list
+        near_pois = route.get_near_pois(distance=50)
+        near_poi_dict_list = [poi.make_dict(list_item=True) for poi in near_pois if not poi in pois]
+        data_dict['near_poi_dict_list'] = near_poi_dict_list
+        return render(request, 'pois/pois_report/route_detail.html', data_dict)
+    return HttpResponseRedirect('/')
 
 def route_detail_by_slug(request, route_slug):
     route = get_object_or_404(Route, slug=route_slug)
@@ -516,10 +537,6 @@ def viewport(request):
                 break
     form = PoiBythemeForm(initial={'tags': tags})
     return render(request, 'pois/street_detail.html', {'help': help_text, 'poi_dict_list': poi_dict_list, 'view_type': 'viewport', 'form': form, 'tags': tags, 'region': region})
-
-def choose_zone(request):
-    help_text = FlatPage.objects.get(url='/help/viewport/').content
-    return render(request, 'pois/choose_zone.html', {'help': help_text})
 
 def zone_cloud(request):
     """ allows to test zone_cloud.html and zone_net """
@@ -841,8 +858,14 @@ def zone_tag_index(request, zone_id, zone=None):
         cache.set(key, all_zones)
     can_edit = zone.can_edit(request)
     region = zone.zone_parent()
-    zonetype_label = zone.type_label()
-    
+    # zonetype_label = zone.type_label()
+    zonetype_label = zone.name
+    if zone.zonetype_id == 3:
+        zonetype_label = '%s-%s' % (zone.code, zone.name)
+    elif zone.zonetype_id == 6:
+        zonetype_label = '%s %s' % (zone.type_label(), zone.name)
+    elif zone.zonetype_id == 7 and zone.code.startswith('M.'):
+        zonetype_label = '%s %s' % (zone.name, _('of Roma'))
     return render(request, 'pois/zone_tag_index.html', {'zone': zone, 'region': region, 'zonetype_label': zonetype_label, 'zonetype_list': all_zones, 'tag_poitype_list': tag_poitype_list, 'can_edit': can_edit,})
 
 
@@ -1072,12 +1095,21 @@ def poitype_detail(request, klass, poitype=None):
                 if item['comune'][1] != 'roma':
                     region = 'LAZIO'
                     break
-        
         """
         set_focus(request, tags=[theme.id for theme in theme_list])
         focus_set_category(request, klass)
         """
         sub_types = not poitype.active and [{ 'name': p.name, 'slug': p.slug } for p in poitype.sub_types()] or []
+        poitype_name = poitype.name
+        if poitype.short:
+            poitype_short = poitype.short
+        else:
+            ancestor_klass = '%s0000' % (poitype.klass[:4])
+            ancestor=Poitype.objects.get(klass=ancestor_klass)
+            if ancestor.short:
+                poitype_short = ancestor.short
+            else:
+                poitype_short = _("easily find addresses, contacts and information on services.")
         poitype = { 'name': poitype.name,  'slug': poitype.slug, 'active': poitype.active }
         if sub_types:
             poitype['sub_types'] = sub_types
@@ -1092,6 +1124,12 @@ def poitype_detail(request, klass, poitype=None):
                 print (data_dict)
                 """
                 pass
+        if region == 'ROMA':
+            data_dict['title_page'] = '%s %s' % (poitype_name, _('in Roma'))
+            data_dict['short_page'] = '%s %s: %s' % (poitype_name,_('in Roma'),poitype_short)
+        else:
+            data_dict['title_page'] = '%s %s' % (poitype_name, _('in Lazio'))
+            data_dict['short_page'] = '%s %s: %s' % (poitype_name,_('in Lazio'),poitype_short)
     return render(request, 'pois/poitype_detail.html', data_dict)
 
 def poitype_detail_by_slug(request, klass_slug):
@@ -1118,6 +1156,21 @@ def poitype_tag_detail(request, klass, tag_id, poitype=None, tag=None):
     data = {'help': help_text, 'poitype': poitype, 'region': region, 'zone': zone, 'theme_list': theme_list, 'poi_dict_list': poi_dict_list,}
     if not tag in poitype.tags.all():
         data['theme'] = tag
+    if poitype.short:
+        poitype_short = poitype.short
+    else:
+        ancestor_klass = '%s0000' % (poitype.klass[:4])
+        ancestor=Poitype.objects.get(klass=ancestor_klass)
+        if ancestor.short:
+            poitype_short = ancestor.short
+        else:
+            poitype_short = _("easily find addresses, contacts and information on services.")
+    if region == 'ROMA':
+        data['title_page'] = '%s %s' % (poitype.name, _('in Roma'))
+        data['short_page'] = '%s %s: %s' % (poitype.name,_('in Roma'),poitype_short)
+    else:
+        data['title_page'] = '%s %s' % (poitype.name, _('in Lazio'))
+        data['short_page'] = '%s %s: %s' % (poitype.name,_('in Lazio'),poitype_short)
     return render(request, 'pois/poitype_tag_detail.html', data)
 
 def poitype_tag_detail_by_slugs(request, klass_slug, tag_slug):
@@ -1164,6 +1217,16 @@ def poitype_zone_detail(request, klass, zone_id, poitype=None, zone=None):
                         zone_list = sorted(zone_list_no_sorted, key=lambda k: k['name'].lower())
         theme_list = [ t.make_dict() for t in poitype.tags.all()]
         sub_types = not poitype.active and [{ 'name': p.name, 'slug': p.slug } for p in poitype.sub_types()] or []
+        poitype_name = poitype.name
+        if poitype.short:
+            poitype_short = poitype.short
+        else:
+            ancestor_klass = '%s0000' % (poitype.klass[:4])
+            ancestor=Poitype.objects.get(klass=ancestor_klass)
+            if ancestor.short:
+                poitype_short = ancestor.short
+            else:
+                poitype_short = _("easily find addresses, contacts and information on services.")
         poitype = { 'name': poitype.name,  'slug': poitype.slug, 'active': poitype.active }
         if sub_types:
             poitype['sub_types'] = sub_types
@@ -1193,7 +1256,10 @@ def poitype_zone_detail(request, klass, zone_id, poitype=None, zone=None):
                 print (data_dict)
                 """
                 pass
-    data_dict['zone'] = zone
+        data_dict['zone'] = zone
+        
+        data_dict['title_page'] = '%s - %s' % (poitype_name, zone.name)
+        data_dict['short_page'] = '%s - %s: %s' % (poitype_name, zone.name,poitype_short)
     return render(request, 'pois/poitype_zone_detail.html', data_dict)
 
 def poitype_zone_detail_by_slugs(request, klass_slug, zone_slug):
@@ -1429,54 +1495,68 @@ def poi_save_note(request):
         return render(request, 'pois/poi_feedback.html', {'form': form, 'text_body': text_body})
 
 def pois_recent(request, n=MAX_POIS):
-    # instances = Poi.objects.filter(state=1).order_by('-id')[:n]
-    instances = Poi.objects.select_related().filter(state=1).order_by('-id')[:n]
-    poi_dict_list = [poi.make_dict() for poi in instances]
-    return render(request, 'pois/poi_list.html', {'list_type': 'recent', 'poi_dict_list': poi_dict_list, 'count': instances.count()})
-
+    user = request.user
+    if user.is_superuser or user.is_staff:
+        instances = Poi.objects.select_related().filter(state=1).order_by('-id')[:n]
+        poi_dict_list = [poi.make_dict() for poi in instances]
+        return render(request, 'pois/pois_report/poi_list.html', {'list_type': 'recent', 'poi_dict_list': poi_dict_list, 'count': instances.count()})
+    return HttpResponseRedirect('/')
+    
 def pois_updates(request, n=MAX_POIS):
-    last_id = Poi.objects.latest('id').id
-    instances = Poi.objects.select_related().filter(id__lt=last_id-MAX_POIS, state=1).order_by('-modified')[:n]
-    poi_dict_list = [poi.make_dict() for poi in instances]
-    return render(request, 'pois/poi_list.html', {'list_type': 'updates', 'poi_dict_list': poi_dict_list, 'count': instances.count()})
+    user = request.user
+    if user.is_superuser or user.is_staff:
+        last_id = Poi.objects.latest('id').id
+        instances = Poi.objects.select_related().filter(id__lt=last_id-MAX_POIS, state=1).order_by('-modified')[:n]
+        poi_dict_list = [poi.make_dict() for poi in instances]
+        return render(request, 'pois/pois_report/poi_list.html', {'list_type': 'updates', 'poi_dict_list': poi_dict_list, 'count': instances.count()})
+    return HttpResponseRedirect('/')
 
 def my_resources(request, n=MAX_POIS):
     n = request.GET.get('n', n)
     n = int(n)
     poi_dict_list = []
     count = 0
-    if request.user.is_authenticated:
+    if request.user.is_superuser or request.user.is_staff:
         instances = Poi.objects.filter(owner=request.user).order_by('-id')[:n]
         count = instances.count()
         poi_dict_list = [poi.make_dict() for poi in instances]
-    return render(request, 'pois/poi_list.html', {'list_type': 'my_resources', 'poi_dict_list': poi_dict_list, 'count': count})
-
+        return render(request, 'pois/pois_report/poi_list.html', {'list_type': 'my_resources', 'poi_dict_list': poi_dict_list, 'count': count})
+    return HttpResponseRedirect('/')
+    
 def poi_contributors(request):
-    users = User.objects.annotate(num_pois=Count('poi_owner')).filter(num_pois__gt=0).order_by('-num_pois')
-    return render(request, 'pois/poi_contributors.html', { 'user_list': users, })
+    user = request.user
+    if user.is_superuser or user.is_staff:
+        users = User.objects.annotate(num_pois=Count('poi_owner')).filter(num_pois__gt=0).order_by('-num_pois')
+        return render(request, 'pois/pois_report/poi_contributors.html', { 'user_list': users, })
+    return HttpResponseRedirect('/')
 
 def poi_zonize(request, poi_id):
-    poi = get_object_or_404(Poi, pk=poi_id)
-    poi.update_zones(zonetypes=[1, 3, 7])
-    return HttpResponseRedirect('/admin/pois/poi/%s/' % poi_id)
-
+    if request.user.is_superuser or request.user.is_staff:
+        poi = get_object_or_404(Poi, pk=poi_id)
+        poi.update_zones(zonetypes=[1, 3, 7])
+        return HttpResponseRedirect('/admin/pois/poi/%s/' % poi_id)
+    return HttpResponseRedirect('/')
+    
 def pois_update_colocations(request):
-    pois = Poi.objects.exclude(host__isnull=True)
-    n = 0
-    for poi in pois:
-        host = poi.host
-        if poi.point == host.point:
-            pass
-        else:
-            poi.point = host.point
-            poi.save()
-            n += 1
-    html = u"""
+    if request.user.is_superuser or request.user.is_staff:
+        pois = Poi.objects.exclude(host__isnull=True)
+        n = 0
+        for poi in pois:
+            host = poi.host
+            if poi.point == host.point:
+                pass
+            else:
+                poi.point = host.point
+                poi.save()
+                n += 1
+        html = u"""
 <html><body>
 <div>Aggiornato la posizione di %d risorse con quella della risorsa ospitante.
 </body></html>
 """ % n
-    return HttpResponse(html, content_type='text/html')
+        return HttpResponse(html, content_type='text/html')
+    return HttpResponseRedirect('/')
+        
 
 def poi_analysis(request):
     no_geo_list = []
@@ -1530,7 +1610,8 @@ def poi_analysis(request):
                         item = poi.make_dict()
                         item.update({'notes': notes})
                         notes_list.append(item)
-    return render(request, 'pois/poi_analysis.html', {'stato': state, 'web_list': web_list, 'feeds_list': feeds_list, 'no_geo_list': no_geo_list, 'no_theme_list': no_theme_list, 'todo_list': todo_list, 'comment_list': comment_list, 'notes_list': notes_list,})
+        return render(request, 'pois/pois_report/poi_analysis.html', {'stato': state, 'web_list': web_list, 'feeds_list': feeds_list, 'no_geo_list': no_geo_list, 'no_theme_list': no_theme_list, 'todo_list': todo_list, 'comment_list': comment_list, 'notes_list': notes_list,})
+    return HttpResponseRedirect('/')
 
 
 def decimal_to_exagesimal(coord):
@@ -1673,30 +1754,36 @@ def resource_map_by_slug(request, poi_slug):
 
 from django.db.models import Count
 def resource_networks(request):
-    pois = Poi.objects.filter(state=1).exclude(poi__pois=None)
-    if POI_CLASSES:
-        pois = pois.filter(poitype_id__in=POI_CLASSES)
-    pois = pois.annotate(num_pois=Count('poipoi')).order_by('-num_pois')
-    poi_dict_list = []
-    for poi in pois:
-        poi_dict = poi.make_dict(list_item=True)
-        if poi.num_pois > 3:
-            poi_dict['num_pois'] = poi.num_pois
-            poi_dict_list.append(poi_dict)
-    return render(request, 'pois/poi_list.html', {'list_type': 'networks', 'poi_dict_list': poi_dict_list, 'count': len(poi_dict_list)})
+    user = request.user
+    if user.is_superuser or user.is_staff:
+        pois = Poi.objects.filter(state=1).exclude(poi__pois=None)
+        if POI_CLASSES:
+            pois = pois.filter(poitype_id__in=POI_CLASSES)
+        pois = pois.annotate(num_pois=Count('poipoi')).order_by('-num_pois')
+        poi_dict_list = []
+        for poi in pois:
+            poi_dict = poi.make_dict(list_item=True)
+            if poi.num_pois > 3:
+                poi_dict['num_pois'] = poi.num_pois
+                poi_dict_list.append(poi_dict)
+        return render(request, 'pois/pois_report/poi_list.html', {'list_type': 'networks', 'poi_dict_list': poi_dict_list, 'count': len(poi_dict_list)})
+    return HttpResponseRedirect('/')
 
 def resource_maps(request):
-    instances = Poi.objects.filter(state=1).exclude(poi_careof=None).annotate(num_pois=Count('poi__careof')).order_by('-num_pois')
-    poi_dict_list = []
-    for instance in instances:
-        pois_map = Poi.objects.filter(careof=instance)
-        num_pois = len(pois_map)
-        if num_pois > 3 and num_pois < 100:
-            # poi_dict = instance.make_dict()
-            poi_dict = instance.make_dict(list_item=True)
-            poi_dict['num_pois'] = num_pois
-            poi_dict_list.append(poi_dict)
-    return render(request, 'pois/poi_list.html', {'list_type': 'maps', 'poi_dict_list': poi_dict_list, 'count': len(poi_dict_list)})
+    user = request.user
+    if user.is_superuser or user.is_staff:
+        instances = Poi.objects.filter(state=1).exclude(poi_careof=None).annotate(num_pois=Count('poi__careof')).order_by('-num_pois')
+        poi_dict_list = []
+        for instance in instances:
+            pois_map = Poi.objects.filter(careof=instance)
+            num_pois = len(pois_map)
+            if num_pois > 3 and num_pois < 100:
+                # poi_dict = instance.make_dict()
+                poi_dict = instance.make_dict(list_item=True)
+                poi_dict['num_pois'] = num_pois
+                poi_dict_list.append(poi_dict)
+        return render(request, 'pois/pois_report/poi_list.html', {'list_type': 'maps', 'poi_dict_list': poi_dict_list, 'count': len(poi_dict_list)})
+    return HttpResponseRedirect('/')
 
 def viewport_get_pois(request, viewport, street_id=None, tags=[]):
     w, s, e, n = viewport

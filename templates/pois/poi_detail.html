@@ -67,7 +67,7 @@
                                 {% for zone in zone_list %}
                                      <div class="val">
                                     {% if zone.slug %}
-                                        <a rel="tooltip" href="/indice-zona/{{ zone.slug }}/" title="{% trans "list the resources" %} {% trans "located in the zone" %} {{ zone.name }}"><span class="notranslate">{{ zone.name }}</span></a>
+                                        <a rel="tooltip" href="{{indice_zona}}{{ zone.slug }}/" title="{% trans "list the resources" %} {% trans "located in the zone" %} {{ zone.name }}"><span class="notranslate">{{ zone.name }}</span></a>
                                     {% else %}
                                         <a rel="tooltip" href="{{ zone.url }}" title="{% trans "list the resources" %} {% trans "located in the zone" %} {{ zone.name }}"><span class="notranslate">{{ zone.name }}</span></a>
                                     {% endif %}
@@ -77,7 +77,11 @@
                             </tr>
                         {% endif %}
                         <tr><th>{% trans "Address" %}:</th><td>
+                        {% comment %}
+                        20180518 MMR - tolto cap cliccabile
                         {% if  poi_dict.street_url %}<a rel="tooltip" href="{{ poi_dict.street_url }}" title="{% trans "show" %} {{ poi_dict.street_name }}"><span class="notranslate">{{ poi_dict.street_name }}</span></a><span class="notranslate">, {{ poi_dict.number }}</span>{% else %}<span class="notranslate">{{ poi_dict.street_address }}</span>{% endif %} - <a href="/indice-zona/{{poi_dict.cap }}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the zone with zipcode" %} {{poi_dict.cap }}"><span class="notranslate">{{ poi_dict.cap }}</span></a> {% if poi_dict.comune.1 == 'roma' %}<span class="notranslate">{{ poi_dict.comune.0 }}</span>{% else %}<a href="/indice-zona/{{poi_dict.comune.1}}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the town" %} {{ poi_dict.comune.0 }}"><span class="notranslate">{{ poi_dict.comune.0 }}</span></a>{% endif %}</td></tr>
+                        {% endcomment %}
+                        {% if  poi_dict.street_url %}<a rel="tooltip" href="{{ poi_dict.street_url }}" title="{% trans "show" %} {{ poi_dict.street_name }}"><span class="notranslate">{{ poi_dict.street_name }}</span></a><span class="notranslate">, {{ poi_dict.number }}</span>{% else %}<span class="notranslate">{{ poi_dict.street_address }}</span>{% endif %} - <span class="notranslate">{{ poi_dict.cap }}</span> {% if poi_dict.comune.1 == 'roma' %}<span class="notranslate">{{ poi_dict.comune.0 }}</span>{% else %}<a href="{{indice_zona}}{{poi_dict.comune.1}}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the town" %} {{ poi_dict.comune.0 }}"><span class="notranslate">{{ poi_dict.comune.0 }}</span></a>{% endif %}</td></tr>
                         {% if poi_dict.phones %}
                         <tr><th>{% trans "Phone" %}:</th><td>
                              <div class="summary notranslate">

@@ -3,7 +3,8 @@
 
 {{ current_path }}
 
-{% block head_title %}{{ tag.name|capfirst }} - Roma e Lazio{% endblock %}
+{% block head_title %}{{ tag.name|capfirst }} {% trans "in Roma and Lazio" %}{% endblock %}
+{% block meta_description %}{{tag.short}}{% endblock meta_description %}
 {% block top-banner %}{% endblock top-banner %}
 {% block content %}
     <div class="mLR-15"><img src="{{ MEDIA_URL }}img_tema/{{tag.slug}}.jpg" alt="" class="img-responsive"></div>

@@ -3,8 +3,8 @@
 
 {{ current_path }}
 
-{% block head_title %}{% if zone.zonetype_id == 3 %}{{zone.code}}-{% elif zone.zonetype_id == 6 %}{{zonetype_label}} {% endif %}{{ zone.name }} - {% trans "Resources by theme area"|lower %}{% endblock %}
-{% block meta_description %}{% if zone.zonetype_id == 3 or zone.zonetype_id == 6 %}{{ zone.zonetype_label|capfirst }} {% endif %}{{ zone.name }}: {% trans "list of resources grouped by thematic area"%}{% endblock meta_description %}
+{% block head_title %}{{zonetype_label}}: {% trans "useful resources" %}{% endblock %}
+{% block meta_description %}{{ zone.zonetype_label|capfirst }}: {% trans "useful resources organized by theme area." %} {% trans "Schools, social and health services, cultural resources and much more." %}{% endblock meta_description %}
 {% block content %}
     <div class="boxcontent">
         <div class="row mB10">

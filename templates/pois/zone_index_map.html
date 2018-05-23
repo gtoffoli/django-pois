@@ -1,8 +1,8 @@
 {% extends "roma/roma_base.html" %}
 {% load staticfiles i18n %}
 
-{% block head_title %}{% if zonetype_label %}{{ zonetype_label|capfirst }}{% endif %}{% endblock %}
-
+{% block head_title %}{{ zonetype_label|capfirst }}{% endblock %}
+{% block meta_description %}{{ zonetype_short|capfirst }}{% endblock meta_description %}
 {% block content %}
     <div class="boxcontent">
         <div class="row mB10">
@@ -20,10 +20,10 @@
                 {% if zonetype.id == 3 and prefix == '' %}
                     {% for item in zonetype.list_topo_zones %}
                         <div class="eti">{{ item.0|capfirst }}</div>
-                        {% for zone in item.1 %}<div {% if not forloop.last %}class="val"{% endif %}><a rel="tooltip" id="{{ zone.id }}" class="event-map" title="{% trans "list the resources" %} {% trans "located in the zone" %} {{ zone.name }}" href="/indice-zona/{{ zone.slug}}/"><span class="notranslate">{{ zone.name }} <small>({{zone.code}})</small></span></a></div>{% endfor %}
+                        {% for zone in item.1 %}<div {% if not forloop.last %}class="val"{% endif %}><a rel="tooltip" id="{{ zone.id }}" class="event-map" title="{% trans "list the resources" %} {% trans "located in the zone" %} {{ zone.name }}" href="{{indice_zona}}{{ zone.slug}}/"><span class="notranslate">{{ zone.name }} <small>({{zone.code}})</small></span></a></div>{% endfor %}
                     {% endfor %}
                 {% else %}
-                    {% for zone in zone_list %}<div class="val"><a rel="tooltip" id="{{ zone.id }}" class="event-map" title="{% trans "list the resources" %} {% trans "located in the zone" %} {{ zone.name }}" href="/indice-zona/{{ zone.slug}}/"><span class="notranslate">{{ zone.name }}</span>{% if zonetype.id == 3 %} <small class="notranslate">({{zone.code}})</small>{% endif %}</a></div>{% endfor %}
+                    {% for zone in zone_list %}<div class="val"><a rel="tooltip" id="{{ zone.id }}" class="event-map" title="{% trans "list the resources" %} {% trans "located in the zone" %} {{ zone.name }}" href="{{indice_zona}}{{ zone.slug}}/"><span class="notranslate">{{ zone.name }}</span>{% if zonetype.id == 3 %} <small class="notranslate">({{zone.code}})</small>{% endif %}</a></div>{% endfor %}
                 {% endif %}
                 </div>
             </div>
@@ -107,7 +107,7 @@ var json_zones = {};
             {% else %}
                 zone = geojson_format.read({{zone.geom_OSM.geojson|safe}})[0]; // We mark it 'safe' so that Django doesn't escape the quotes.
             {% endif %}
-            zone.attributes = { id: {{zone.id}}, label: "{{zone.name}}", description: "{{zone.name}}", type: 'municipio', url: "/indice-zona/{{zone.slug}}/"};
+            zone.attributes = { id: {{zone.id}}, label: "{{zone.name}}", description: "{{zone.name}}", type: 'municipio', url: "{{indice_zona}}{{zone.slug}}/"};
 // center = zone.getCentroid();
             zones.addFeatures(zone);
         {% endif %}{% endfor %}

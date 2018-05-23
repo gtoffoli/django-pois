@@ -267,7 +267,7 @@ function refresh_viewport(form) {
         } else {
             s+='<span class="notranslate">{6}</span>';
         }
-        s+=' - <a href="/indice-zona/{7}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the zone with zipcode" %} {7}"><span class="notranslate">{7}</span></a> ';
+        s+=' - <a href="{{indice_zona}}{7}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the zone with zipcode" %} {7}"><span class="notranslate">{7}</span></a> ';
         if (poi_dict['comune'][1]=='roma') {
             s+='<span class="notranslate">{8}</span>';
         } else {

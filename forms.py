@@ -47,6 +47,7 @@ class PoitypeForm(ModelForm):
     name = forms.CharField(widget=forms.TextInput(attrs={'style':'width:40em','maxlength':80}))
     slug = forms.CharField(widget=forms.TextInput(attrs={'style':'width:40em','maxlength':50}))
     short = forms.CharField(required=False, widget=forms.TextInput(attrs={'style':'width:80em','maxlength':120}))
+    active = forms.BooleanField(required=False,widget=forms.CheckboxInput())
 
     class Meta:
         model = Poitype
@@ -56,6 +57,7 @@ class PoitypeForm(ModelForm):
             'name',
             'slug',
             'short',
+            'active',
             'icon',
             'color',
             'tags'

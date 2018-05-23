@@ -22,13 +22,14 @@
                     {% if zone_zipcode_list %}
                         <div class="summary {% if not zone_list %}mB20{% endif %}">
                             <div class="eti">{% trans "zipcode areas"|capfirst %}</div>
-                            {% for zone in zone_zipcode_list %}<div class="val"><a href="/indice-zona/{{ zone.slug }}/" rel="tooltip" title="{% trans "list the resources" %}"><span class="notranslate">{{ zone.name }}</span></a></div>{% endfor %}
+                            {% comment %} 20180518 MMR escluso link zone_cap {% endcomment %}
+                            {% for zone in zone_zipcode_list %}<div class="val"><span class="notranslate">{{ zone.name }}</span></div>{% endfor %}
                         </div>
                     {% endif %}
                     {% if zone_list %}
                         <div class="summary mB20">
                             <div class="eti">{% trans "related zones"|capfirst %}</div>
-                            {% for zone in zone_list %}<div class="val"><a href="/indice-zona/{{ zone.slug }}/" rel="tooltip" title="{% trans "list the resources" %}">{{ zone.name }}{% if zone.zonetype_id == 3 %} <small>({{ zone.code }})</small>{% endif %}</a></div>{% endfor %}
+                            {% for zone in zone_list %}<div class="val"><a href="{{indice_zona}}{{ zone.slug }}/" rel="tooltip" title="{% trans "list the resources" %}">{{ zone.name }}{% if zone.zonetype_id == 3 %} <small>({{ zone.code }})</small>{% endif %}</a></div>{% endfor %}
                         </div>
                     {% endif %}
                 {% endif %}
@@ -272,7 +273,7 @@ function refresh_viewport(form) {
         } else {
             s+='<span class="notranslate">{6}</span>';
         }
-        s+=' - <a href="/indice-zona/{7}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the zone with zipcode" %} {7}"><span class="notranslate">{7}</span></a> ';
+        s+=' - <a href="{{indice_zona}}{7}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the zone with zipcode" %} {7}"><span class="notranslate">{7}</span></a> ';
         if (poi_dict['comune'][1]=='roma') {
             s+='<span class="notranslate">{8}</span>';
         } else {

@@ -1,8 +1,8 @@
 {% extends "roma/roma_base.html" %}
 {% load staticfiles i18n %}
 
-{% block head_title %}{{ poitype.name }} - {{ zone.name }}{% if zone.zonetype.id == 3 %}({{ zone.code}}){% endif %}{% endblock %}
-
+{% block head_title %}{{title_page}}{% endblock %}
+{% block meta_description %}{{short_page}}{% endblock meta_description %}
 {% block content %}
     <div class="boxcontent">
         <div class="row mB10">
@@ -44,7 +44,7 @@
             <div class="col-md-3 col-lg-2">
                 <div class="actions">
                     {% if zone and zone.code != 'ROMA' %}
-                        <div><a href="/indice-zona/{{ zone.slug }}/" title="{% trans "show the resources by theme area" %}" rel="tooltip"><i class="fa fa-list" aria-hidden="true"></i> <small>{% trans "show the resources by theme area" %}</small></a></div>
+                        <div><a href="{{indice_zona}}{{ zone.slug }}/" title="{% trans "show the resources by theme area" %}" rel="tooltip"><i class="fa fa-list" aria-hidden="true"></i> <small>{% trans "show the resources by theme area" %}</small></a></div>
                         <div><a href="/categoria/{{ poitype.slug }}/" rel="tooltip" title="{% trans 'show all resources in this category' %}"><i class="fa fa-map-o" aria-hidden="true"></i> <small>{% trans 'show all resources in this category' %}</small></a></div>
                     {% endif %}                    
                     {% include "pois/_help_block.html" %}

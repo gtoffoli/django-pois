@@ -126,10 +126,11 @@ class TagTagAdmin(admin.ModelAdmin):
 class PoitypeAdmin(admin.ModelAdmin):
     form = PoitypeForm
     fieldsets = [
-        (None, {'fields': ['klass','name_en', 'name', 'slug', 'short', 'icon', 'color', 'tags',]}),
+        (None, {'fields': ['klass','name_en', 'name', 'slug', 'short', 'active', 'icon', 'color', 'tags',]}),
     ]
     list_display = ('klass', 'name_en', 'name', 'slug', 'short', 'modified', 'active', 'list_themes',  'color',)
-    search_fields = ['name_en', 'name','short']
+    list_filter = ['active']
+    search_fields = ['name_en', 'name','klass','short']
 
     def list_themes(self, obj):
         tags = obj.tags.all()

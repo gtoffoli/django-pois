@@ -340,7 +340,8 @@ class Zone(geomodels.Model):
         zone_dict['code'] = self.code
         zone_dict['name'] = self.name
         zone_dict['slug'] = self.slug
-        zone_dict['url'] = '/indice-zona/%s/' % self.slug
+        #20180518 MMR - zone_dict['url'] = '/indice-zona/%s/' % self.slug
+        zone_dict['url'] = '/risorse-utili-%s/' % self.slug
         zone_dict['safe_code'] = self.safe_code()
         zone_dict['zonetype_id'] = self.zonetype_id
         # MMR non utilizzato - zone_dict['zonetype_name_plural']= self.zonetype.name_plural
@@ -1794,11 +1795,11 @@ class ZonetypeTranslation(object):
 register(Zonetype, ZonetypeTranslation)
 
 class TagTranslation(object):
-    fields = ('name')
+    fields = ('name','short')
 register(Tag, TagTranslation)
 
 class PoitypeTranslation(object):
-    fields = ('name')
+    fields = ('name','short')
 register(Poitype, PoitypeTranslation)
 
 """

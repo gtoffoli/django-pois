@@ -3,15 +3,16 @@
 
 {{ current_path }}
 
-{% block head_title %}Roma - Lazio - {% trans "Categories and resources, by theme area" %}{% endblock %}
-
+{% block head_title %}{% trans "Useful services in Roma and Lazio" %}{% endblock %}
+{% block meta_description %}{% trans "Useful services in Roma and Lazio organized by theme area." %} {% trans "Schools, social and health services, cultural resources and much more." %}{% endblock meta_description %}
 {% block content %}
     <div class="boxcontent">
         <div class="row mB10">
             <div class="col-md-9 col-lg-10">
-                 <h1>{% trans "Categories and resources, by theme area" %}</h1>
+                 <h1>{% trans "Categories and resources by theme area" %}</h1>
             </div>
             <div class="col-md-3 col-lg-2">
+                {% comment %}
                 <div class="summary">
                     <div><a href="#"><i class="fa fa-info-circle" aria-hidden="true"></i> <small>{% trans "help" %}</small></a>
                     <div><small style="display:none">
@@ -20,6 +21,7 @@
                         <p>{% trans "Click on the number in parentheses, next to a category, to get a list of resources of that category" %}.</p>
                     </small></div></div>
                 </div>
+                {% endcomment %}
             </div>
         </div>
         {% if tag_poitype_list %}

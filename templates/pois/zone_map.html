@@ -2,7 +2,7 @@
 {% load staticfiles i18n set_var %}
 
 {% block head_title %}{% if zone.zonetype.id == 3 %}{{ zone.code}}{% elif zone.zonetype.id == 6 %}{{zone.zonetype_label}} {% endif %}{{ zone.name }}, {{region}}{% endblock %}
-{% block meta_description %}{% trans "main streets and places"|capfirst %}: {{ zone.short }}{% endblock %}
+{% block meta_description %}{% if zone.short %}{% trans "main streets and places"|capfirst %}: {{ zone.short }}{% endif %}{% endblock %}
 
 
 

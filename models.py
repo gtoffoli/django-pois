@@ -967,7 +967,8 @@ class Poi(geomodels.Model):
     TYPECARD_CHOICES = (
         (0, 'free'),
         (1, 'a pagamento'),
-        (2, 'pubblica'),)
+        (2, 'pubblica'),
+        (3, 'promozione'),)
     typecard = models.IntegerField(verbose_name='Scheda', choices=TYPECARD_CHOICES, default=0, null=True)
     created = models.DateField(verbose_name='Creata il', auto_now_add=True, blank=True, null=True)
     

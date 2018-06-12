@@ -23,10 +23,14 @@
                 <div class="segnaposto notranslate">{% if poi_dict.comune.1 != 'roma' %}{{ poi_dict.zone_parent|upper }} - {% endif %}{{ poi_dict.comune.0|upper }}</div>
             </div>
             <div class="col-md-9 col-lg-10">
-                <h1>{% if poi_dict.logo %}<img src="{{poi_dict.logo}}" alt=""> {% endif %}<span class="notranslate">{{ poi_dict.name }}</span></h1>
+                <h1>{% comment %}poi_dict.typecard > 0 and {% endcomment %}{% if poi_dict.logo %}<img src="{{poi_dict.logo}}" alt=""> {% endif %}<span class="notranslate">{{ poi_dict.name }}</span></h1>
                 {% if can_edit and poi_dict.state != 'ok' %}
                    <div>Stato: {{poi_dict.state}}</div>
                 {% endif %}
+                 <p class="fontSize16">{{ poi_dict.short }}</p>
+                 <div class="summary mB10"><span class="demiBold">{% trans "Category" %}:</span> <a rel="tooltip" href="{{ poitype.url }}" title='{% trans "list the resources" %} {% trans "of the category" %} {{ poitype.name }}'>{{ poitype.name }}</a> - 
+                                           <span class="demiBold">{% trans "Theme areas" %}: </span> {% for theme in theme_list %}<div class="val">{{ theme.name }}</div>{% endfor %}
+                 </div>
             </div>
             <div class="col-md-3 col-lg-2">
                 <div class="actions">
@@ -47,20 +51,6 @@
                 <div class="box-res box-scroll">
                     <div class="table-responsive"><table class="table table-striped table-res">
                         <tbody>
-                        {% if poitype %}
-                            <tr><th>{% trans "Category" %}:</th><td><a rel="tooltip" href="{{ poitype.url }}" title='{% trans "list the resources" %} {% trans "of the category" %} {{ poitype.name }}'>{{ poitype.name }}</a></td></tr>
-                        {% endif %} 
-                        {% if theme_list %}
-                            <tr><th>{% trans "Theme areas" %}:</th>
-                                <td><div class="summary">{% for theme in theme_list %}<div class="val">{{ theme.name }}</div>{% endfor %}</div></td>
-                            </tr>
-                        {% endif %} 
-                        {% if poi_dict.host_name %}
-                            <tr><th>{% trans "Hosted by" %}:</th><td><a href="{{ poi_dict.host_url }}"><span class="notranslate">{{ poi_dict.host_name }}</span></a></td></tr>
-                        {% endif %} 
-                        {% if poi_dict.short %}
-                            <tr><th>{% trans "Shortly" %}:</th><td>{{ poi_dict.short }}</td></tr>
-                        {% endif %}
                         {% if zone_list %}
                             <tr><th>{% trans "Zones" %}:</th>
                                 <td><div class="summary">
@@ -93,7 +83,7 @@
                         {% endif %}
                         {% if poi_dict.emails %}
                         <tr><th>E-mail:</th><td>
-                             <ul class="list-unstyled notranslate">
+                             <ul class="list-unstyled mB0 notranslate">
                              {% for email in poi_dict.emails %}
                                  <li><a rel="tooltip" href="{{ email.0 }}">{{ email.1 }}</a></li>
                              {% endfor %}
@@ -102,7 +92,7 @@
                         {% endif %}
                         {% if poi_dict.webs %}
                         <tr><th class="notranslate">Web:</th><td>
-                            <ul class="list-unstyled">
+                            <ul class="list-unstyled  mB0">
                             {% for web in poi_dict.webs %}
                                 <li><a rel="tooltip" href="{{ web.0 }}" target="_blank">{{ web.1 }}</a></li>
                             {% endfor %}
@@ -112,7 +102,7 @@
                         {% if request.user.is_superuser or request.user.is_staff %}
                         {% if poi_dict.routes %}
                             <tr><th>{% trans "Routes" %}:</th>
-                                <td><ul class="list-unstyled notranslate">
+                                <td><ul class="list-unstyled  mB0 notranslate">
                                 {% for route in poi_dict.routes %}
                                     <li><a rel="tooltip" href="{{ route.friendly_url }}">{{ route.name }}</a></li>
                                 {% endfor %}
@@ -122,7 +112,7 @@
                         {% endif %}
                         {% if poi_dict.affiliations %}
                             <tr><th>{% trans "Affiliation" %}:</th>
-                                <td><ul class="list-unstyled">
+                                <td><ul class="list-unstyled  mB0">
                                 {% for affiliation in poi_dict.affiliations %}
                                     <li>{% if affiliation.logo %}<img class="img-thumb" src="{{ affiliation.logo }} ">{% endif %}
                                         <a rel="tooltip" href="{{ affiliation.url }}"  title="{% trans "Show the profile of"|lower %} {{ affiliation.name }}"><span class="notranslate">{{ affiliation.name }}</span></a>
@@ -147,6 +137,9 @@
                                 </td>
                             </tr>
                         {% endif %}
+                        {% if poi_dict.host_name %}
+                            <tr><th>{% trans "Hosted by" %}:</th><td><a href="{{ poi_dict.host_url }}"><span class="notranslate">{{ poi_dict.host_name }}</span></a></td></tr>
+                        {% endif %}
                         {% if hosted_list %}
                             <tr><th>{% trans "Hosted resources" %}:</th>
                                 <td><div class="summary notranslate">
@@ -168,14 +161,14 @@
         </div>
         <div class="row">
             <div class="col-md-6 col-lg-6 mB20">
-            {% if poi_dict.description %}
+            {% comment %}poi_dict.typecard > 0 and {% endcomment %}{% if poi_dict.description %}
                 <div class="box-res box-scroll back-box"><div class="pTB6LR12">{{ poi_dict.description|safe }}</div></div>
             {% else %}
                 <div class="box-res text-center back-box display-box"><div><i class="fa fa-edit"></i> descrizione</div></div>
             {% endif %}
             </div>
             <div class="col-md-6 col-lg-6 mB20">
-            {% if poi_dict.video %}
+            {% comment %}poi_dict.typecard > 0 and {% endcomment %}{% if poi_dict.video %}
                 <div class="box-res">
                     {% if show_element %}
                     <iframe src="{{ poi_dict.video.0 }}?autoplay=1" frameborder="0" allowfullscreen=""></iframe></div>
@@ -187,7 +180,7 @@
         </div>
         <div class="row">
             <div class="col-md-6 col-lg-6 mB20">
-            {% if feeds %}
+            {% comment %}poi_dict.typecard > 0 and {% endcomment %}{% if feeds %}
                 <div class="box-res box-scroll back-box">
                 {% if show_element %}
                 {% for feed in feeds %}

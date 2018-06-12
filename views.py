@@ -1293,6 +1293,7 @@ def poi_detail(request, poi_id, poi=None):
     if not data_dict:
         print ('invalid cache for ', key)
         poi_dict = poi.make_dict() # 140603
+        poi_dict['typecard'] = poi.getTypecard
         zones = Zone.objects.filter(pois=poi_id, zonetype__id__in=[3,7]).order_by('zonetype__id')
         zone_list = []
         macrozone = None

@@ -29,13 +29,13 @@
                 {% endif %}
                  <p class="fontSize16">{{ poi_dict.short }}</p>
                  <div class="summary mB10"><span class="demiBold">{% trans "Category" %}:</span> <a rel="tooltip" href="{{ poitype.url }}" title='{% trans "list the resources" %} {% trans "of the category" %} {{ poitype.name }}'>{{ poitype.name }}</a> - 
-                                           <span class="demiBold">{% trans "Theme areas" %}: </span> {% for theme in theme_list %}<div class="val">{{ theme.name }}</div>{% endfor %}
+                                           <span class="demiBold">{% trans "Theme areas" %}: </span> {% for theme in theme_list %}<div class="val"><a href="/tema/{{theme.slug}}/">{{ theme.name }}</a></div>{% endfor %}
                  </div>
             </div>
             <div class="col-md-3 col-lg-2">
                 <div class="actions">
                     {% if can_edit %}<div><a href="{% url "admin:pois_poi_change" poi_dict.id %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <small>{% trans "edit" %}</small></a></div>{% endif %}
-                    <div><a id="explore_viewport" href="#"><i class="fa fa-map-o" aria-hidden="true"></i> <small>{% trans "explore the resources in the neighbourhood" %}</small></a></div>
+                    <div><a id="explore_viewport" href="javascript:void(0)"><i class="fa fa-map-o" aria-hidden="true"></i> <small>{% trans "explore the resources in the neighbourhood" %}</small></a></div>
                     <div id="live-geolocation"></div>
                     {% comment %}MMR 20170920 <div id="muoviroma-percorso"></div>{% endcomment %}
                 </div>
@@ -94,7 +94,7 @@
                         <tr><th class="notranslate">Web:</th><td>
                             <ul class="list-unstyled  mB0">
                             {% for web in poi_dict.webs %}
-                                <li><a rel="tooltip" href="{{ web.0 }}" target="_blank">{{ web.1 }}</a></li>
+                                <li><a rel="tooltip" href="{{ web.0 }}" target="_blank" class="cursordefault">{{ web.1 }}</a></li>
                             {% endfor %}
                             </ul>
                         </td></tr>
@@ -235,7 +235,7 @@
                 {% endif %}
             </div>
         </div>
-        <div class="mT20 text-center">
+        <div class="mT20 text-center box-fb">
             <div id="fb-root"></div>
             <script>(function(d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0];
@@ -355,6 +355,7 @@ DY = 400; // 250.0;
 function lookup_location() {
     geoPosition.getCurrentPosition(explore_location, location_error);
 }
+/*
 $(function() {
     if (geoPosition.init()) {
         $("#live-geolocation").html('<a href="#" onclick="lookup_location();return false"><i class="fa fa-location-arrow" aria-hidden="true"></i>  <small>{% trans "explore the zone around your current position" %}</small></a>');
@@ -364,7 +365,12 @@ $(function() {
         $("#muoviroma-percorso").html('<br /><div class="icon-hand-right"></div> <a href="http://muovi.roma.it/percorso/js?cr=1&cr_da={% trans "enter your current address" %}&cr_a={{ poi_dict.street_address }}, Roma" target="_blank">{% trans "find your way to this resource using the services by"|capfirst %} muovi.roma.it</a>');
     }
 });
-
+*/
+$(function() {
+    if (geoPosition.init()) {
+        $("#live-geolocation").html('<a class="cursordefault" href="javascript:void(0)" onclick="lookup_location();return false"><i class="fa fa-location-arrow" aria-hidden="true"></i>  <small>{% trans "explore the zone around your current position" %}</small></a>');
+    }
+});
 map_init();
 </script>
 {% endblock mapjs %}

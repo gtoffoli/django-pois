@@ -1302,7 +1302,8 @@ def poi_detail(request, poi_id, poi=None):
             if zone.zonetype_id == 3: # zona toponomastica
                 zone_list.append({ 'name': '%s (%s)' % (zone.name, zone.code), 'url': '/zona/%s/' % zone.slug, 'slug': zone.slug})
             else: # municipio
-                zone_list.append({ 'name': zone.name, 'url': '/zona/%s/' % zone.slug, 'slug': zone.slug})
+                if zone.code.startswith('M'):
+                    zone_list.append({ 'name': zone.name, 'url': '/zona/%s/' % zone.slug, 'slug': zone.slug})
                 zone_parent = zone.zone_parent()
                 macrozone = zone.get_macrozone_slug()
         poi_dict['zone_parent'] = zone_parent

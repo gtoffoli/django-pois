@@ -1115,6 +1115,12 @@ def poitype_detail(request, klass, poitype=None):
             poitype['sub_types'] = sub_types
         data_dict = {'help': help_text, 'poitype': poitype, 'theme_list': theme_list, 'poi_dict_list': poi_dict_list, 'region': region, 'zone_list': zone_list, 'min': min_count, 'max': max_count}
         data_dict['zone'] = zone
+        if region == 'ROMA':
+            data_dict['title_page'] = '%s %s' % (poitype_name, _('in Roma'))
+            data_dict['short_page'] = '%s %s: %s' % (poitype_name,_('in Roma'),poitype_short)
+        else:
+            data_dict['title_page'] = '%s %s' % (poitype_name, _('in Lazio'))
+            data_dict['short_page'] = '%s %s: %s' % (poitype_name,_('in Lazio'),poitype_short)
         if language.startswith('it') and not theme:
             try:
                 categories_cache.set(key, data_dict)
@@ -1124,12 +1130,6 @@ def poitype_detail(request, klass, poitype=None):
                 print (data_dict)
                 """
                 pass
-        if region == 'ROMA':
-            data_dict['title_page'] = '%s %s' % (poitype_name, _('in Roma'))
-            data_dict['short_page'] = '%s %s: %s' % (poitype_name,_('in Roma'),poitype_short)
-        else:
-            data_dict['title_page'] = '%s %s' % (poitype_name, _('in Lazio'))
-            data_dict['short_page'] = '%s %s: %s' % (poitype_name,_('in Lazio'),poitype_short)
     return render(request, 'pois/poitype_detail.html', data_dict)
 
 def poitype_detail_by_slug(request, klass_slug):
@@ -1246,7 +1246,9 @@ def poitype_zone_detail(request, klass, zone_id, poitype=None, zone=None):
         else:
             region = zone.zone_parent()
         data_dict = {'help': help_text, 'poitype': poitype, 'theme_list': theme_list, 'poi_dict_list': poi_dict_list, 'zone_list': zone_list, 'region': region}
-
+        data_dict['zone'] = zone
+        data_dict['title_page'] = '%s - %s' % (poitype_name, zone.name)
+        data_dict['short_page'] = '%s - %s: %s' % (poitype_name, zone.name,poitype_short)
         if language.startswith('it'):
             try:
                 catzones_cache.set(key, data_dict)
@@ -1256,10 +1258,6 @@ def poitype_zone_detail(request, klass, zone_id, poitype=None, zone=None):
                 print (data_dict)
                 """
                 pass
-        data_dict['zone'] = zone
-        
-        data_dict['title_page'] = '%s - %s' % (poitype_name, zone.name)
-        data_dict['short_page'] = '%s - %s: %s' % (poitype_name, zone.name,poitype_short)
     return render(request, 'pois/poitype_zone_detail.html', data_dict)
 
 def poitype_zone_detail_by_slugs(request, klass_slug, zone_slug):

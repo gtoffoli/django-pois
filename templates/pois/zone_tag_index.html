@@ -4,7 +4,7 @@
 {{ current_path }}
 
 {% block head_title %}{{zonetype_label}}: {% trans "useful resources" %}{% endblock %}
-{% block meta_description %}{{ zone.zonetype_label|capfirst }}: {% trans "useful resources organized by theme area." %} {% trans "Schools, social and health services, cultural resources and much more." %}{% endblock meta_description %}
+{% block meta_description %}{{ zonetype_label|capfirst }}: {% trans "useful resources organized by theme area." %} {% trans "Schools, social and health services, cultural resources and much more." %}{% endblock meta_description %}
 {% block content %}
     <div class="boxcontent">
         <div class="row mB10">
@@ -21,7 +21,7 @@
                 </div>
             </div>
         </div>
-        {% if zone.description %}<div class="mT20">{{ zone.description|safe }}</div>{% endif %}
+        {% comment %}{% if zone.description %}<div class="mT20">{{ zone.description|safe }}</div>{% endif %}{% endcomment%}
         {% if tag_poitype_list %}
 {% comment %}<p class="help-block">{% trans "In this list a category can occur in several theme areas" %}.</p>{% endcomment %}
             <div class="row">

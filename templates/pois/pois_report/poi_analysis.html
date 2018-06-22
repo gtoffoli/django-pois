@@ -19,7 +19,7 @@
                 <td>
                     <div class="row">
                     <div class="col-lg-6">{{forloop.counter }}. [{{poi_dict.modified}}] {{ poi_dict.name }} <a href="{% url "admin:pois_poi_change" poi_dict.id %}">MODIFICA</a> - <a href="risorsa/{{poi_dict.slug}}">VEDI</a></div>
-                    <div class="col-lg-6">{% for web in poi_dict.webs %}<div><a href="{{web.0}}" target="_blank">{{web.0}}</a></div>{% endfor %}</div>
+                    <div class="col-lg-6">{% for web in poi_dict.webs %}<div><a href="{{web.0}}" target="_blank" rel="noopener">{{web.0}}</a></div>{% endfor %}</div>
                     </div>
                 </td>
             </tr>
@@ -34,7 +34,7 @@
                 <td>
                     <div class="row">
                     <div class="col-lg-6">{{forloop.counter }}. [{{poi_dict.modified}}] {{ poi_dict.name }} <a href="{% url "admin:pois_poi_change" poi_dict.id %}">MODIFICA</a> - <a href="risorsa/{{poi_dict.slug}}">VEDI</a></div>
-                    <div class="col-lg-6"><div><a href="{{feeds.0}}" target="_blank">{{poi_dict.feeds}}</a></div></div>
+                    <div class="col-lg-6"><div><a href="{{feeds.0}}" target="_blank" rel="noopener">{{poi_dict.feeds}}</a></div></div>
                     </div>
                 </td>
             </tr>

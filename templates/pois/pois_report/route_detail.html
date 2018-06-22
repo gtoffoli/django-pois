@@ -15,7 +15,7 @@
             <div class="col-md-3 col-lg-2">
                 <div class="actions">
                     {% if can_edit %}<div><a href="{% url "admin:pois_route_change" route.id %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <small>{% trans "edit" %}</small></a></div>{% endif %}
-                    <div><a id="explore_viewport" href="#"><i class="fa fa-map-o" aria-hidden="true"></i> <small>{% trans "explore the resources in the neighbourhood" %}</small></a></div>
+                    <div><a id="explore_viewport" href="#" rel="nofollow"><i class="fa fa-map-o" aria-hidden="true"></i> <small>{% trans "explore the resources in the neighbourhood" %}</small></a></div>
                     <div id="live-geolocation"></div>
                 </div>
             </div>
@@ -290,7 +290,7 @@ DY = 400;
 
     $(function() {
         if (geoPosition.init()) {
-            $("#live-geolocation").html('<a href="#" onclick="lookup_location();return false"><i class="fa fa-location-arrow" aria-hidden="true"></i>  <small>{% trans "explore the zone around your current position" %}</small></a>');
+            $("#live-geolocation").html('<a href="#" rel="nofollow" onclick="lookup_location();return false"><i class="fa fa-location-arrow" aria-hidden="true"></i>  <small>{% trans "explore the zone around your current position" %}</small></a>');
         }
     });
 map_init();

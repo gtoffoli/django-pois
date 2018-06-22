@@ -301,7 +301,7 @@ function refresh_viewport(form) {
 
     $(function() {
         if (geoPosition.init()) {
-            $("#live-geolocation").html('<a href="#" onclick="lookup_location();return false"><i class="fa fa-location-arrow" aria-hidden="true"></i>  <small>{% trans "explore the zone around your current position" %}</small></a>');
+            $("#live-geolocation").html('<a href="#" rel="nofollow" onclick="lookup_location();return false"><i class="fa fa-location-arrow" aria-hidden="true"></i>  <small>{% trans "explore the zone around your current position" %}</small></a>');
         }
     });
 

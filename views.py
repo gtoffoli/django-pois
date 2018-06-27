@@ -31,7 +31,7 @@ from django_user_agents.utils import get_user_agent
 from django.conf import settings
 from roma.session import get_focus, set_focus, focus_set_category, focus_add_themes
 from django.db.models.functions import Lower
-from pois.models import Zonetype, Zone, Route, Odonym, Poitype, Poi, Tag
+from pois.models import Zonetype, Zone, Route, Odonym, Poitype, Poi, Tag, PoiPoi
 from pois.models import list_all_zones
 from pois.models import make_zone_subquery
 from pois.models import refresh_configuration
@@ -1284,7 +1284,7 @@ def poi_detail(request, poi_id, poi=None):
     user_agent = get_user_agent(request)
     pois_cache = caches['pois']
     key = 'poi%05d' % poi_id
-    if not language.startswith('it') or request.GET.get('nocache', None):
+    if not language.startswith('it') or request.GET.get('nocache',None):
         data_dict = None
     else:
         data_dict = pois_cache.get(key, None)
@@ -1307,8 +1307,12 @@ def poi_detail(request, poi_id, poi=None):
         poi_dict['zone_parent'] = zone_parent
         hosted_list = Poi.objects.filter(host=poi).order_by('name')
         hosted_list = [{ 'name': p.name, 'url': p.friendly_url()} for p in hosted_list if p.state == 1]
-        poi_list = Poi.objects.filter(pois=poi).order_by('name')
-        poi_list = [{ 'name': p.name, 'url': p.friendly_url()} for p in poi_list if p.state == 1]
+        poi_chain_list = poi.get_chain_pois()
+        if poi_chain_list:
+            poi_chain_list=[p for p in poi_chain_list if p != poi and Poi.objects.filter(pk = p.id, state = 1)]
+            print(poi_chain_list)
+        poi_list = Poi.objects.filter(pois=poi, state=1).order_by('name')
+        poi_list = [{ 'name': p.name, 'url': p.friendly_url()} for p in poi_list if not p in poi_chain_list]
         n_caredby = Poi.objects.filter(careof=poi).count()
         poitype = poi.poitype
         if poitype:
@@ -1321,7 +1325,7 @@ def poi_detail(request, poi_id, poi=None):
                 poitype = { 'name': poitype.name, 'url': poitype.friendly_url()}
         
         theme_list = [{ 'id': theme.id, 'name': theme.name, 'slug': theme.slug } for theme in poi.get_all_themes() if theme.id != 49]
-        data_dict = {'poi_dict': poi_dict, 'poitype': poitype, 'theme_list': theme_list, 'hosted_list': hosted_list, 'zone_list': zone_list, 'poi_list': poi_list, 'n_caredby': n_caredby,}
+        data_dict = {'poi_dict': poi_dict, 'poitype': poitype, 'theme_list': theme_list, 'hosted_list': hosted_list, 'zone_list': zone_list, 'poi_list': poi_list, 'poi_chain_list': poi_chain_list, 'n_caredby': n_caredby,}
         if macrozone:
             data_dict['macrozone'] = macrozone
         if language.startswith('it'):

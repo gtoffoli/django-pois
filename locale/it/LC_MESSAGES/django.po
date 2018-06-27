@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-23 12:26+0200\n"
-"PO-Revision-Date: 2018-05-23 12:30+0100\n"
+"POT-Creation-Date: 2018-06-25 15:35+0200\n"
+"PO-Revision-Date: 2018-06-25 15:35+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -22,11 +22,11 @@ msgstr ""
 msgid "name of the resource"
 msgstr "nome della risorsa"
 
-#: .\pois\forms.py:398 .\pois\forms.py:542
+#: .\pois\forms.py:398 .\pois\forms.py:558
 msgid "short description"
 msgstr "breve descrizione"
 
-#: .\pois\forms.py:402 .\pois\forms.py:546
+#: .\pois\forms.py:402 .\pois\forms.py:562
 msgid "theme areas"
 msgstr "aree tematiche"
 
@@ -86,7 +86,7 @@ msgstr "web"
 msgid "facebook"
 msgstr "facebook"
 
-#: .\pois\forms.py:460 .\pois\forms.py:567 .\pois\forms.py:570
+#: .\pois\forms.py:460 .\pois\forms.py:583 .\pois\forms.py:586
 msgid "Full Name"
 msgstr "Nome e Cognome"
 
@@ -109,7 +109,7 @@ msgstr ""
 msgid "control string"
 msgstr "stringa di controllo"
 
-#: .\pois\forms.py:472 .\pois\forms.py:584
+#: .\pois\forms.py:472 .\pois\forms.py:600
 msgid "Enter these 5 characters in the textbox on the right"
 msgstr "Digita questi 5 caratteri nella casella di testo sulla destra"
 
@@ -121,56 +121,56 @@ msgstr "Hai selezionato più di 2 aree tematiche."
 msgid "This field is required."
 msgstr "Questo campo è obbligatorio."
 
-#: .\pois\forms.py:514 .\pois\forms.py:515
+#: .\pois\forms.py:530 .\pois\forms.py:531
 msgid "Choose theme areas"
 msgstr "Scegli le aree tematiche"
 
-#: .\pois\forms.py:529
+#: .\pois\forms.py:545
 msgid "what to search"
 msgstr "che cosa cercare"
 
-#: .\pois\forms.py:531
+#: .\pois\forms.py:547
 msgid "resources"
 msgstr "risorse"
 
-#: .\pois\forms.py:531
+#: .\pois\forms.py:547
 msgid "categories"
 msgstr "categorie"
 
-#: .\pois\forms.py:531
+#: .\pois\forms.py:547
 msgid "zones"
 msgstr "zone"
 
-#: .\pois\forms.py:531
+#: .\pois\forms.py:547
 msgid "streets"
 msgstr "vie, piazze .."
 
-#: .\pois\forms.py:535
+#: .\pois\forms.py:551
 msgid "text to match"
 msgstr "testo da trovare"
 
-#: .\pois\forms.py:539
+#: .\pois\forms.py:555
 msgid "match text in"
 msgstr "trova il testo in"
 
-#: .\pois\forms.py:542
+#: .\pois\forms.py:558
 msgid "name"
 msgstr "nome"
 
-#: .\pois\forms.py:547
+#: .\pois\forms.py:563
 msgid "Choose theme areas (no selection = all areas)"
 msgstr "Scegli le aree tematiche (nessuna selezione = tutte le aree)"
 
-#: .\pois\forms.py:572 .\pois\forms.py:575
+#: .\pois\forms.py:588 .\pois\forms.py:591
 #: .\pois\templates\pois\poi_view.html:30
 msgid "Email"
 msgstr "E-mail"
 
-#: .\pois\forms.py:577 .\pois\forms.py:580
+#: .\pois\forms.py:593 .\pois\forms.py:596
 msgid "Notes"
 msgstr "Note"
 
-#: .\pois\forms.py:581
+#: .\pois\forms.py:597
 msgid ""
 "Pursuant to art. 13 of Legislative Decree 30 June 2003 n. 196 we wish to "
 "inform you that the personal data supplied by you with the completion and "
@@ -181,7 +181,7 @@ msgstr ""
 "del presente modulo verranno utilizzati solo per rispondere alla Tua "
 "richiesta."
 
-#: .\pois\forms.py:583
+#: .\pois\forms.py:599
 msgid "Control string"
 msgstr "Stringa di controllo"
 
@@ -290,9 +290,9 @@ msgstr "aiuto"
 #: .\pois\templates\pois\pois_report\route_detail.html:179
 #: .\pois\templates\pois\pois_report\route_detail.html:183
 #: .\pois\templates\pois\search_results.html:14
-#: .\pois\templates\pois\street_detail.html:185
-#: .\pois\templates\pois\street_detail.html:202
-#: .\pois\templates\pois\street_detail.html:206
+#: .\pois\templates\pois\street_detail.html:186
+#: .\pois\templates\pois\street_detail.html:203
+#: .\pois\templates\pois\street_detail.html:207
 #: .\pois\templates\pois\zone_detail.html:176
 #: .\pois\templates\pois\zone_detail.html:196
 #: .\pois\templates\pois\zone_detail.html:200
@@ -307,8 +307,8 @@ msgstr "Risorse"
 #: .\pois\templates\pois\pois_report\poi_list.html:28
 #: .\pois\templates\pois\pois_report\route_detail.html:182
 #: .\pois\templates\pois\pois_report\route_detail.html:185
-#: .\pois\templates\pois\street_detail.html:205
-#: .\pois\templates\pois\street_detail.html:208
+#: .\pois\templates\pois\street_detail.html:206
+#: .\pois\templates\pois\street_detail.html:209
 #: .\pois\templates\pois\zone_detail.html:199
 #: .\pois\templates\pois\zone_detail.html:202
 #: .\pois\templates\pois\zone_map.html:217
@@ -318,7 +318,7 @@ msgstr "mostra il profilo della risorsa"
 
 #: .\pois\templates\pois\_poi_list_item.html:12
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:52
-#: .\pois\templates\pois\poi_detail.html:52
+#: .\pois\templates\pois\poi_detail.html:32
 msgid "Category"
 msgstr "Categoria"
 
@@ -334,7 +334,7 @@ msgstr "Data"
 #: .\pois\templates\pois\network_detail.html:24
 #: .\pois\templates\pois\pois_report\route_detail.html:263
 #: .\pois\templates\pois\poitype_index.html:37
-#: .\pois\templates\pois\street_detail.html:270
+#: .\pois\templates\pois\street_detail.html:271
 #: .\pois\templates\pois\tag_detail.html:24
 #: .\pois\templates\pois\tag_detail.html:37
 #: .\pois\templates\pois\tag_detail.html:50
@@ -343,7 +343,7 @@ msgstr "Data"
 #: .\pois\templates\pois\tag_index.html:38
 #: .\pois\templates\pois\zone_detail.html:271
 #: .\pois\templates\pois\zone_map.html:284
-#: .\pois\templates\pois\zone_tag_index.html:38
+#: .\pois\templates\pois\zone_tag_index.html:39
 msgid "show resource"
 msgstr "mostra la risorsa"
 
@@ -354,11 +354,11 @@ msgstr "mostra la risorsa"
 #: .\pois\templates\pois\_pois_zone_view_summary.html:38
 #: .\pois\templates\pois\_pois_zone_view_summary.html:45
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:81 Copia.html:142
-#: Copia.html:158 .\pois\templates\pois\poi_detail.html:86
-#: .\pois\templates\pois\poi_detail.html:147
-#: .\pois\templates\pois\poi_detail.html:163
+#: Copia.html:158 .\pois\templates\pois\poi_detail.html:77
+#: .\pois\templates\pois\poi_detail.html:150
+#: .\pois\templates\pois\poi_detail.html:169
 #: .\pois\templates\pois\pois_report\route_detail.html:266
-#: .\pois\templates\pois\street_detail.html:273
+#: .\pois\templates\pois\street_detail.html:274
 #: .\pois\templates\pois\zone_detail.html:274
 #: .\pois\templates\pois\zone_index.html:4
 #: .\pois\templates\pois\zone_index.html:10
@@ -370,15 +370,15 @@ msgstr "mostra"
 
 #: .\pois\templates\pois\_poi_list_item.html:23
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:52 Copia.html:71
-#: Copia.html:73 Copia.html:81 .\pois\templates\pois\poi_detail.html:52
-#: .\pois\templates\pois\poi_detail.html:71
-#: .\pois\templates\pois\poi_detail.html:73
-#: .\pois\templates\pois\poi_detail.html:86
+#: Copia.html:73 Copia.html:81 .\pois\templates\pois\poi_detail.html:32
+#: .\pois\templates\pois\poi_detail.html:62
+#: .\pois\templates\pois\poi_detail.html:64
+#: .\pois\templates\pois\poi_detail.html:77
 #: .\pois\templates\pois\pois_report\route_detail.html:270
 #: .\pois\templates\pois\pois_report\route_detail.html:274
 #: .\pois\templates\pois\street_detail.html:33
-#: .\pois\templates\pois\street_detail.html:277
-#: .\pois\templates\pois\street_detail.html:281
+#: .\pois\templates\pois\street_detail.html:278
+#: .\pois\templates\pois\street_detail.html:282
 #: .\pois\templates\pois\zone_detail.html:279
 #: .\pois\templates\pois\zone_detail.html:286
 #: .\pois\templates\pois\zone_index_map.html:23
@@ -391,9 +391,9 @@ msgstr "elenca le risorse"
 
 #: .\pois\templates\pois\_poi_list_item.html:23
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:81
-#: .\pois\templates\pois\poi_detail.html:86
+#: .\pois\templates\pois\poi_detail.html:77
 #: .\pois\templates\pois\pois_report\route_detail.html:274
-#: .\pois\templates\pois\street_detail.html:281
+#: .\pois\templates\pois\street_detail.html:282
 #: .\pois\templates\pois\zone_detail.html:286
 #: .\pois\templates\pois\zone_map.html:295
 msgid "located in the town"
@@ -425,7 +425,7 @@ msgid "Categories"
 msgstr "Categorie"
 
 #: .\pois\templates\pois\autocomplete.html:9 .\pois\templates\pois\poi_detail
-#: iubenda - Copia.html:66 .\pois\templates\pois\poi_detail.html:66
+#: iubenda - Copia.html:66 .\pois\templates\pois\poi_detail.html:57
 #: .\pois\templates\pois\search_results.html:30
 msgid "Zones"
 msgstr "Zone"
@@ -450,15 +450,15 @@ msgstr "Cerca ... (digita almeno 3 caratteri)"
 #: .\pois\templates\pois\network_detail.html:5
 #: .\pois\templates\pois\network_detail.html:18
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:132 Copia.html:142
-#: .\pois\templates\pois\poi_detail.html:137
-#: .\pois\templates\pois\poi_detail.html:147
+#: .\pois\templates\pois\poi_detail.html:140
+#: .\pois\templates\pois\poi_detail.html:150
 msgid "affiliated resources"
 msgstr "risorse affiliate"
 
 #: .\pois\templates\pois\network_detail.html:6
 #: .\pois\templates\pois\network_detail.html:19
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:158
-#: .\pois\templates\pois\poi_detail.html:163
+#: .\pois\templates\pois\poi_detail.html:169
 msgid "friend resources"
 msgstr "risorse amiche"
 
@@ -477,8 +477,8 @@ msgstr "situate nella zona"
 #: .\pois\templates\pois\pois_report\route_detail.html:33
 #: .\pois\templates\pois\pois_report\route_detail.html:252
 #: .\pois\templates\pois\poitype_zone_detail.html:63
-#: .\pois\templates\pois\street_detail.html:75
-#: .\pois\templates\pois\street_detail.html:259
+#: .\pois\templates\pois\street_detail.html:76
+#: .\pois\templates\pois\street_detail.html:260
 #: .\pois\templates\pois\tag_detail.html:90
 #: .\pois\templates\pois\tag_zone_detail.html:19
 #: .\pois\templates\pois\zone_detail.html:50
@@ -488,7 +488,7 @@ msgid "No resource is present"
 msgstr "Non sono presenti risorse"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:33
-#: .\pois\templates\pois\poi_detail.html:33
+#: .\pois\templates\pois\poi_detail.html:38
 #: .\pois\templates\pois\pois_report\route_detail.html:17
 #: .\pois\templates\pois\street_detail.html:40
 #: .\pois\templates\pois\zone_detail.html:19
@@ -498,172 +498,176 @@ msgid "edit"
 msgstr "modifica"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:34
-#: .\pois\templates\pois\poi_detail.html:34
+#: .\pois\templates\pois\poi_detail.html:39
 #: .\pois\templates\pois\pois_report\route_detail.html:18
 #: .\pois\templates\pois\street_detail.html:43
 msgid "explore the resources in the neighbourhood"
 msgstr "esplora le risorse nei dintorni"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:52
-#: .\pois\templates\pois\poi_detail.html:52
+#: .\pois\templates\pois\poi_detail.html:32
 #: .\pois\templates\pois\tag_detail.html:24
 #: .\pois\templates\pois\tag_detail.html:37
 #: .\pois\templates\pois\tag_detail.html:50
 #: .\pois\templates\pois\tag_detail.html:65
 #: .\pois\templates\pois\tag_detail.html:78
 #: .\pois\templates\pois\tag_index.html:38
-#: .\pois\templates\pois\zone_tag_index.html:38
+#: .\pois\templates\pois\zone_tag_index.html:39
 msgid "of the category"
 msgstr "della categoria"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:55
-#: .\pois\templates\pois\poi_detail.html:55
+#: .\pois\templates\pois\poi_detail.html:33
 #: .\pois\templates\pois\poi_view.html:21
 msgid "Theme areas"
 msgstr "Aree tematiche"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:60
-#: .\pois\templates\pois\poi_detail.html:60
+#: .\pois\templates\pois\poi_detail.html:156
 msgid "Hosted by"
 msgstr "Presso"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:63
-#: .\pois\templates\pois\poi_detail.html:63
 msgid "Shortly"
 msgstr "In breve"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:71 Copia.html:73
-#: .\pois\templates\pois\poi_detail.html:71
-#: .\pois\templates\pois\poi_detail.html:73
+#: .\pois\templates\pois\poi_detail.html:62
+#: .\pois\templates\pois\poi_detail.html:64
 #: .\pois\templates\pois\zone_index_map.html:23
 #: .\pois\templates\pois\zone_index_map.html:26
 msgid "located in the zone"
 msgstr "situate nella zona"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:80
-#: .\pois\templates\pois\poi_detail.html:80
+#: .\pois\templates\pois\poi_detail.html:71
 #: .\pois\templates\pois\poi_view.html:23
 msgid "Address"
 msgstr "Indirizzo"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:81
 #: .\pois\templates\pois\pois_report\route_detail.html:270
-#: .\pois\templates\pois\street_detail.html:277
+#: .\pois\templates\pois\street_detail.html:278
 #: .\pois\templates\pois\zone_detail.html:279
 #: .\pois\templates\pois\zone_map.html:291
 msgid "located in the zone with zipcode"
 msgstr "situate nella zona con CAP"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:83
-#: .\pois\templates\pois\poi_detail.html:88
+#: .\pois\templates\pois\poi_detail.html:79
 #: .\pois\templates\pois\poi_view.html:26
 msgid "Phone"
 msgstr "Telefono"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:111
-#: .\pois\templates\pois\poi_detail.html:116
+#: .\pois\templates\pois\poi_detail.html:107
 #: .\pois\templates\pois\pois_report\route_detail.html:10
 msgid "Routes"
 msgstr "Itinerari"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:121
-#: .\pois\templates\pois\poi_detail.html:126
+#: .\pois\templates\pois\poi_detail.html:128
 msgid "Affiliation"
 msgstr "Affiliazione"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:125 Copia.html:230
-#: .\pois\templates\pois\poi_detail.html:130
-#: .\pois\templates\pois\poi_detail.html:235
+#: .\pois\templates\pois\poi_detail.html:132
+#: .\pois\templates\pois\poi_detail.html:244
 msgid "Show the profile of"
 msgstr "Mostra la scheda"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:142 Copia.html:158
-#: .\pois\templates\pois\poi_detail.html:147
-#: .\pois\templates\pois\poi_detail.html:163
+#: .\pois\templates\pois\poi_detail.html:150
+#: .\pois\templates\pois\poi_detail.html:169
 msgid "a map of"
 msgstr "una mappa di"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:148
-#: .\pois\templates\pois\poi_detail.html:153
+#: .\pois\templates\pois\poi_detail.html:159
 msgid "Hosted resources"
 msgstr "Risorse ospitate"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:157
-#: .\pois\templates\pois\poi_detail.html:162
+#: .\pois\templates\pois\poi_detail.html:168
 msgid "network"
 msgstr "rete"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:192
-#: .\pois\templates\pois\poi_detail.html:197
+#: .\pois\templates\pois\poi_detail.html:206
 msgid "articles from"
 msgstr "articoli da"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:197
-#: .\pois\templates\pois\poi_detail.html:202
+#: .\pois\templates\pois\poi_detail.html:211
 msgid "read the original article"
 msgstr "leggi l'articolo originale"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:228
-#: .\pois\templates\pois\poi_detail.html:233
+#: .\pois\templates\pois\poi_detail.html:242
 msgid "This profile care of"
 msgstr "Scheda a cura di"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:229
-#: .\pois\templates\pois\poi_detail.html:234
+#: .\pois\templates\pois\poi_detail.html:243
 msgid "go to the website of"
 msgstr "vai al sito web di"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:236
-#: .\pois\templates\pois\poi_detail.html:241
+#: .\pois\templates\pois\poi_detail.html:250
 msgid "Thanks for your contribution"
 msgstr "Grazie per il tuo contributo"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:238
-#: .\pois\templates\pois\poi_detail.html:243
+#: .\pois\templates\pois\poi_detail.html:252
 msgid "If the information in this page isn't correct, up-to-date and complete"
 msgstr ""
 "Se l'informazione in questa pagina non è corretta, aggiornata e completa"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:238
-#: .\pois\templates\pois\poi_detail.html:243
+#: .\pois\templates\pois\poi_detail.html:252
 msgid "send us a note"
 msgstr "inviaci una nota"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:238
-#: .\pois\templates\pois\poi_detail.html:243
+#: .\pois\templates\pois\poi_detail.html:252
 msgid "Thanks"
 msgstr "Grazie"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:340
-#: .\pois\templates\pois\poi_detail.html:345
+#: .\pois\templates\pois\poi_detail.html:354
 #: .\pois\templates\pois\pois_report\route_detail.html:288
-#: .\pois\templates\pois\street_detail.html:297
+#: .\pois\templates\pois\street_detail.html:298
 #: .\pois\templates\pois\zone_detail.html:301
 #: .\pois\templates\pois\zone_map.html:315
 msgid "cannot determine your current location"
 msgstr "non sono in grado di determinare la tua posizione"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:364
-#: .\pois\templates\pois\poi_detail.html:369
+#: .\pois\templates\pois\poi_detail.html:379
+#: .\pois\templates\pois\poi_detail.html:389
 #: .\pois\templates\pois\pois_report\route_detail.html:293
-#: .\pois\templates\pois\street_detail.html:302
+#: .\pois\templates\pois\street_detail.html:303
 #: .\pois\templates\pois\zone_detail.html:306
 #: .\pois\templates\pois\zone_map.html:320
 msgid "explore the zone around your current position"
 msgstr "esplora la zona intorno alla tua posizione attuale"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:365 Copia.html:367
-#: Copia.html:368 .\pois\templates\pois\poi_detail.html:370
-#: .\pois\templates\pois\poi_detail.html:372
-#: .\pois\templates\pois\poi_detail.html:373
+#: Copia.html:368 .\pois\templates\pois\poi_detail.html:380
+#: .\pois\templates\pois\poi_detail.html:382
+#: .\pois\templates\pois\poi_detail.html:383
 msgid "find your way to this resource using the services by"
 msgstr "trova il percorso per questa risorsa usando i servizi di"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:367 Copia.html:368
-#: .\pois\templates\pois\poi_detail.html:372
-#: .\pois\templates\pois\poi_detail.html:373
+#: .\pois\templates\pois\poi_detail.html:382
+#: .\pois\templates\pois\poi_detail.html:383
 msgid "enter your current address"
 msgstr "inserisci il tuo indirizzo attuale"
+
+#: .\pois\templates\pois\poi_detail.html:117
+msgid "linked resources"
+msgstr "risorse collegate"
 
 #: .\pois\templates\pois\poi_edit.html:4
 #: .\pois\templates\pois\poi_edit.html:14
@@ -944,7 +948,7 @@ msgstr "a Roma e nel Lazio"
 #: .\pois\templates\pois\tag_detail.html:82
 #: .\pois\templates\pois\tag_index.html:40
 #: .\pois\templates\pois\tag_index.html:42
-#: .\pois\templates\pois\zone_tag_index.html:40
+#: .\pois\templates\pois\zone_tag_index.html:41
 #, python-format
 msgid "show the resources of the category %(poitype_name)s on the map"
 msgstr "mostra sulla mappa le risorse della categoria %(poitype_name)s"
@@ -967,7 +971,7 @@ msgid "Categories and resources by theme area"
 msgstr "Categorie e risorse per area tematica"
 
 #: .\pois\templates\pois\tag_index.html:52
-#: .\pois\templates\pois\zone_tag_index.html:51
+#: .\pois\templates\pois\zone_tag_index.html:52
 msgid "No theme areas or resource categories are present"
 msgstr "Non sono presenti aree tematiche o categorie di risorse"
 
@@ -980,7 +984,7 @@ msgstr ""
 "lista di risorse di quella categoria"
 
 #: .\pois\templates\pois\tag_zone_detail.html:19
-#: .\pois\templates\pois\zone_tag_index.html:51
+#: .\pois\templates\pois\zone_tag_index.html:52
 msgid "for this zone"
 msgstr "per questa zona"
 
@@ -1090,12 +1094,12 @@ msgstr ""
 msgid "easily find addresses, contacts and information on services."
 msgstr "trova facilmente indirizzi, contatti e informazioni sui servizi."
 
-#: .\pois\views.py:1128 .\pois\views.py:1129 .\pois\views.py:1169
+#: .\pois\views.py:1119 .\pois\views.py:1120 .\pois\views.py:1169
 #: .\pois\views.py:1170
 msgid "in Roma"
 msgstr "a Roma"
 
-#: .\pois\views.py:1131 .\pois\views.py:1132 .\pois\views.py:1172
+#: .\pois\views.py:1122 .\pois\views.py:1123 .\pois\views.py:1172
 #: .\pois\views.py:1173
 msgid "in Lazio"
 msgstr "nel Lazio"

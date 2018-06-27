@@ -110,6 +110,17 @@
                             </tr>
                         {% endif %}
                         {% endif %}
+                        {% if poi_chain_list %}
+                            <tr><th>{% trans "linked resources"|capfirst %}:</th>
+                                <td>
+                                    <div class="summary notranslate">
+                                    {% for linked in poi_chain_list %}
+                                        <div class="val"><a rel="tooltip" href="/risorsa/{{linked.slug }}/">{{ linked.name }}</a></div>
+                                    {% endfor %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
                         {% if poi_dict.affiliations %}
                             <tr><th>{% trans "Affiliation" %}:</th>
                                 <td><ul class="list-unstyled  mB0">
@@ -121,6 +132,7 @@
                               </ul></td>
                             </tr>
                         {% endif %}
+
                         {% if poi_list %}
                             <tr><th>{% trans "affiliated resources"|capfirst %}:</th>
                                 <td>

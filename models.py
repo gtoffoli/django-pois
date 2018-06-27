@@ -894,6 +894,14 @@ class PoitypeTag(models.Model):
     def __str__(self):
         return '%s has tag %s' % (self.poitype.getName(), self.tag.getName())
 
+def get_chain_poi(item, list_pois):
+    poipois = PoiPoi.objects.filter(reltype_id = 2, from_poi=item)
+    for poipoi in poipois:
+        if not poipoi.to_poi in list_pois:
+            list_pois.append(poipoi.to_poi)
+            get_chain_poi(poipoi.to_poi,list_pois)
+    return list_pois
+
 @python_2_unicode_compatible
 class Poi(geomodels.Model):
     name = models.CharField(verbose_name='Nome', max_length=100)
@@ -924,6 +932,7 @@ class Poi(geomodels.Model):
     feeds = models.TextField(verbose_name='Indirizzi di feeds', blank=True, help_text=' rss e atom, uno per riga')
     # pois = models.ManyToManyField('self', through='PoiPoi', verbose_name='Vedi anche') # new: 130327
     pois = models.ManyToManyField('self', through='PoiPoi', symmetrical=False, verbose_name='Risorse correlate') # new: 130610 no symmetrical
+
     notes = models.TextField(verbose_name='Note', blank=True, null=True)   
     sourcetype = models.ForeignKey(Sourcetype, models.PROTECT, verbose_name='Tipo di fonte', blank=True, null=True)
     """
@@ -1064,17 +1073,28 @@ class Poi(geomodels.Model):
             return tags
 
     def get_affiliation(self):
+        """
         poipois = PoiPoi.objects.filter(from_poi=self)
         for poipoi in poipois:
-            # print 'poipoi = ', poipoi
             if poipoi.reltype_id == 1:
+                return poipoi.to_poi
+        """
+        poipois = PoiPoi.objects.filter(from_poi=self, reltype_id = 1)
+        for poipoi in poipois:
                 return poipoi.to_poi
         return None
 
     def get_affiliations(self):
         affiliations = []
+        """
         poipois = PoiPoi.objects.filter(from_poi=self)
         return [poipoi.to_poi for poipoi in poipois if poipoi.reltype_id == 1]
+        """
+        poipois = PoiPoi.objects.filter(from_poi=self, reltype_id = 1)
+        return [poipoi.to_poi for poipoi in poipois]
+
+    def get_chain_pois(self):
+        return get_chain_poi(self,[])
 
     def get_url(self):
         return '/pois/%s/' % self.id
@@ -1551,7 +1571,7 @@ class PoiPoitype(models.Model):
 
     def __str__(self):
         return '%s in %s' % (self.poi.poi(), self.poitype.getName())
-
+        
 @python_2_unicode_compatible
 class PoiZone(models.Model):
     poi = models.ForeignKey(Poi, models.CASCADE)

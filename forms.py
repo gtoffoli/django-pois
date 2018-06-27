@@ -27,7 +27,7 @@ MMR temporaneamente disattivato
 from richtext_blog.models import Post, Tag as BlogTag
 from richtext_blog.forms import CommentForm
 """
-from pois.models import Zonetype, Zone, Route, Tag, Poitype, Poi, Odonym, Confighome #MMR temporaneamente disattivato - , Blog
+from pois.models import Zonetype, Zone, Route, Tag, Poitype, Poi, Odonym, PoiPoi, Confighome #MMR temporaneamente disattivato - , Blog
 # from pois.utils.gmap_widget import GoogleMapsWidget
 
 """
@@ -495,6 +495,22 @@ class PoiUserForm(ModelForm):
                 raise forms.ValidationError(_('This field is required.'), code='required')
             return street_address
         
+
+class PoiPoiForm(ModelForm):
+    class Meta:
+        model = PoiPoi
+        fields = ('from_poi', 'to_poi', 'reltype_id')
+
+    from_poi = forms.ModelChoiceField(Poi.objects.all(),
+                required=False,
+                label='da risorsa',
+                widget=autocomplete.ModelSelect2(url='risorsa-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Scegli risorsa','style':'width:60%'})
+                )
+    to_poi = forms.ModelChoiceField(Poi.objects.all(),
+                required=False,
+                label='a risorsa',
+                widget=autocomplete.ModelSelect2(url='risorsa-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Scegli risorsa','style':'width:60%'})
+                )
 
 class PoiBythemeForm(forms.Form):
     """

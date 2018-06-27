@@ -5,7 +5,7 @@ from tinymce.widgets import TinyMCE
 
 
 from pois.models import Zonetype, Zone, ZoneZone, Route, Odonym, Tag, TagTag, Poitype, Sourcetype, Poi, PoiZone, PoiRoute, PoiPoi, Confighome #  MMR temporaneamente disattivato -, Blog
-from pois.forms import TagForm, PoitypeForm, ZoneForm, RouteForm, PoiForm, ConfighomeForm # MMR temporaneamente disattivato -, BlogForm
+from pois.forms import TagForm, PoitypeForm, ZoneForm, RouteForm, PoiForm, PoiPoiForm, ConfighomeForm # MMR temporaneamente disattivato -, BlogForm
 
 from roma.settings import srid_OSM
 srid_GPS = 4326 # WGS84 = World Geodetic System 1984 (the reference system used by GPS)
@@ -301,11 +301,14 @@ class PoiRouteAdmin(admin.ModelAdmin):
     search_fields = ['poi', 'route',]
 
 class PoiPoiAdmin(admin.ModelAdmin):
+    """
     fieldsets = [
         (None, {'fields': ['from_poi', 'to_poi', 'reltype_id']}),
     ]
+    """
+    form = PoiPoiForm
     list_display = ('from_poi', 'to_poi', 'reltype_id',)
-    search_fields = ['from_poi', 'to_poi',]
+    search_fields = ['from_poi__name', 'to_poi__name']
 
 #180409 MMR
 class ConfighomeAdmin(admin.ModelAdmin):

@@ -16,6 +16,18 @@
     <meta property="og:image:height" content="240">
     <meta property="og:site_name" content="RomaPaese">
 {% endblock facebook_data %}
+{% block extra_style %}
+<style>
+    .box-res-image {
+        border-color: #fff;
+        text-align: center;
+    }
+    .box-res-image > img {
+        max-height:100%;
+        max-width: 100%;
+    }
+</style>
+{% endblock extra_style %}
 {% block content %}
     <div class="boxcontent">
         <div class="row mB10">
@@ -180,13 +192,16 @@
             {% endif %}
             </div>
             <div class="col-md-6 col-lg-6 mB20">
-            {% comment %}poi_dict.typecard > 0 and {% endcomment %}{% if poi_dict.video %}
+            {% comment %}poi_dict.typecard > 0 and {% endcomment %}
+            {% if poi_dict.video %}
                 <div class="box-res">
                     {% if show_element %}
                     <iframe src="{{ poi_dict.video.0 }}?autoplay=1" frameborder="0" allowfullscreen=""></iframe></div>
                     {% endif %}
+            {% elif poi_dict.imageA %}
+            <div class="box-res box-res-image"><img src="{{poi_dict.imageA}}" alt=""></div>
             {% else %}
-                <div class="box-res back-box display-box"><div><i class="fa fa-play"></i> video</div></div>
+                <div class="box-res back-box display-box"><div><i class="fa fa-play"></i> video &nbsp; {% trans 'or' %} &nbsp; <i class="fa fa-image"></i> {% trans 'photo' %}</div></div>
             {% endif %}
             </div>
         </div>
@@ -219,8 +234,10 @@
                 {% endfor %}
                 {% endif %}
                 </div>
+            {% elif poi_dict.imageB %}
+            <div class="box-res box-res-image"><img src="{{poi_dict.imageB}}" alt=""></div>
             {% else %}
-                <div class="box-res text-center back-box display-box"><div><i class="fa fa-rss"></i> rss</div></div>
+                <div class="box-res text-center back-box display-box"><div><i class="fa fa-rss"></i> rss &nbsp; {% trans 'or' %} &nbsp; <i class="fa fa-image"></i> {% trans 'photo' %}</div></div>
             {% endif %}
             </div>
             <div class="col-md-6 col-lg-6">

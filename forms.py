@@ -360,6 +360,8 @@ class PoiForm(ModelForm):
             'video',
             'feeds',
             'logo',
+            'imageA',
+            'imageB',
             'notes',
             'sourcetype',
             'source',
@@ -381,7 +383,7 @@ class PoiForm(ModelForm):
             'video': forms.Textarea(attrs={'cols': 60, 'rows': 2}),
             'feeds': forms.Textarea(attrs={'cols': 60, 'rows': 2}),
             'notes': forms.Textarea(attrs={'cols': 60, 'rows': 3}),
-        }
+        } 
 
 class PoiUserForm(ModelForm):
 

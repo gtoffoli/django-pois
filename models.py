@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 from django.utils.encoding import python_2_unicode_compatible
 
+import os
+import uuid 
 import datetime
 from collections import defaultdict
 # from lxml.html.clean import clean_html, fromstring
@@ -894,6 +896,12 @@ class PoitypeTag(models.Model):
     def __str__(self):
         return '%s has tag %s' % (self.poitype.getName(), self.tag.getName())
 
+
+def image_path(instance, filename):
+    basefilename, file_extension= os.path.splitext(filename)
+    randomstr= uuid.uuid4()
+    return 'resources/%s_%s%s' % (basefilename, randomstr, file_extension)
+
 def get_chain_poi(item, list_pois):
     poipois = PoiPoi.objects.filter(reltype_id = 2, from_poi=item)
     for poipoi in poipois:
@@ -949,6 +957,8 @@ class Poi(geomodels.Model):
     # aggiunto 130606
     host = models.ForeignKey('self', models.SET_NULL, related_name='poi_host', verbose_name='Ospitato da', blank=True, null=True)
     logo = models.ImageField(upload_to='logos', null=True, blank=True, verbose_name='Logo (immagine)')
+    imageA = models.ImageField(upload_to=image_path, null=True, blank=True, verbose_name='Immagine A')
+    imageB = models.ImageField(upload_to=image_path, null=True, blank=True, verbose_name='Immagine B')
     slug = AutoSlugField(unique=True, populate_from='name', editable=True, blank=True, null=True)
     # aggiunto 130808
     members = models.ManyToManyField(User, related_name='poi_members', through='PoiMember', symmetrical=False, verbose_name='Membri')
@@ -1484,6 +1494,8 @@ class Poi(geomodels.Model):
             poi_dict['webs'] = self.clean_webs()
             poi_dict['video'] = self.get_video()
             poi_dict['logo'] = self.logo and self.logo.url or ''
+            poi_dict['imageA'] = self.imageA and self.imageA.url or ''
+            poi_dict['imageB'] = self.imageB and self.imageB.url or ''
             if self.owner:
                 poi_dict['owner'] = '%s %s' % (self.owner.first_name, self.owner.last_name)
             else:
@@ -1556,7 +1568,6 @@ def update_poi_coordinates(sender, **kwargs):
             poi.save()        
 
 post_save.connect(update_poi_coordinates, sender=Poi)
-
 
 @python_2_unicode_compatible
 class PoiPoitype(models.Model):

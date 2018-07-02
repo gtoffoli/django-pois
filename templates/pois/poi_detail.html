@@ -46,7 +46,10 @@
             </div>
             <div class="col-md-3 col-lg-2">
                 <div class="actions">
-                    {% if can_edit %}<div><a href="{% url "admin:pois_poi_change" poi_dict.id %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <small>{% trans "edit" %}</small></a></div>{% endif %}
+                    {% if can_edit %}
+                        <div><a href="{% url "admin:pois_poi_change" poi_dict.id %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <small>{% trans "edit" %}</small></a></div>
+                        <div><a href="/datatrans/translate/poi/{{poi_dict.id}}/"><i class="fa fa-language" aria-hidden="true"></i> <small>{% trans "translate" %}</small></a></div>
+                    {% endif %}
                     <div><a id="explore_viewport" href="javascript:void(0)"><i class="fa fa-map-o" aria-hidden="true"></i> <small>{% trans "explore the resources in the neighbourhood" %}</small></a></div>
                     <div id="live-geolocation"></div>
                     {% comment %}MMR 20170920 <div id="muoviroma-percorso"></div>{% endcomment %}

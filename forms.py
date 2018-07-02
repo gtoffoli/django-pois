@@ -13,7 +13,7 @@ from django import forms
 from django.forms import ModelForm
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import string_concat
+# from django.utils.translation import string_concat
 
 from django.contrib.auth.models import User
 from django.contrib.admin.widgets import FilteredSelectMultiple
@@ -250,8 +250,8 @@ class PoiForm(ModelForm):
     poitype = forms.ChoiceField(label="Tipo di risorsa", choices=(),
                                        widget=forms.Select(attrs={'class':'selector'}))
     """
-    name = forms.CharField(widget=forms.TextInput(attrs={'style':'width:50em','maxlength':100}))
-    short = forms.CharField(widget=forms.TextInput(attrs={'style':'width:60em','maxlength':120}))
+    name = forms.CharField(label='Nome', widget=forms.TextInput(attrs={'style':'width:50em','maxlength':100}))
+    short = forms.CharField(label='Descriz. breve',widget=forms.TextInput(attrs={'style':'width:60em','maxlength':120}))
     """
     phone = forms.Textarea(attrs={'cols': 60, 'rows': 2})
     email = forms.Textarea(attrs={'cols': 60, 'rows': 2})
@@ -271,7 +271,7 @@ class PoiForm(ModelForm):
             attrs={'minimum_characters': 3,
                                         'placeholder': 'Aggiungi categoria'}))
     """
-    description = forms.CharField(required=False,widget=TinyMCE())
+    description = forms.CharField(label='Descrizione', required=False,widget=TinyMCE())
     """
     host_object = autocomplete_light.GenericModelChoiceField(
                 required=False,

@@ -25,6 +25,7 @@ from django.contrib.gis.measure import D # ``D`` is a shortcut for ``Distance
 # MMR old version - from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.flatpages.models import FlatPage
 from django.contrib.auth.models import User
 # MMR from richtext_blog.models import Post
 from autoslug import AutoSlugField
@@ -1834,6 +1835,10 @@ class PoitypeTranslation(object):
     fields = ('name','short')
 register(Poitype, PoitypeTranslation)
 
+class PoiTranslation(object):
+    fields = ('name','short','web','description')
+register(Poi, PoiTranslation)
+
 """
 MMR - temporaneamente disattivato
 
@@ -1858,6 +1863,18 @@ def post_can_edit(self, request):
     return False
 Post.can_edit = post_can_edit
 """
+
+def model_get_language_name(self):
+    return dict(settings.LANGUAGES).get(settings.LANGUAGE_CODE, 'Italian')
+FlatPage.get_language_name = model_get_language_name
+Poi.get_language_name = model_get_language_name
+
+@property
+def model_get_original_language(self):
+    return settings.LANGUAGE_CODE
+FlatPage.original_language = model_get_original_language
+Poi.original_language = model_get_original_language
+
 
 def refresh_configuration():
     rebuild_poi_categories()

@@ -1247,8 +1247,14 @@ def poitype_zone_detail(request, klass, zone_id, poitype=None, zone=None):
             region = zone.zone_parent()
         data_dict = {'help': help_text, 'poitype': poitype, 'theme_list': theme_list, 'poi_dict_list': poi_dict_list, 'zone_list': zone_list, 'region': region}
         data_dict['zone'] = zone
-        data_dict['title_page'] = '%s - %s' % (poitype_name, zone.name)
-        data_dict['short_page'] = '%s - %s: %s' % (poitype_name, zone.name,poitype_short)
+        
+        if zone.code.startswith('S.'):
+            data_dict['title_page'] = '%s - %s (%s)' % (poitype_name, zone.name, _('quarter extension'))
+            data_dict['short_page'] = '%s - %s (%s): %s' % (poitype_name, zone.name, _('quarter extension'), poitype_short)
+        else:
+            data_dict['title_page'] = '%s - %s' % (poitype_name, zone.name,)
+            data_dict['short_page'] = '%s - %s: %s' % (poitype_name, zone.name, poitype_short)
+
         if language.startswith('it'):
             try:
                 catzones_cache.set(key, data_dict)
@@ -1722,13 +1728,17 @@ def poi_network_zone(request, poi_id, zone_id, poi=None, zone=None):
     help_text = FlatPage.objects.get(url='/help/network/').content
     parent = poi
     poi_dict_list = [poi.make_dict(list_item=True) for poi in poi_list]
-    region = zone.zone_parent()
+    zone_name = zone.name
+    region = zone.zone_parent().lower()
+    if zone_name.lower().startswith(region):
+        region = zone_name
+        zone_name = ''
     if poi_dict_list:
         for item in poi_dict_list:
             if item['comune'][1] != 'roma':
-                region = 'LAZIO' 
+                region = 'lazio' 
                 break
-    return render(request, 'pois/network_detail.html', {'relation': 'affiliated', 'help': help_text, 'parent': parent, 'zone': zone, 'poi_dict_list': poi_dict_list, 'region': region})
+    return render(request, 'pois/network_detail.html', {'relation': 'affiliated', 'help': help_text, 'zone_name': zone_name, 'parent': parent, 'zone': zone, 'poi_dict_list': poi_dict_list, 'region': region})
 
 def poi_network_zone_by_slug(request, poi_slug, zone_slug):
     poi = get_object_or_404(Poi, slug=poi_slug)

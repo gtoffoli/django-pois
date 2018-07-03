@@ -3,20 +3,22 @@
 
 {% block head_title %}
 	{% if relation == 'affiliated' %}{{ parent.getName }}: {% trans "affiliated resources" %}
-	{% elif relation == 'caredby' %}{{ parent.getName }}: {% trans "friend resources" %}{% endif %}
+	{% elif relation == 'caredby' %}{{ parent.getName }}: {% trans "friend resources" %}{% endif %}, {{region|title}}{% if zone_name %} - {{zone_name}} {% endif %}
+	{% block meta_description %}{% endblock meta_description %}
 {% endblock %}
 
 {% block content %}
     <div class="boxcontent">
         <div class="row mB10">
             <div class="col-md-12 col-lg-12">
-                <div class="segnaposto notranslate">{{ region }}</div>
+                <div class="segnaposto notranslate">{{ region }}{% if zone_name %} - {{zone_name}} {% endif %}</div>
             </div>
             <div class="col-md-9 col-lg-10">
                  <h1 class="mB0">{% if parent.getLogo %}<img src="{{MEDIA_URL}}{{parent.getLogo}}" alt=""> {% endif %}<span class="notranslate">{{ parent.getName }}</span></h1>
                  <h3 class="mT0">
                     {% if relation == 'affiliated' %}{% trans "affiliated resources"|capfirst %}
                     {% elif relation == 'caredby' %}{% trans "friend resources"|capfirst %}{% endif %}
+                    
                  </h3>
             </div>
             <div class="col-md-3 col-lg-2">

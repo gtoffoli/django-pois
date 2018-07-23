@@ -84,9 +84,9 @@
                         <tr><th>{% trans "Address" %}:</th><td>
                         {% comment %}
                         20180518 MMR - tolto cap cliccabile
-                        {% if  poi_dict.street_url %}<a rel="tooltip" href="{{ poi_dict.street_url }}" title="{% trans "show" %} {{ poi_dict.street_name }}"><span class="notranslate">{{ poi_dict.street_name }}</span></a><span class="notranslate">, {{ poi_dict.number }}</span>{% else %}<span class="notranslate">{{ poi_dict.street_address }}</span>{% endif %} - <a href="/indice-zona/{{poi_dict.cap }}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the zone with zipcode" %} {{poi_dict.cap }}"><span class="notranslate">{{ poi_dict.cap }}</span></a> {% if poi_dict.comune.1 == 'roma' %}<span class="notranslate">{{ poi_dict.comune.0 }}</span>{% else %}<a href="/indice-zona/{{poi_dict.comune.1}}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the town" %} {{ poi_dict.comune.0 }}"><span class="notranslate">{{ poi_dict.comune.0 }}</span></a>{% endif %}</td></tr>
+                        {% if  poi_dict.street_url %}<a rel="tooltip" href="{{ poi_dict.street_url }}" title="{% trans "show" %} {{ poi_dict.street_name }}"><span class="notranslate">{{ poi_dict.street_name }}</span></a>{% if poi_dict.number %}<span class="notranslate">, {{ poi_dict.number }}</span>{% endif %}{% else %}<span class="notranslate">{{ poi_dict.street_address }}</span>{% endif %} - <a href="/indice-zona/{{poi_dict.cap }}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the zone with zipcode" %} {{poi_dict.cap }}"><span class="notranslate">{{ poi_dict.cap }}</span></a> {% if poi_dict.comune.1 == 'roma' %}<span class="notranslate">{{ poi_dict.comune.0 }}</span>{% else %}<a href="/indice-zona/{{poi_dict.comune.1}}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the town" %} {{ poi_dict.comune.0 }}"><span class="notranslate">{{ poi_dict.comune.0 }}</span></a>{% endif %}</td></tr>
                         {% endcomment %}
-                        {% if  poi_dict.street_url %}<a rel="tooltip" href="{{ poi_dict.street_url }}" title="{% trans "show" %} {{ poi_dict.street_name }}"><span class="notranslate">{{ poi_dict.street_name }}</span></a><span class="notranslate">, {{ poi_dict.number }}</span>{% else %}<span class="notranslate">{{ poi_dict.street_address }}</span>{% endif %} - <span class="notranslate">{{ poi_dict.cap }}</span> {% if poi_dict.comune.1 == 'roma' %}<span class="notranslate">{{ poi_dict.comune.0 }}</span>{% else %}<a href="{{indice_zona}}{{poi_dict.comune.1}}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the town" %} {{ poi_dict.comune.0 }}"><span class="notranslate">{{ poi_dict.comune.0 }}</span></a>{% endif %}</td></tr>
+                        {% if  poi_dict.street_url %}<a rel="tooltip" href="{{ poi_dict.street_url }}" title="{% trans "show" %} {{ poi_dict.street_name }}"><span class="notranslate">{{ poi_dict.street_name }}</span></a>{% if poi_dict.number %}<span class="notranslate">, {{ poi_dict.number }}</span>{% endif %}{% else %}<span class="notranslate">{{ poi_dict.street_address }}</span>{% endif %} - <span class="notranslate">{{ poi_dict.cap }}</span> {% if poi_dict.comune.1 == 'roma' %}<span class="notranslate">{{ poi_dict.comune.0 }}</span>{% else %}<a href="{{indice_zona}}{{poi_dict.comune.1}}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the town" %} {{ poi_dict.comune.0 }}"><span class="notranslate">{{ poi_dict.comune.0 }}</span></a>{% endif %}</td></tr>
                         {% if poi_dict.phones %}
                         <tr><th>{% trans "Phone" %}:</th><td>
                              <div class="summary notranslate">
@@ -249,6 +249,7 @@
                 {% endif %}{% endif %}{% endif %}
             </div>
         </div>
+        {% comment %}
         {% set careof = poi_dict.careof %}
         <div class="row">
             {% if careof %}
@@ -267,7 +268,17 @@
                 {% endif %}
             </div>
         </div>
-        <div class="mT20 text-center box-fb">
+        {% endcomment %}
+        <div class="row mT20">
+            <div class="col-md-6 col-lg-6">
+                {% if request.GET.comment %}
+                    <div><strong>{% trans "Thanks for your contribution" %}!</strong></div>
+                {% else %}
+                    <div>{% trans "If the information in this page isn't correct, up-to-date and complete" %}, <a href="/annota-risorsa/{{ poi_dict.slug }}/">{% trans "send us a note" %}</a>. {% trans "Thanks" %}!</div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 col-lg-6 text-center">
+                        <div class="text-center box-fb">
             <div id="fb-root"></div>
             <script>(function(d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0];
@@ -286,6 +297,9 @@
                 data-share="true">
             </div>
         </div>
+            </div>
+        </div>
+
     </div>
 {% endblock content %}
 

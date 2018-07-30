@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import datetime
+import requests
 # Add before admin.autodiscover() and any form import for that matter:
 from collections import defaultdict
 from urllib.parse import urlsplit
@@ -1413,44 +1414,55 @@ def poi_save(request):
         form = PoiUserForm(request.POST)
         if form.is_valid():
             # human = True
-            web = request.POST['web']
-            facebook = request.POST['facebook']
-            now = datetime.datetime.now()
-            fullname = request.POST['fullname']
-            user_email = request.POST['user_email']
-            notes = """----- risorsa segnalata in data %s -----
+            recaptcha = request.POST.get('g-recaptcha-response')
+            data = {
+                'secret': settings.GOOGLE_RECAPTCHA_SKEY,
+                'response': recaptcha
+            }
+            r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+            result_captcha = r.json()
+            if result_captcha['success']:
+                web = request.POST['web']
+                facebook = request.POST['facebook']
+                now = datetime.datetime.now()
+                fullname = request.POST['fullname']
+                user_email = request.POST['user_email']
+                notes = """----- risorsa segnalata in data %s -----
 ----- da %s - %s -----
 """ % (now, fullname, user_email)
-            poi = form.save()
-            if request.user.is_authenticated:
-                poi.owner = request.user
-            poi.notes = notes
-            if web and facebook:
-                poi.web = '%s\n%s' % (web, facebook)
-            elif facebook:
-                poi.web = facebook
-            poi.save()
-            subject='%s - nuova risorsa: %s' % (SITE_NAME, poi.name)
-            message='risorsa: %s (id: %s)\n\n----- risorsa segnalata in data %s -----\n\n-----da: %s - %s -----' % (poi.name, poi.id, now, fullname, user_email)
-            result=send_mail(
-                subject,
-                message,
-                SERVER_EMAIL,
-                [SERVER_EMAIL,],
-                fail_silently=False,
-            )
-            subject='%s - risorsa segnalata: %s' % (SITE_NAME, poi.name)
-            message="Gentile %s,\n\n Grazie per averci segnalato la risorsa --- %s ---\nAppena potremo pubblicheremo il profilo della risorsa, dopo avere rivisto ed eventualmente integrato l'informazione da lei fornita.\n\nLo staff di Romapaese\n\n http:%s" % (fullname, poi.name, request.META['HTTP_HOST'])
-            result=send_mail(
-                subject,
-                message,
-                SERVER_EMAIL,
-                [user_email],
-                fail_silently=False,
-            )
-            return HttpResponseRedirect('/nuova-risorsa/%s/' % poi.id)
+                poi = form.save()
+                if request.user.is_authenticated:
+                    poi.owner = request.user
+                poi.notes = notes
+                if web and facebook:
+                    poi.web = '%s\n%s' % (web, facebook)
+                elif facebook:
+                    poi.web = facebook
+                poi.save()
+                subject='%s - nuova risorsa: %s' % (SITE_NAME, poi.name)
+                message='risorsa: %s (id: %s)\n\n----- risorsa segnalata in data %s -----\n\n-----da: %s - %s -----' % (poi.name, poi.id, now, fullname, user_email)
+                result=send_mail(
+                    subject,
+                    message,
+                    SERVER_EMAIL,
+                    [SERVER_EMAIL,],
+                    fail_silently=False,
+                )
+                subject='%s - risorsa segnalata: %s' % (SITE_NAME, poi.name)
+                message="Gentile %s,\n\n Grazie per averci segnalato la risorsa --- %s ---\nAppena potremo pubblicheremo il profilo della risorsa, dopo avere rivisto ed eventualmente integrato l'informazione da lei fornita.\n\nLo staff di Romapaese\n\n http:%s" % (fullname, poi.name, request.META['HTTP_HOST'])
+                result=send_mail(
+                    subject,
+                    message,
+                    SERVER_EMAIL,
+                    [user_email],
+                    fail_silently=False,
+                )
+                return HttpResponseRedirect('/nuova-risorsa/%s/' % poi.id)
+            else:
+                nocaptcha = _('Invalid reCAPTCHA. Please try again.')
+                return render(request, 'pois/poi_edit.html', {'form': form, 'text_body': text_body, 'nocaptcha': nocaptcha})
         else:
-            return render(request, 'pois/poi_edit.html', {'form': form, 'text_body': text_body})
+            return render(request, 'pois/poi_edit.html', {'form': form, 'text_body': text_body, 'nocaptcha': ''})
     else:
         return poi_new(request)
 
@@ -1480,29 +1492,40 @@ def poi_save_note(request):
     text_body = flatpage.content
     form = PoiAnnotationForm(request.POST)
     if form.is_valid():
-        now = datetime.datetime.now()
-        comment = request.POST['notes']
-        fullname = request.POST['name']
-        email = request.POST['email']
-        poi.notes = """----- commento in data %s -----
+        recaptcha = request.POST.get('g-recaptcha-response')
+        data = {
+            'secret': settings.GOOGLE_RECAPTCHA_SKEY,
+            'response': recaptcha
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result_captcha = r.json()
+        if result_captcha['success']:
+            now = datetime.datetime.now()
+            comment = request.POST['notes']
+            fullname = request.POST['name']
+            email = request.POST['email']
+            poi.notes = """----- commento in data %s -----
 %s
 %s - %s
 -----
 %s
 """ % (now, comment, fullname, email, poi.notes)
-        poi.save()
-        subject='%s - nota su risorsa: %s' % (SITE_NAME, poi.name)
-        message='risorsa: %s (id: %s) http://%s/risorsa/%s/\n\n----- nota in data %s -----\n\n nota inviata tramite il sito da: %s - %s' % (poi.name, poi.id, request.META['HTTP_HOST'], poi.slug, now, fullname, email)
-        result=send_mail(
-            subject,
-            message,
-            SERVER_EMAIL,
-            [SERVER_EMAIL],
-            fail_silently=False,
-        )
-        return HttpResponseRedirect('/risorsa/%s/?comment=true' % poi.slug)
+            poi.save()
+            subject='%s - nota su risorsa: %s' % (SITE_NAME, poi.name)
+            message='risorsa: %s (id: %s) http://%s/risorsa/%s/\n\n----- nota in data %s -----\n\n nota inviata tramite il sito da: %s - %s' % (poi.name, poi.id, request.META['HTTP_HOST'], poi.slug, now, fullname, email)
+            result=send_mail(
+                subject,
+                message,
+                SERVER_EMAIL,
+                [SERVER_EMAIL],
+                fail_silently=False,
+            )
+            return HttpResponseRedirect('/risorsa/%s/?comment=true' % poi.slug)
+        else:
+            nocaptcha = _('Invalid reCAPTCHA. Please try again.')
+            return render(request, 'pois/poi_feedback.html', {'poi_name': poi.name,'form': form, 'text_body': text_body,'nocaptcha': nocaptcha})
     else:
-        return render(request, 'pois/poi_feedback.html', {'form': form, 'text_body': text_body})
+        return render(request, 'pois/poi_feedback.html', {'poi_name': poi.name, 'form': form, 'text_body': text_body, 'nocaptcha': ''})
 
 def pois_recent(request, n=MAX_POIS):
     user = request.user

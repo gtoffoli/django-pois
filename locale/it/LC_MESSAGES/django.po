@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-23 14:34+0200\n"
-"PO-Revision-Date: 2018-07-23 14:39+0100\n"
+"POT-Creation-Date: 2018-07-30 12:10+0200\n"
+"PO-Revision-Date: 2018-07-30 12:13+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -631,7 +631,7 @@ msgid "Thanks"
 msgstr "Grazie"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:340
-#: .\pois\templates\pois\poi_detail.html:386
+#: .\pois\templates\pois\poi_detail.html:389
 #: .\pois\templates\pois\pois_report\route_detail.html:288
 #: .\pois\templates\pois\street_detail.html:298
 #: .\pois\templates\pois\zone_detail.html:301
@@ -640,8 +640,8 @@ msgid "cannot determine your current location"
 msgstr "non sono in grado di determinare la tua posizione"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:364
-#: .\pois\templates\pois\poi_detail.html:411
-#: .\pois\templates\pois\poi_detail.html:421
+#: .\pois\templates\pois\poi_detail.html:414
+#: .\pois\templates\pois\poi_detail.html:424
 #: .\pois\templates\pois\pois_report\route_detail.html:293
 #: .\pois\templates\pois\street_detail.html:303
 #: .\pois\templates\pois\zone_detail.html:306
@@ -650,15 +650,15 @@ msgid "explore the zone around your current position"
 msgstr "esplora la zona intorno alla tua posizione attuale"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:365 Copia.html:367
-#: Copia.html:368 .\pois\templates\pois\poi_detail.html:412
-#: .\pois\templates\pois\poi_detail.html:414
-#: .\pois\templates\pois\poi_detail.html:415
+#: Copia.html:368 .\pois\templates\pois\poi_detail.html:415
+#: .\pois\templates\pois\poi_detail.html:417
+#: .\pois\templates\pois\poi_detail.html:418
 msgid "find your way to this resource using the services by"
 msgstr "trova il percorso per questa risorsa usando i servizi di"
 
 #: .\pois\templates\pois\poi_detail iubenda - Copia.html:367 Copia.html:368
-#: .\pois\templates\pois\poi_detail.html:414
-#: .\pois\templates\pois\poi_detail.html:415
+#: .\pois\templates\pois\poi_detail.html:417
+#: .\pois\templates\pois\poi_detail.html:418
 msgid "enter your current address"
 msgstr "inserisci il tuo indirizzo attuale"
 

@@ -20,7 +20,7 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 # from django.contrib.gis.forms.fields import GeometryField
 from django.contrib.gis.admin.widgets import OpenLayersWidget
 from tinymce.widgets import TinyMCE
-from captcha.fields import CaptchaField, CaptchaTextInput
+# from captcha.fields import CaptchaField, CaptchaTextInput
 
 """
 MMR temporaneamente disattivato

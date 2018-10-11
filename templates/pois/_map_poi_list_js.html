@@ -99,11 +99,11 @@
         map.addControl(new OpenLayers.Control.LayerSwitcher());
         map.addControl(new OpenLayers.Control.ScaleLine({geodesic: 'true'}));
         var gmap = new OpenLayers.Layer.Google("Google Streets", { numZoomLevels: 20 });
-        //var gsat = new OpenLayers.Layer.Google("Google Satellite", {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22});
+        var gsat = new OpenLayers.Layer.Google("Google Satellite", {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22});
         var osm = new OpenLayers.Layer.OSM("OpenStreetMap");
-        map.addLayer(gmap);
-        //map.addLayer(gsat);
         map.addLayer(osm);
+        map.addLayer(gmap);
+        map.addLayer(gsat);
         geojson_format = new OpenLayers.Format.GeoJSON();
         {% if zone.code != 'ROMA' %}
             vectors = new OpenLayers.Layer.Vector("Zone");

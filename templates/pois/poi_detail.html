@@ -28,6 +28,34 @@
     }
 </style>
 {% endblock extra_style %}
+{% block JSON-LD %}
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Organization",
+  "name": "{{ poi_dict.name }}",
+  "description": "{{ poi_dict.short }}",
+  {% if poi_dict.emails %}"email": "{{ poi_dict.emails.0.0|slice:"7:" }}",{% endif %}
+  {% if poi_dict.phones %}"telephone": "{{poi_dict.phones.0}}",{% endif %}
+  {% if poi_dict.webs %}"url": "{{poi_dict.webs.0.0}}",{% endif %}
+  "location" : {
+    "@type": "Place",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "{{poi_dict.comune.0}}",
+      "addressRegion": "LAZIO",
+      "postalCode": "{{poi_dict.cap}}",
+      "streetAddress": "{{poi_dict.street_address}}"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "{{ poi_dict.latitude }}",
+      "longitude": "{{ poi_dict.longitude }}"
+    }
+  }
+}
+</script>
+{% endblock JSON-LD %}
 {% block content %}
     <div class="boxcontent">
         <div class="row mB10">

@@ -1483,8 +1483,12 @@ class Poi(geomodels.Model):
         point_osm = self.point_OSM()
         if point_osm:
             poi_dict['point'] = point_osm.geojson
+            poi_dict['latitude'] = self.point.y
+            poi_dict['longitude'] = self.point.x
         else:
             poi_dict['point'] = ''
+            poi_dict['latitude'] = ''
+            poi_dict['longitude'] = ''
         if not list_item:
             poi_dict['slug'] = self.slug
             poi_dict['prefixed_name'] = self.prefixed_name()

@@ -1,7 +1,7 @@
 {% extends "roma/roma_base.html" %}
 {% load staticfiles i18n %}
 
-{% block head_title %}{% trans "Search results for" %}: <span class="notranslate">"{{ q }}"</span>{% endblock %}
+{% block head_title %}{% trans "Search results for" %}: {{ q }}{% endblock %}
 
 {% block content %}
 <div class="boxcontent">

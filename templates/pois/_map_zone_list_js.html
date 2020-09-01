@@ -84,12 +84,16 @@
             {% if not zone_list.0.count %}controls: []{% endif %}
         });
         map.div.oncontextmenu = function noContextMenu(e){return false;};
+        /* 20200901 MMR
         var gmap = new OpenLayers.Layer.Google("Google Streets", { numZoomLevels: 20 });
         var gsat = new OpenLayers.Layer.Google("Google Satellite", {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22});
+        */
         var osm = new OpenLayers.Layer.OSM("OpenStreetMap");
         map.addLayer(osm);
+        /* 20200901 MMR
         map.addLayer(gmap);
         map.addLayer(gsat);
+        */
         geojson_format = new OpenLayers.Format.GeoJSON();
         zones = new OpenLayers.Layer.Vector("Zone");
         zones.styleMap = zone_style_map;

@@ -376,13 +376,7 @@ function map_init(){
     map.div.oncontextmenu = function noContextMenu(e){return false;};
     map.addControl(new OpenLayers.Control.LayerSwitcher());
     map.addControl(new OpenLayers.Control.ScaleLine({geodesic: 'true'}));
-    //var gmap = new OpenLayers.Layer.Google("Google Streets", { numZoomLevels: 20 });
-    //map.addLayer(gmap);
-/*
-var gsat = new OpenLayers.Layer.Google("Google Satellite", {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22});
-map.addLayer(gsat);
-
-*/
+{% include "pois/_layerGoogleMaps_js.html" %}
     var osm = new OpenLayers.Layer.OSM("OpenStreetMap");
     map.addLayer(osm);
 // var blank = new OpenLayers.Layer("Blank", {isBaseLayer: true}); map.addLayer(blank);

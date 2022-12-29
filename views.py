@@ -15,9 +15,8 @@ MMR temporaneamente disattivato
 import autocomplete_light
 autocomplete_light.autodiscover()
 """
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.template import RequestContext
 from django.contrib.gis.shortcuts import render_to_kml
 from django.contrib.gis.geos import Polygon, LinearRing
 from django.db.models import Q
@@ -1272,6 +1271,7 @@ def poitype_zone_detail_by_slugs(request, klass_slug, zone_slug):
     zone = get_object_or_404(Zone, slug=zone_slug)
     return poitype_zone_detail(request, poitype.klass, zone.id, poitype=poitype, zone=zone)
 
+@login_required
 def poi_index(request):
     poi_list = Poi.objects.all()
     return render(request, 'pois/poi_index.html', {'poi_list': poi_list,})
@@ -1323,9 +1323,6 @@ def poi_detail(request, poi_id, poi=None):
         n_caredby = Poi.objects.filter(careof=poi).count()
         poitype = poi.poitype
         if poitype:
-            """
-            poitype = { 'name': poitype.name, 'url': poitype.friendly_url()}
-            """
             if macrozone:
                 poitype = { 'name': poitype.name, 'url': '/categoria/%s/zona/%s/' % (poitype.slug, macrozone)}
             else:
@@ -1370,7 +1367,6 @@ def poi_detail_by_slug(request, poi_slug):
 def street_autocomplete(request):
     MIN_CHARS = 3
     q = request.GET.get('q', None)
-    create_option = []
     results = []
     if q and len(q) >= MIN_CHARS:
         qs = Odonym.objects.filter(name__icontains=q).order_by('name')
@@ -1404,7 +1400,7 @@ def poi_new(request):
         fullname ='%s %s' % (user.first_name, user.last_name)
         form = PoiUserForm(initial={'fullname': fullname,'user_email': user.email})
     else:
-       form = PoiUserForm()
+        form = PoiUserForm()
     return render(request, 'pois/poi_edit.html', {'poi': '', 'form': form, 'text_body': text_body})
 
 def poi_save(request):
@@ -1441,7 +1437,7 @@ def poi_save(request):
                 poi.save()
                 subject='%s - nuova risorsa: %s' % (SITE_NAME, poi.name)
                 message='risorsa: %s (id: %s)\n\n----- risorsa segnalata in data %s -----\n\n-----da: %s - %s -----' % (poi.name, poi.id, now, fullname, user_email)
-                result=send_mail(
+                result = send_mail(
                     subject,
                     message,
                     SERVER_EMAIL,
@@ -1450,7 +1446,7 @@ def poi_save(request):
                 )
                 subject='%s - risorsa segnalata: %s' % (SITE_NAME, poi.name)
                 message="Gentile %s,\n\n Grazie per averci segnalato la risorsa --- %s ---\nAppena potremo pubblicheremo il profilo della risorsa, dopo avere rivisto ed eventualmente integrato l'informazione da lei fornita.\n\nLo staff di Romapaese\n\n http:%s" % (fullname, poi.name, request.META['HTTP_HOST'])
-                result=send_mail(
+                result = send_mail(
                     subject,
                     message,
                     SERVER_EMAIL,
@@ -1513,7 +1509,7 @@ def poi_save_note(request):
             poi.save()
             subject='%s - nota su risorsa: %s' % (SITE_NAME, poi.name)
             message='risorsa: %s (id: %s) http://%s/risorsa/%s/\n\n----- nota in data %s -----\n\n nota inviata tramite il sito da: %s - %s' % (poi.name, poi.id, request.META['HTTP_HOST'], poi.slug, now, fullname, email)
-            result=send_mail(
+            result = send_mail(
                 subject,
                 message,
                 SERVER_EMAIL,
@@ -2094,5 +2090,3 @@ def search_all(request):
     # n_results = len(queries['pois']) + len(queries['categories']) + len(queries['zones']) + len(queries['streets'])
     n_results = len(queries.get('pois', [])) + len(queries.get('categories', [])) + len(queries.get('zones', [])) + len(queries.get('streets', []))
     return render(request, 'pois/search_results.html', {'q': q, 'queries': queries, 'n_results': n_results, 'form': form,})
-
-

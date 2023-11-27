@@ -274,7 +274,8 @@
         </div>
         {% endif %}
         <div class="row mT20">
-            <div class="col-md-6 col-lg-6">
+            {% comment %}<div class="col-md-6 col-lg-6">{% endcomment %}
+            <div class="col-md-12 col-lg-12">
                 {% if request.GET.comment %}
                     <div><strong>{% trans "Thanks for your contribution" %}!</strong></div>
                 {% else %}
@@ -285,8 +286,9 @@
                     </div>
                 {% endif %}
             </div>
+            {% comment %}
             <div class="col-md-6 col-lg-6 text-center">
-                        <div class="text-center box-fb">
+            <div class="text-center box-fb">
             <div id="fb-root"></div>
             <script>(function(d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0];
@@ -304,8 +306,9 @@
                 data-show-faces="false" 
                 data-share="true">
             </div>
-        </div>
             </div>
+            </div>
+            {% endcomment %}
         </div>
 
     </div>

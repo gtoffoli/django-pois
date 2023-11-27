@@ -63,7 +63,7 @@
                 <div class="segnaposto notranslate">{% if poi_dict.comune.1 != 'roma' %}{{ poi_dict.zone_parent|upper }} - {% endif %}{{ poi_dict.comune.0|upper }}</div>
             </div>
             <div class="col-md-9 col-lg-10">
-                <h1>{% comment %}poi_dict.typecard > 0 and {% endcomment %}{% if poi_dict.logo %}<img src="{{poi_dict.logo}}" alt=""> {% endif %}<span class="notranslate">{{ poi_dict.name }}</span></h1>
+                <h1>{% if poi_dict.logo %}<img src="{{poi_dict.logo}}" alt=""> {% endif %}<span class="notranslate">{{ poi_dict.name }}</span></h1>
                 {% if can_edit and poi_dict.state != 'ok' %}
                    <div>Stato: {{poi_dict.state}}</div>
                 {% endif %}
@@ -80,7 +80,6 @@
                     {% endif %}
                     <div><a id="explore_viewport" href="javascript:void(0)"><i class="fa fa-map-o" aria-hidden="true"></i> <small>{% trans "explore the resources in the neighbourhood" %}</small></a></div>
                     <div id="live-geolocation"></div>
-                    {% comment %}MMR 20170920 <div id="muoviroma-percorso"></div>{% endcomment %}
                 </div>
             </div>
         </div>
@@ -110,10 +109,6 @@
                             </tr>
                         {% endif %}
                         <tr><th>{% trans "Address" %}:</th><td>
-                        {% comment %}
-                        20180518 MMR - tolto cap cliccabile
-                        {% if  poi_dict.street_url %}<a rel="tooltip" href="{{ poi_dict.street_url }}" title="{% trans "show" %} {{ poi_dict.street_name }}"><span class="notranslate">{{ poi_dict.street_name }}</span></a>{% if poi_dict.number %}<span class="notranslate">, {{ poi_dict.number }}</span>{% endif %}{% else %}<span class="notranslate">{{ poi_dict.street_address }}</span>{% endif %} - <a href="/indice-zona/{{poi_dict.cap }}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the zone with zipcode" %} {{poi_dict.cap }}"><span class="notranslate">{{ poi_dict.cap }}</span></a> {% if poi_dict.comune.1 == 'roma' %}<span class="notranslate">{{ poi_dict.comune.0 }}</span>{% else %}<a href="/indice-zona/{{poi_dict.comune.1}}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the town" %} {{ poi_dict.comune.0 }}"><span class="notranslate">{{ poi_dict.comune.0 }}</span></a>{% endif %}</td></tr>
-                        {% endcomment %}
                         {% if  poi_dict.street_url %}<a rel="tooltip" href="{{ poi_dict.street_url }}" title="{% trans "show" %} {{ poi_dict.street_name }}"><span class="notranslate">{{ poi_dict.street_name }}</span></a>{% if poi_dict.number %}<span class="notranslate">, {{ poi_dict.number }}</span>{% endif %}{% else %}<span class="notranslate">{{ poi_dict.street_address }}</span>{% endif %} - <span class="notranslate">{{ poi_dict.cap }}</span> {% if poi_dict.comune.1 == 'roma' %}<span class="notranslate">{{ poi_dict.comune.0 }}</span>{% else %}<a href="{{indice_zona}}{{poi_dict.comune.1}}/" rel="tooltip" title="{% trans "list the resources" %} {% trans "located in the town" %} {{ poi_dict.comune.0 }}"><span class="notranslate">{{ poi_dict.comune.0 }}</span></a>{% endif %}</td></tr>
                         {% if poi_dict.phones %}
                         <tr><th>{% trans "Phone" %}:</th><td>
@@ -216,14 +211,13 @@
         </div>
         <div class="row">
             <div class="col-md-6 col-lg-6 mB20">
-            {% comment %}poi_dict.typecard > 0 and {% endcomment %}{% if poi_dict.description %}
+            {% if poi_dict.description %}
                 <div class="box-res box-scroll back-box"><div class="pTB6LR12">{{ poi_dict.description|safe }}</div></div>
             {% else %}
                 <div class="box-res text-center back-box display-box"><div><i class="fa fa-edit"></i> descrizione</div></div>
             {% endif %}
             </div>
             <div class="col-md-6 col-lg-6 mB20">
-            {% comment %}poi_dict.typecard > 0 and {% endcomment %}
             {% if poi_dict.video %}
                 <div class="box-res">
                     {% if show_element %}
@@ -236,9 +230,10 @@
             {% endif %}
             </div>
         </div>
+        {% if feeds or poi_dict.imageB %}
         <div class="row">
             <div class="col-md-6 col-lg-6 mB20">
-            {% comment %}poi_dict.typecard > 0 and {% endcomment %}{% if feeds %}
+            {% if feeds %}
                 <div class="box-res box-scroll back-box">
                 {% if show_element %}
                 {% for feed in feeds %}
@@ -277,32 +272,17 @@
                 {% endif %}{% endif %}{% endif %}
             </div>
         </div>
-        {% comment %}
-        {% set careof = poi_dict.careof %}
-        <div class="row">
-            {% if careof %}
-                <div  class="col-md-6 col-lg-6">
-                    <div><strong>{% trans "This profile care of" %}: </strong>
-                         {% if careof.logo_url %}<a rel="tooltip" href="{{ careof.web }}" title="{% trans "go to the website of" %} {{ careof.name }}"><img class="img-thumb" src="{{ careof.logo_url }}"></a>{% endif %}
-                         <a rel="tooltip" href="{{ careof.url }}" title="{% trans "Show the profile of"|lower %} {{ careof.name }}"><span class="notranslate">{{ careof.name }}</span></a>
-                    </div>
-                </div>
-            {% endif %}
-            <div  class="{% if careof %}col-md-6 col-lg-6{% else %}col-md-12 col-lg-12{% endif %}">
-                {% if request.GET.comment %}
-                    <div><strong>{% trans "Thanks for your contribution" %}!</strong></div>
-                {% else %}
-                    <div>{% trans "If the information in this page isn't correct, up-to-date and complete" %}, <a href="/annota-risorsa/{{ poi_dict.slug }}/">{% trans "send us a note" %}</a>. {% trans "Thanks" %}!</div>
-                {% endif %}
-            </div>
-        </div>
-        {% endcomment %}
+        {% endif %}
         <div class="row mT20">
             <div class="col-md-6 col-lg-6">
                 {% if request.GET.comment %}
                     <div><strong>{% trans "Thanks for your contribution" %}!</strong></div>
                 {% else %}
-                    <div>{% trans "If the information in this page isn't correct, up-to-date and complete" %}, <a href="/annota-risorsa/{{ poi_dict.slug }}/">{% trans "send us a note" %}</a>. {% trans "Thanks" %}!</div>
+                    <div>{% trans "If the information in this page isn't correct, up-to-date and complete" %},
+						<a href="/annota-risorsa/{{ poi_dict.slug }}/">{% trans "send us a note" %}</a>. {% trans "Thanks" %}!</div>
+                    <div><span class="error">{% trans "Please note" %}</span>: {% trans "We do not represent the above organization/service" %}:
+                    	{% trans "send any inquiry or complaint directly to it" %}. {% trans "Please do not send us CVs or applications" %}!
+                    </div>
                 {% endif %}
             </div>
             <div class="col-md-6 col-lg-6 text-center">
@@ -371,20 +351,17 @@ var poi_style_map = new OpenLayers.StyleMap({
 function map_init(){
     map = new OpenLayers.Map('map', {
         projection: proj_OSM,
-// controls: [new OpenLayers.Control.Navigation(),],
-});
+        // controls: [new OpenLayers.Control.Navigation(),],
+        });
     map.div.oncontextmenu = function noContextMenu(e){return false;};
     map.addControl(new OpenLayers.Control.LayerSwitcher());
     map.addControl(new OpenLayers.Control.ScaleLine({geodesic: 'true'}));
 {% include "pois/_layerGoogleMaps_js.html" %}
     var osm = new OpenLayers.Layer.OSM("OpenStreetMap");
     map.addLayer(osm);
-// var blank = new OpenLayers.Layer("Blank", {isBaseLayer: true}); map.addLayer(blank);
     geojson_format = new OpenLayers.Format.GeoJSON();
     pois = new OpenLayers.Layer.Vector("Risorsa");
-// poi = geojson_format.read({{poi.point_OSM.geojson|safe}})[0]; // We mark it 'safe' so that Django doesn't escape the quotes.
     poi = geojson_format.read({{poi_dict.point|safe}})[0]; // We mark it 'safe' so that Django doesn't escape the quotes.
-// poi.attributes = { id: {{poi.id}}, name: "{{poi.safe_name}}", type: "{{poi.poitype}}", icon_name: "{{poi.icon_name}}", icon_color: "{{poi.icon_color}}" };
     poi.attributes = { id: {{poi_dict.id}}, name: "{{poi_dict.safe_name}}", icon_name: "{{poi_dict.icon}}", icon_color: "{{poi_dict.color}}" };
     pois.addFeatures(poi);
     map.addLayer(pois);
@@ -398,7 +375,6 @@ function map_init(){
     }
     map.zoomToExtent(pois.getDataExtent());
     map.zoomTo(map.getZoom()-3);
-// map.zoomToExtent(vectors.getDataExtent());
 }
 
 function location_error() {
@@ -407,12 +383,9 @@ function location_error() {
 function show_path(loc) {
     var lat_1 = loc.coords.latitude;
     var lon_1 = loc.coords.longitude;
-// var s = "http://muovi.roma.it/percorso/js?cr=1&cr_da=punto:({0},{1})&cr_a={2}";
     var s = "http://muovi.roma.it/percorso/js?cp=1&da=punto:({0},{1})&a={2}";
-// address = "{{ poi_dict.street_name }}".replace(/ /g, '+')+'+'+"{{ poi_dict.number }}";
-    address = "{{ poi_dict.street_address }}".replace(/ /g, '+');
+    var address = "{{ poi_dict.street_address }}".replace(/ /g, '+');
     var url = s.format(lat_1, lon_1, address);
-// window.open(url);
     var popup  = window.open("about:blank", "_blank"); // the about:blank is to please Chrome, and _blank to please Firefox
     popup.location = url;
 }
@@ -424,17 +397,6 @@ DY = 400; // 250.0;
 function lookup_location() {
     geoPosition.getCurrentPosition(explore_location, location_error);
 }
-/*
-$(function() {
-    if (geoPosition.init()) {
-        $("#live-geolocation").html('<a href="#" onclick="lookup_location();return false"><i class="fa fa-location-arrow" aria-hidden="true"></i>  <small>{% trans "explore the zone around your current position" %}</small></a>');
-        $("#muoviroma-percorso").html('<br /><div class="icon-hand-right"></div> <a href="#" onclick="path_from_here();return false">{% trans "find your way to this resource using the services by"|capfirst %} muoversiaroma.it</a>');
-    } else {
-// $("#muoviroma-percorso").html('<br /><div class="icon-hand-right"></div> <a href="http://muovi.roma.it/percorso/js?cr=1&cr_da={% trans "enter your current address" %}&cr_a={{ poi_dict.street_name }}+{{ poi_dict.number }}, Roma" target="_blank">{% trans "find your way to this resource using the services by"|capfirst %} muovi.roma.it</a>');
-        $("#muoviroma-percorso").html('<br /><div class="icon-hand-right"></div> <a href="http://muovi.roma.it/percorso/js?cr=1&cr_da={% trans "enter your current address" %}&cr_a={{ poi_dict.street_address }}, Roma" target="_blank">{% trans "find your way to this resource using the services by"|capfirst %} muovi.roma.it</a>');
-    }
-});
-*/
 $(function() {
     if (geoPosition.init()) {
         $("#live-geolocation").html('<a class="cursordefault" href="javascript:void(0)" onclick="lookup_location();return false"><i class="fa fa-location-arrow" aria-hidden="true"></i>  <small>{% trans "explore the zone around your current position" %}</small></a>');

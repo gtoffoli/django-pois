@@ -572,16 +572,6 @@ class PoiAnnotationForm(forms.Form):
     error_css_class = 'error'
     required_css_class = 'required'
 
-    """
-    def __init__(self, *args, **kwargs):
-        if kwargs:
-            poi_id = kwargs.pop('poi_id')
-        else:
-            poi_id = args[0]['id']
-        super(PoiAnnotationForm, self).__init__(*args,**kwargs)
-        self.fields['id'].initial = poi_id
-    """
-
     id = forms.IntegerField(widget=forms.HiddenInput, required=False)
     name = forms.CharField(
             label=_("Full Name"),
@@ -599,12 +589,6 @@ class PoiAnnotationForm(forms.Form):
             required=True,
             widget=forms.Textarea(attrs={'class': 'form-control','placeholder':_("Notes"),'rows':5}))
     permission = forms.BooleanField(required=True, label=_('Pursuant to art. 13 of Legislative Decree 30 June 2003 n. 196 we wish to inform you that the personal data supplied by you with the completion and submission of this form will be used only to respond to your request.'), widget=forms.CheckboxInput())
-    """
-    captcha = CaptchaField(
-            label=_("Control string"),
-            help_text=_("Enter these 5 characters in the textbox on the right"),
-            required=True,)
-    """
     
 #180409 MMR
 class ConfighomeForm(ModelForm):

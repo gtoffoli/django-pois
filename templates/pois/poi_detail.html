@@ -77,6 +77,7 @@
                     {% if can_edit %}
                         <div><a href="{% url "admin:pois_poi_change" poi_dict.id %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <small>{% trans "edit" %}</small></a></div>
                         <div><a href="/datatrans/translate/poi/{{poi_dict.id}}/"><i class="fa fa-language" aria-hidden="true"></i> <small>{% trans "translate" %}</small></a></div>
+                        {% if poi_dict.modified %}<div>{{poi_dict.modified}}</div>{% endif %}
                     {% endif %}
                     <div><a id="explore_viewport" href="javascript:void(0)"><i class="fa fa-map-o" aria-hidden="true"></i> <small>{% trans "explore the resources in the neighbourhood" %}</small></a></div>
                     <div id="live-geolocation"></div>

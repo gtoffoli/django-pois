@@ -1835,45 +1835,52 @@ def viewport_get_pois(request, viewport, street_id=None, tags=[]):
     return pois
 
 def set_viewport(request):
-    w = float(request.GET['left'])
-    s = float(request.GET['bottom'])
-    e = float(request.GET['right'])
-    n = float(request.GET['top'])
-    viewport = [w, s, e, n]
-    set_focus(request, key='viewport', value=viewport)
+    try:
+        w = float(request.GET['left'])
+        s = float(request.GET['bottom'])
+        e = float(request.GET['right'])
+        n = float(request.GET['top'])
+        viewport = [w, s, e, n]
+        set_focus(request, key='viewport', value=viewport)
+    except:
+        pass
     json_data = json.dumps({'HTTPRESPONSE': 1, 'data': ''})
     return HttpResponse(json_data, content_type="application/x-json")
 
 
 # riporta le risorse interne alla viewport specificata dalla querystring
 def viewport_pois(request):
-    w = float(request.GET['left'])
-    s = float(request.GET['bottom'])
-    e = float(request.GET['right'])
-    n = float(request.GET['top'])
-    street_id = int(request.GET.get('street', 0))
-    max_pois = int(request.GET.get('max', 100))
-    tags = request.GET.get('tags', '').strip()
-    tags = tags and tags.split(',') or []
-    tags = [int(tag) for tag in tags]
-    set_focus(request, tags=tags)
-    ok = False
-    while not ok:
-        viewport = [w, s, e, n]
-        set_focus(request, key='viewport', value=viewport)
-        pois = viewport_get_pois(request, viewport, street_id=street_id, tags=tags)
-        n_pois = pois.count()
-        ok = n_pois < max_pois
-        if not ok:
-            divider = n_pois > (max_pois * 2) and 8 or 16
-            dy = n-s
-            dx = e-w
-            n -= dy/divider
-            s += dy/divider
-            w += dx/divider
-            e -= dx/divider
-    resource_list_no_sorted = [poi.make_dict(list_item=True) for poi in pois]
-    resource_list = sorted(resource_list_no_sorted, key=lambda k: k['name'].lower())
+    resource_list = []
+    try:
+        w = float(request.GET['left'])
+        s = float(request.GET['bottom'])
+        e = float(request.GET['right'])
+        n = float(request.GET['top'])
+        street_id = int(request.GET.get('street', 0))
+        max_pois = int(request.GET.get('max', 100))
+        tags = request.GET.get('tags', '').strip()
+        tags = tags and tags.split(',') or []
+        tags = [int(tag) for tag in tags]
+        set_focus(request, tags=tags)
+        ok = False
+        while not ok:
+            viewport = [w, s, e, n]
+            set_focus(request, key='viewport', value=viewport)
+            pois = viewport_get_pois(request, viewport, street_id=street_id, tags=tags)
+            n_pois = pois.count()
+            ok = n_pois < max_pois
+            if not ok:
+                divider = n_pois > (max_pois * 2) and 8 or 16
+                dy = n-s
+                dx = e-w
+                n -= dy/divider
+                s += dy/divider
+                w += dx/divider
+                e -= dx/divider
+        resource_list_no_sorted = [poi.make_dict(list_item=True) for poi in pois]
+        resource_list = sorted(resource_list_no_sorted, key=lambda k: k['name'].lower())
+    except:
+        pass
     json_data = json.dumps({'HTTPRESPONSE': 1, 'resource_list': resource_list})
     # return HttpResponse(json_data, mimetype="application/json")
     return HttpResponse(json_data, content_type="application/x-json")

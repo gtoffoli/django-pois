@@ -1385,6 +1385,7 @@ def poi_promote(request):
     table_phone = flatpage.content
     return render(request, 'pois/poi_promote.html', {'text_body': text_body, 'table_desktop': table_desktop, 'table_tablet': table_tablet, 'table_phone': table_phone, })
 
+@login_required
 def poi_edit(request, poi_id):
     poi = get_object_or_404(Poi, pk=poi_id)
     form = PoiUserForm(instance=poi)
@@ -1523,6 +1524,7 @@ def poi_save_note(request):
     else:
         return render(request, 'pois/poi_feedback.html', {'poi_name': poi.name, 'form': form, 'text_body': text_body, 'nocaptcha': ''})
 
+@login_required
 def pois_recent(request, n=MAX_POIS):
     user = request.user
     if user.is_superuser or user.is_staff:
@@ -1531,6 +1533,7 @@ def pois_recent(request, n=MAX_POIS):
         return render(request, 'pois/pois_report/poi_list.html', {'list_type': 'recent', 'poi_dict_list': poi_dict_list, 'count': instances.count()})
     return HttpResponseRedirect('/')
     
+@login_required
 def pois_updates(request, n=MAX_POIS):
     user = request.user
     if user.is_superuser or user.is_staff:
@@ -1540,6 +1543,7 @@ def pois_updates(request, n=MAX_POIS):
         return render(request, 'pois/pois_report/poi_list.html', {'list_type': 'updates', 'poi_dict_list': poi_dict_list, 'count': instances.count()})
     return HttpResponseRedirect('/')
 
+@login_required
 def my_resources(request, n=MAX_POIS):
     n = request.GET.get('n', n)
     n = int(n)
@@ -1552,6 +1556,7 @@ def my_resources(request, n=MAX_POIS):
         return render(request, 'pois/pois_report/poi_list.html', {'list_type': 'my_resources', 'poi_dict_list': poi_dict_list, 'count': count})
     return HttpResponseRedirect('/')
     
+@login_required
 def poi_contributors(request):
     user = request.user
     if user.is_superuser or user.is_staff:
@@ -1566,6 +1571,7 @@ def poi_zonize(request, poi_id):
         return HttpResponseRedirect('/admin/pois/poi/%s/' % poi_id)
     return HttpResponseRedirect('/')
     
+@login_required
 def pois_update_colocations(request):
     if request.user.is_superuser or request.user.is_staff:
         pois = Poi.objects.exclude(host__isnull=True)
@@ -1586,7 +1592,7 @@ def pois_update_colocations(request):
         return HttpResponse(html, content_type='text/html')
     return HttpResponseRedirect('/')
         
-
+@login_required
 def poi_analysis(request):
     no_geo_list = []
     no_theme_list = []

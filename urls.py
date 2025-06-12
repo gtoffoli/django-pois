@@ -2,7 +2,9 @@ from __future__ import unicode_literals
 
 # from django.conf.urls.defaults import *
 # MMR old version - from django.conf.urls import patterns, include, url
-from django.conf.urls import include, url
+# from django.conf.urls import include, url
+from django.urls import re_path as url
+from django.conf.urls import include
 # MMR added
 from pois import views
 

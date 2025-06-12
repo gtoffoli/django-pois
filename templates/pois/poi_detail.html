@@ -1,5 +1,5 @@
 {% extends "roma/roma_base.html" %}
-{% load staticfiles i18n set_var %}
+{% load static i18n set_var %}
 
 {% block og %}prefix="og: http://ogp.me/ns#" class?="js"{% endblock og %}
 {% block head_title %}{{ poi_dict.name }} - {{poi_dict.comune.0}}{% if poi_dict.comune.1 != 'roma' %}, {{ poi_dict.zone_parent }}{% else %} {% for zone in zone_list %}{{zone.name}}{%if not forloop.last %}, {% endif %}{% endfor %}{% endif %}{% endblock %}

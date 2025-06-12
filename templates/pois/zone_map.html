@@ -1,5 +1,5 @@
 {% extends "roma/roma_base.html" %}
-{% load staticfiles i18n set_var %}
+{% load static i18n set_var %}
 
 {% block head_title %}{% if zone.zonetype.id == 3 %}{{ zone.code}}{% elif zone.zonetype.id == 6 %}{{zone.zonetype_label}} {% endif %}{{ zone.name }}, {{region}}{% endblock %}
 {% block meta_description %}{% if zone.short %}{% trans "main streets and places"|capfirst %}: {{ zone.short }}{% endif %}{% endblock %}

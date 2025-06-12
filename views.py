@@ -49,12 +49,14 @@ srid_GPS = 4326 # WGS84 = World Geodetic System 1984 (the reference system used 
 srid_ISTAT = 23032
 roma_lon = 12.4750
 roma_lat = 41.9050
-from django.contrib.gis import admin
+# from django.contrib.gis import admin
+from pois.admin import MultiGeoAdmin
 from django.contrib.gis.geos import Point
 
 from dal import autocomplete
 
-class ZoneAdmin(admin.OSMGeoAdmin):
+# class ZoneAdmin(admin.OSMGeoAdmin):
+class ZoneAdmin(MultiGeoAdmin):
     pnt = Point(roma_lon, roma_lat, srid=srid_GPS)
     pnt.transform(srid_OSM)
     default_lon, default_lat = pnt.coords

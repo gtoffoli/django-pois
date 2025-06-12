@@ -18,7 +18,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.admin.widgets import FilteredSelectMultiple
 # from django.contrib.gis.forms.fields import GeometryField
-from django.contrib.gis.admin.widgets import OpenLayersWidget
+# from django.contrib.gis.admin.widgets import OpenLayersWidget
+from django.contrib.gis.forms.widgets import OpenLayersWidget
 from tinymce.widgets import TinyMCE
 # from captcha.fields import CaptchaField, CaptchaTextInput
 
@@ -215,7 +216,8 @@ class PoitypeChoiceField(forms.ModelChoiceField):
 
 from django.utils.html import mark_safe
 class PoitypeSelectWidget(forms.widgets.Select):
-    def render(self, name, value, attrs=None, choices=()):
+    # def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, choices=(), renderer=None):
         # output = forms.Select.render(self, name, value, attrs=attrs, choices=poitype_groups)
         # output = forms.Select.render(self, name, value, attrs=attrs)
         # output = poitype_widget
@@ -237,7 +239,8 @@ autocomplete_light.register(AutocompleteRelatedPoiItems)
 
 class PoiWidget(OpenLayersWidget):
     """ subclasses default widget for form field GeometryField """
-    def render(self, name, value, attrs=None):
+    # def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         OpenLayersWidget.render(self, name, value, attrs=attrs)
 
 COMUNE_CHOICES = [(58091, 'Roma')] + [(zone.pro_com, zone.name) for zone in Zone.objects.filter(zonetype_id=7, pro_com__isnull=False).exclude(pro_com=58091).order_by('name')]

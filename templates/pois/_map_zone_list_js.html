@@ -1,4 +1,4 @@
-{% load staticfiles i18n %}
+{% load static i18n %}
 
     {% for zone in zone_list %}<script type="text/javascript" src="{{ STATIC_URL }}roma/js/geojson/{{ zone.safe_code }}.js"></script>{% endfor %}
 

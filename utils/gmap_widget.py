@@ -11,7 +11,8 @@ class GoogleMapsWidget(forms.HiddenInput):
             'http://ajax.googleapis.com/ajax/libs/django.jQuery/1.4.2/django.jQuery.min.js',
         )
 
-    def render(self, name, value, attrs=None, choices=()):
+    # def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, choices=(), renderer=None):
         # self.attrs['base_point'] = self.attrs.get('base_point', u'42.697649,23.322154')
         self.attrs['base_point'] = self.attrs.get('base_point', '')
         self.attrs['width'] = self.attrs.get('width', 400)

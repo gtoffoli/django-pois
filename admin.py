@@ -17,7 +17,8 @@ mazzini_lon = 12.463553
 mazzini_lat = 41.915914
 
 # vedi definizione di OSMGeoAdmin in modulo django.contrib.gis.admin.options
-from django.contrib.gis.admin.options import GeoModelAdmin
+# from django.contrib.gis.admin.options import GeoModelAdmin
+from django.contrib.gis.admin.options import GISModelAdmin
 from django.contrib.gis import gdal
 
 # Use the official spherical mercator projection SRID on versions
@@ -27,7 +28,8 @@ if gdal.GDAL_VERSION >= (1, 7):
 else:
     spherical_mercator_srid = 900913
 
-class MultiGeoAdmin(GeoModelAdmin):
+# class MultiGeoAdmin(GeoModelAdmin):
+class MultiGeoAdmin(GISModelAdmin):
     map_template = 'admin/pois/multi.html'
     num_zoom = 20
     map_srid = spherical_mercator_srid
@@ -49,7 +51,8 @@ class ZonetypeAdmin(admin.ModelAdmin):
 
 # class ZoneAdmin(admin.ModelAdmin):
 # class ZoneAdmin(admin.GeoModelAdmin):
-class ZoneAdmin(admin.OSMGeoAdmin):
+# class ZoneAdmin(admin.OSMGeoAdmin):
+class ZoneAdmin(MultiGeoAdmin):
     pnt = Point(roma_lon, roma_lat, srid=srid_GPS)
     pnt.transform(srid_OSM)
     default_lon, default_lat = pnt.coords
@@ -83,7 +86,8 @@ class ZoneZoneAdmin(admin.ModelAdmin):
     list_display = ('from_zone', 'to_zone', 'overlap', 'distance',)
     search_fields = ['from_zone', 'to_zone',]
 
-class RouteAdmin(admin.OSMGeoAdmin):
+# class RouteAdmin(admin.OSMGeoAdmin):
+class RouteAdmin(MultiGeoAdmin):
     pnt = Point(roma_lon, roma_lat, srid=srid_GPS)
     pnt.transform(srid_OSM)
     default_lon, default_lat = pnt.coords

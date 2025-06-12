@@ -1,5 +1,5 @@
 {% extends "roma/roma_base.html" %}
-{% load staticfiles i18n set_var %}
+{% load static i18n set_var %}
 
 {% block head_title %}{% if zone.zonetype_id == 3 %}{{ zone.code }} - {% elif zone.zonetype_id == 6 %}{{ zone.zonetype_label|capfirst }} {% endif %}{{ zone.name }}, {{zone.prefix|lower|capfirst}}{% endblock %}
 {% block meta_description %}{% if zone.zonetype_id == 3 or zone.zonetype_id == 6 %}{{ zone.zonetype_label|capfirst }} {% endif %}{{ zone.name }}: {% trans "map of georeferenced resources" %}{% endblock meta_description %} 

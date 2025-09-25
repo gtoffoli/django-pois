@@ -9,6 +9,7 @@ autocomplete_light.autodiscover()
 
 from dal import autocomplete
 
+from django.conf import settings
 from django import forms
 from django.forms import ModelForm
 from django.template.loader import render_to_string
@@ -19,7 +20,9 @@ from django.contrib.auth.models import User
 from django.contrib.admin.widgets import FilteredSelectMultiple
 # from django.contrib.gis.forms.fields import GeometryField
 # from django.contrib.gis.admin.widgets import OpenLayersWidget
-from django.contrib.gis.forms.widgets import OpenLayersWidget
+from django.contrib.gis.geos import Point
+from django.contrib.gis.forms.fields import PointField
+from django.contrib.gis.forms.widgets import OpenLayersWidget, OSMWidget
 from tinymce.widgets import TinyMCE
 # from captcha.fields import CaptchaField, CaptchaTextInput
 
@@ -136,7 +139,6 @@ class RouteForm(ModelForm):
             'coords': forms.Textarea(attrs={'cols': 60, 'rows': 6}),
        }
 
-# from django.conf import settings
 # poi_categories = settings.POI_CATEGORIES
 
 zonetype_ids = [1, 3, 2]
@@ -216,13 +218,8 @@ class PoitypeChoiceField(forms.ModelChoiceField):
 
 from django.utils.html import mark_safe
 class PoitypeSelectWidget(forms.widgets.Select):
-    # def render(self, name, value, attrs=None, choices=()):
     def render(self, name, value, attrs=None, choices=(), renderer=None):
-        # output = forms.Select.render(self, name, value, attrs=attrs, choices=poitype_groups)
-        # output = forms.Select.render(self, name, value, attrs=attrs)
-        # output = poitype_widget
         output = make_poitype_widget(value)
-        # print output
         return mark_safe(output)
 
 """
@@ -237,30 +234,21 @@ class AutocompleteRelatedPoiItems(autocomplete_light.AutocompleteGenericBase):
 autocomplete_light.register(AutocompleteRelatedPoiItems)
 """
 
+"""
 class PoiWidget(OpenLayersWidget):
-    """ subclasses default widget for form field GeometryField """
+    # subclasses default widget for form field GeometryField
     # def render(self, name, value, attrs=None):
     def render(self, name, value, attrs=None, renderer=None):
         OpenLayersWidget.render(self, name, value, attrs=attrs)
+"""
 
 COMUNE_CHOICES = [(58091, 'Roma')] + [(zone.pro_com, zone.name) for zone in Zone.objects.filter(zonetype_id=7, pro_com__isnull=False).exclude(pro_com=58091).order_by('name')]
 
 # Create the form class.
-# class PoiForm(ModelForm):
-# MMR old version - class PoiForm(autocomplete_light.GenericModelForm):
 class PoiForm(ModelForm):
-    """
-    poitype = forms.ChoiceField(label="Tipo di risorsa", choices=(),
-                                       widget=forms.Select(attrs={'class':'selector'}))
-    """
+
     name = forms.CharField(label='Nome', widget=forms.TextInput(attrs={'style':'width:50em','maxlength':100}))
     short = forms.CharField(label='Descriz. breve',widget=forms.TextInput(attrs={'style':'width:60em','maxlength':120}))
-    """
-    phone = forms.Textarea(attrs={'cols': 60, 'rows': 2})
-    email = forms.Textarea(attrs={'cols': 60, 'rows': 2})
-    web = forms.Textarea(attrs={'cols': 60, 'rows': 2})
-    notes = forms.Textarea(attrs={'cols': 60, 'rows': 3})
-    """
     poitype = forms.ModelChoiceField(
         label="Categoria primaria",
         queryset=Poitype.objects.all(),
@@ -275,14 +263,6 @@ class PoiForm(ModelForm):
                                         'placeholder': 'Aggiungi categoria'}))
     """
     description = forms.CharField(label='Descrizione', required=False,widget=TinyMCE())
-    """
-    host_object = autocomplete_light.GenericModelChoiceField(
-                required=False,
-                label='Ospitata da',
-                widget=autocomplete_light.ChoiceWidget(autocomplete='AutocompleteHostPoiItems',
-                    attrs={'minimum_characters': 3,
-                    'placeholder': 'Scegli risorsa'}))
-    """
     host = forms.ModelChoiceField(Poi.objects.all(),
         required=False,
         label='Ospitata da',
@@ -317,6 +297,8 @@ class PoiForm(ModelForm):
         label='Via o Piazza o ..',
         widget=autocomplete.ModelSelect2(url='toponimo-autocomplete',attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Scegli via o ..'})
         )
+    # point = PointField(widget=OSMWidget(
+    #     attrs={'defaul#t_lon': settings.DEFAULT_LON, 'default_lat': settings.DEFAULT_LAT, 'default_zoom': 5}))
     owner = forms.ModelChoiceField(User.objects.all(),
         required=False,
         label='Proprietario',
@@ -337,21 +319,20 @@ class PoiForm(ModelForm):
         model = Poi
         fields = (
             'name',
-            'kind', # aggiunto 130808
+            'kind',
             'poitype',
             # 'moretypes', # aggiunto 130620, rimosso 130808
             'slug',
-            'host', # was 'host_object',
+            'host',
             'pois',
             'tags',
             'zones',
             'routes',
             'short',
             'description',
-            # 'othertags', # rimosso 130808
             'pro_com',
             'street_address',
-            'street', # was 'street_object', # was 'content_object',
+            'street',
             'housenumber',
             'zipcode',
             'latitude',
@@ -368,11 +349,7 @@ class PoiForm(ModelForm):
             'notes',
             'sourcetype',
             'source',
-            # 'sourceel',
-            # 'sourceid',
-            # 'creator',
             'owner',
-            # 'contributor',
             'careof', # aggiunto 130808
             'state', # aggiunto 130808
             'partnership', # aggiunto 130808
@@ -380,6 +357,7 @@ class PoiForm(ModelForm):
             'typecard', # MMR aggiunto 180405
         )
         widgets = {
+            # 'point': OSMWidget(attrs={'default_lon': settings.DEFAULT_LON, 'default_lat': settings.DEFAULT_LAT, 'default_zoom': 5}),
             'phone': forms.Textarea(attrs={'cols': 60, 'rows': 2}),
             'email': forms.Textarea(attrs={'cols': 60, 'rows': 2}),
             'web': forms.Textarea(attrs={'cols': 60, 'rows': 2}),

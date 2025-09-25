@@ -398,10 +398,6 @@ def street_detail(request, street_id, street=None):
             try:
                 streets_cache.set(key, data_dict)
             except:
-                """
-                MMR 20181701
-                print (data_dict)
-                """
                 pass
     can_edit = street.can_edit(request)
     data_dict['can_edit'] = can_edit
@@ -465,10 +461,7 @@ def zone_detail(request, zone_id, zone=None):
             try:
                 zonemaps_cache.set(key, data_dict)
             except:
-                """
-                MMR 20181701
-                print (data_dict)
-                """
+                zonemaps_cache.set(key, None) # 250925-GT added 
                 pass
     data_dict['can_edit'] = zone.can_edit(request)
     return render(request, 'pois/zone_detail.html', data_dict)
@@ -841,10 +834,6 @@ def zone_tag_index(request, zone_id, zone=None):
             try:
                 zones_cache.set(key, tag_poitype_list)
             except:
-                """
-                MMR 20181701
-                print (tag_poitype_list)
-                """
                 pass
     cache = caches['custom']
     key = 'allzones_' + language
@@ -990,10 +979,6 @@ def tag_detail(request, tag_id, tag=None):
             try:
                 themes_cache.set(key, data_dict)
             except:
-                """
-                MMR 20181701
-                print (data_dict)
-                """
                 pass
     # return render_to_response('pois/tag_detail.html', {'tag': tag, 'poitype_list': poitype_instances_list,}, context_instance=RequestContext(request))
     return render(request, 'pois/tag_detail.html', data_dict)
@@ -1127,10 +1112,6 @@ def poitype_detail(request, klass, poitype=None):
             try:
                 categories_cache.set(key, data_dict)
             except:
-                """
-                MMR 20181701
-                print (data_dict)
-                """
                 pass
     return render(request, 'pois/poitype_detail.html', data_dict)
 
@@ -1261,10 +1242,6 @@ def poitype_zone_detail(request, klass, zone_id, poitype=None, zone=None):
             try:
                 catzones_cache.set(key, data_dict)
             except:
-                """
-                MMR 20181701
-                print (data_dict)
-                """
                 pass
     return render(request, 'pois/poitype_zone_detail.html', data_dict)
 

@@ -49,9 +49,6 @@ class ZonetypeAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'name_en', 'name_plural', 'name_plural_en', 'slug',)
     search_fields = ['name']
 
-# class ZoneAdmin(admin.ModelAdmin):
-# class ZoneAdmin(admin.GeoModelAdmin):
-# class ZoneAdmin(admin.OSMGeoAdmin):
 class ZoneAdmin(MultiGeoAdmin):
     pnt = Point(roma_lon, roma_lat, srid=srid_GPS)
     pnt.transform(srid_OSM)
@@ -64,7 +61,6 @@ class ZoneAdmin(MultiGeoAdmin):
     ]
     list_display = ('id', 'code', 'name', 'zonetype', 'slug', 'modified', 'short', 'desc_len', 'careof_name',)
     search_fields = ['code', 'name',]
-    # inlines = [PoiInLine]
 
     def careof_name(self, obj):
         careof = obj.careof
@@ -148,16 +144,17 @@ class SourcetypeAdmin(admin.ModelAdmin):
 # class PoiAdmin(admin.GeoModelAdmin):
 # class PoiAdmin(admin.OSMGeoAdmin):
 class PoiAdmin(MultiGeoAdmin):
+    """
     pnt = Point(roma_lon, roma_lat, srid=srid_GPS)
     pnt.transform(srid_OSM)
     default_lon, default_lat = pnt.coords
     default_zoom = 13
+    """
     form = PoiForm
-    # list_display = ('id', 'name', 'kind', 'category_short', 'list_themes', 'comune', 'zipcode', 'lat_long', 'street_name', 'housenumber', 'list_zones', 'short', 'list_web', 'state', 'N', 'careof_name', 'owner', 'lasteditor', 'modified',)
-    list_display = ('id', 'name', 'category_short', 'list_themes', 'comune_cap', 'lat_long', 'get_street_address', 'list_zones', 'short', 'D', 'W', 'V', 'state', 'typecard', 'N', 'owner', 'created', 'lasteditor', 'modified', 'careof_name', )
-    list_filter = ('state','typecard','tags__name','poitype__name',)
+    # list_display = ('id', 'name', 'category_short', 'list_themes', 'comune_cap', 'lat_long', 'get_street_address', 'list_zones', 'short', 'D', 'W', 'V', 'state', 'typecard', 'N', 'owner', 'created', 'lasteditor', 'modified', 'careof_name', )
+    list_display = ('id', 'name', 'category_short', 'list_themes', 'list_zones', 'get_street_address', 'state', 'modified', 'short', 'D', 'W', 'V', 'N', 'owner', 'created', 'lasteditor', 'careof_name', 'comune_cap', 'lat_long', 'typecard', )
+    list_filter = ('state', 'tags__name','poitype__name',)
     search_fields = ['name', 'short']
-    # inlines = [PoiInLine]
 
     def category_short(self, obj):
         if not obj.poitype:
@@ -169,24 +166,12 @@ class PoiAdmin(MultiGeoAdmin):
     category_short.short_description = 'Categoria'
 
     def comune_cap(self, obj):
-        """
-        try:
-            zone = Zone.objects.get(pro_com=obj.pro_com)
-            return zone.name
-        except:
-            return 'Roma' # obj.pro_com
-        """
         comune = obj.get_comune()
         cap = obj.zipcode
         return '%s \n %s' % (comune[0], cap)
     comune_cap.short_description = 'Comune'
     comune_cap.allow_tags = True
     
-    """
-    def street_name(self, obj):
-        return obj.street_name()
-    street_name.short_description = 'Via'
-    """
     def get_street_address(self, obj):
         return obj.get_street_address()
     get_street_address.short_description = 'Indirizzo'
@@ -220,31 +205,11 @@ class PoiAdmin(MultiGeoAdmin):
         return ''
         
     def W(self, obj):
-        """
-        web = obj.web
-        if web:
-            urls = web.split('\n')
-        """
         web = ''
         urls = obj.safe_web()
         if urls:
-            """
-            out = []
-            for url in urls:
-                if not url:
-                    continue
-                label = url
-                if len(label) > 20:
-                    label = label[:16] + '...'
-                # link = '<a href="http://%s" target="_blank">%s</a>' % (url, label)
-                link = '<a href="%s" target="_blank">%s</a>' % (url, label)
-                out.append(link)
-            web = ', '.join(out)
-            """
             web = 'S'
         return web
-    #list_web.short_description = 'web'
-    # list_web.allow_tags = True
 
     def V(self, obj):
         if obj.video:
@@ -252,7 +217,6 @@ class PoiAdmin(MultiGeoAdmin):
         return ''
     
     def N(self, obj):
-        # return obj.notes and '*' or ''
         notes = obj.notes and obj.notes.strip() or ''
         if notes:
             if notes[0] in ['\n', '\r']:
@@ -305,11 +269,6 @@ class PoiRouteAdmin(admin.ModelAdmin):
     search_fields = ['poi', 'route',]
 
 class PoiPoiAdmin(admin.ModelAdmin):
-    """
-    fieldsets = [
-        (None, {'fields': ['from_poi', 'to_poi', 'reltype_id']}),
-    ]
-    """
     form = PoiPoiForm
     list_display = ('from_poi', 'to_poi', 'reltype_id',)
     search_fields = ['from_poi__name', 'to_poi__name']

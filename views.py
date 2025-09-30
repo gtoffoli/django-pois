@@ -418,7 +418,10 @@ def zone_detail(request, zone_id, zone=None):
     if not language.startswith('it') or request.GET.get('nocache', None):
         data_dict = None
     else:
-        data_dict = zonemaps_cache.get(key, None)
+        try:  # 250930-GT added try..except
+            data_dict = zonemaps_cache.get(key, None)
+        except:
+            data_dict = None
     if data_dict:
         print ('%s valid' % key)
     else:
